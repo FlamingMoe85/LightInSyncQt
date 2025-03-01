@@ -79,6 +79,9 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape)
     m_editable = true;
     m_enabled = true;
 
+    positionLine << QPointF(0, 0)
+                 << QPointF(0, 1.0);
+
     connect(this, SIGNAL(pointsChanged(QPolygonF)),
             m_widget, SLOT(update()));
 }
@@ -315,7 +318,6 @@ void HoverPoints::paintPoints()
 {
     QPainter p;
     p.begin(m_widget);
-
     p.setRenderHint(QPainter::Antialiasing);
 
     if (m_connectionPen.style() != Qt::NoPen && m_connectionType != NoConnection) {
@@ -354,6 +356,16 @@ void HoverPoints::paintPoints()
         else
             p.drawRect(bounds);
     }
+
+    p.drawPolyline(positionLine);
+}
+
+void HoverPoints::DrawPositionLine(float _pos)
+{
+    positionLine[0].setX(TranslateRelToAbsX(_pos));
+    positionLine[0].setY(TranslateRelToAbsY(0));
+    positionLine[1].setX(positionLine[0].x());
+    positionLine[1].setY(TranslateRelToAbsY(1));
 }
 
 static QPointF bound_point(const QPointF &point, const QRectF &bounds, int lock)

@@ -113,6 +113,8 @@ public:
     void setEditable(bool editable) { m_editable = editable; }
     bool editable() const { return m_editable; }
 
+    void DrawPositionLine(float _pos);
+
     qreal TranslateRelToAbsX(qreal x);
     qreal TranslateRelToAbsY(qreal y);
     QPointF TranslateAbsToRel(qreal x, qreal y);
@@ -153,6 +155,9 @@ private:
     QPen m_pointPen;
     QBrush m_pointBrush;
     QPen m_connectionPen;
+
+    QPolygonF positionLine;
+
 };
 
 

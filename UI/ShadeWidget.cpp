@@ -54,6 +54,11 @@ void ShadeWidget::generateShade()
         shade.setColorAt(0, Qt::red);
         QPainter p(&m_shade);
         p.fillRect(rect(), shade);
-
     }
+}
+
+void ShadeWidget::DrawPositionLine(float _pos)
+{
+    m_hoverPoints->DrawPositionLine(_pos);
+    this->repaint();
 }

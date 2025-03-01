@@ -23,6 +23,7 @@ public:
 
     HoverPoints *hoverPoints() const { return m_hoverPoints; }
 
+    void DrawPositionLine(float _pos);
 
 signals:
     void colorsChanged();

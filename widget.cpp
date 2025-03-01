@@ -319,7 +319,8 @@ void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
     float tmpF = (float)ui->horizontalSlider->value() / (float)ui->horizontalSlider->maximum();
     b->Serve(itterration,tmpF);
     ui->label->setText(QString::number(tmpF));
-
+    m_red_shade->DrawPositionLine(tmpF);
+    panShade->DrawPositionLine(tmpF);
     qDebug() << "GetValue";
 }
 
