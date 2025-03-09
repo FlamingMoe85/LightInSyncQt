@@ -61,8 +61,8 @@
 
 #define printf
 
-HoverPoints::HoverPoints(QWidget *widget, PointShape shape)
-    : QObject(widget)
+HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
+    : QObject(widget), titleHeight(_titleHeight)
 {
     m_widget = widget;
     widget->installEventFilter(this);
@@ -103,14 +103,14 @@ void HoverPoints::setEnabled(bool enabled)
 
 qreal HoverPoints::TranslateRelToAbsY(qreal y)
 {
-    return y*boundingRect().height() + boundingRect().y();
+    return y*(boundingRect().height()-titleHeight) + (boundingRect().y()+titleHeight);
 }
 
 QPointF HoverPoints::TranslateAbsToRel(qreal x, qreal y)
 {
     QPointF rP;
     rP.rx() = (x-boundingRect().x())/boundingRect().width();
-    rP.ry() = (y-boundingRect().y())/boundingRect().height();
+    rP.ry() = (y-(boundingRect().y()-titleHeight))/(boundingRect().height()+titleHeight);
     return rP;
 }
 
@@ -283,9 +283,9 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
             QResizeEvent *e = (QResizeEvent *) event;
             if (e->oldSize().width() == 0 || e->oldSize().height() == 0)
                 break;
-            qreal stretch_x = e->size().width() / qreal(e->oldSize().width());
+          /*  qreal stretch_x = e->size().width() / qreal(e->oldSize().width());
             qreal stretch_y = e->size().height() / qreal(e->oldSize().height());
-            /*
+
             for (int i=0; i<m_points.size(); ++i) {
                 QPointF p = TranslateRelToAbs(m_points[i].x(), m_points[i].y());//m_points[i];
                 movePoint(i, QPointF(p.x() * stretch_x, p.y() * stretch_y), false);

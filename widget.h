@@ -8,13 +8,18 @@
 
 #include "ClientServer_Top.h"
 
+
+
 #include "../../../share/EffectStructureBlocks/BundleSeriesManager.h"
 #include "../../../share/Mapper/ColorWheelMapper.h"
 #include "../../../share/Mapper/OneChannelMapper.h"
 #include "../../../share/Mapper/HandThrough.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
+#include "../../../share/FunctionOwners.hpp"
 
 #include "../../Ui/ShadeWidget.h"
+#include "../../Ui/CustomScrollArea.h"
+#include "../../Ui/EffectEditor.h"
 
 #define AMT_DEVICES 6
 #define UNIV_LENGTH 1 + (AMT_DEVICES*10)
@@ -58,7 +63,9 @@ private:
     int itteration;
     int dir;
 
-    ShadeWidget *m_red_shade, *panShade;
+    //ShadeWidget *m_red_shade, *panShade;
+    //CustomScrollArea cusScrollAr;
+    EffectEditor effectEditor;
 
 private slots:
     void Slot_SendMsg();

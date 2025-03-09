@@ -2,6 +2,8 @@
 #define SHADEWIDGET_H
 
 #include <QWidget>
+#include <QLabel>
+#include "../../../share/FunctionOwners.hpp"
 
 class HoverPoints;
 
@@ -14,7 +16,7 @@ public:
         RedShade
     };
 
-    ShadeWidget(ShadeType type, QWidget *parent);
+    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect);
 
     void paintEvent(QPaintEvent *e) override;
 
@@ -26,8 +28,11 @@ public:
     void DrawPositionLine(float _pos);
 
 signals:
-    void colorsChanged();
-    void SignalMouseRelease(const QPolygonF &points);
+    void Signal_colorsChanged(QPolygonF &points);
+    void Signal_SignalMouseRelease(QPolygonF &points);
+
+protected:
+    int index;
 
 private:
     void generateShade();
@@ -36,6 +41,12 @@ private:
     QImage m_shade;
     HoverPoints *m_hoverPoints;
     QLinearGradient m_alpha_gradient;
+    vector<FunctionContainer *> funcContVect;
+    QLabel title;
+
+private slots:
+    void Slot_colorsChanged();
+    void Slot_SignalMouseRelease();
 };
 
 #endif // SHADEWIDGET_H

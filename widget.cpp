@@ -44,39 +44,62 @@ Widget::Widget(QWidget *parent)
 
 
     cT.RegisterClient(&bsmMaster);
-    bsmMaster.AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+    bsmMaster.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
 
     std::vector<ProportionIncrementalDot*> inPanVecR;
     std::vector<Dot*> outPanDotVecR;
+    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
+    GenerateSequentialXvalues(inPanVecR, outPanDotVecR, 0.0);
+    /*
     inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.75));
     inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.75));
     inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.25));
     inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.25));
     GenerateSequentialXvalues(inPanVecR, outPanDotVecR, 0.25);
+    */
 
     std::vector<ProportionIncrementalDot*> inTiltVecR;
     std::vector<Dot*> outTiltDotVecR;
+    inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
+    GenerateSequentialXvalues(inTiltVecR, outTiltDotVecR, 0.0);
+    /*
     inTiltVecR.push_back(new ProportionIncrementalDot(0.5, 0.0));
     inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
     inTiltVecR.push_back(new ProportionIncrementalDot(0.5, 1.0));
     inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 0.0));
     GenerateSequentialXvalues(inTiltVecR, outTiltDotVecR, 0.0);
+    */
 
     std::vector<ProportionIncrementalDot*> inPanVecL;
     std::vector<Dot*> outPanDotVecL;
+    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
+    GenerateSequentialXvalues(inPanVecL, outPanDotVecL, 0.0);
+    /*
     inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.25));
     inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.25));
     inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.75));
     inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.75));
     GenerateSequentialXvalues(inPanVecL, outPanDotVecL, 0.75);
+    */
 
     std::vector<ProportionIncrementalDot*> inTiltVecL;
     std::vector<Dot*> outTiltDotVecL;
+    inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
+    GenerateSequentialXvalues(inTiltVecL, outTiltDotVecL, 0.0);
+    /*
     inTiltVecL.push_back(new ProportionIncrementalDot(0.5, 1.0));
     inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 0.0));
     inTiltVecL.push_back(new ProportionIncrementalDot(0.5, 0.0));
     inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
     GenerateSequentialXvalues(inTiltVecL, outTiltDotVecL, 1.0);
+    */
+
+    vector<FunctionOwners *> funcCont_1, funcCont_2, funcCont_3,funcCont_4;
+    vector<vector<FunctionOwners *> > funcContainerContainers;
+    funcContainerContainers.push_back(funcCont_1);
+    funcContainerContainers.push_back(funcCont_2);
+    funcContainerContainers.push_back(funcCont_3);
+    funcContainerContainers.push_back(funcCont_4);
 
     for(int m=0; m<AMT_DEVICES; m++)
     {
@@ -93,15 +116,18 @@ Widget::Widget(QWidget *parent)
     /**/
 
 
-        bundleSeriesDevice.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bundleSeriesDevice.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
         //bundleSeriesDevice.GetBundleSeries(m)->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.0);
         //bundleSeriesDevice.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.5, 0.0, 1.0);
 
         bundleSeriesDevice.GetBundleSeries(m)->SetSerParamShift(&shiftTop);
 
         bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmPan.GetBundleSeries(m));
-        //bsmPan.SetSerPosToItems(&cT);
-        bsmPan.RegisterClientToItem(m, movingHead[m]->GetPanMapper());
+        bsmPan.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetPanMapper());
+        movingHead[m]->GetPanMapper()->GetType()->append("Pan");
+        funcContainerContainers[0].push_back((movingHead[m]->GetPanMapper()));
+        //bsmPan.RegisterClientToItem(m, movingHead[m]->GetPanMapper());
+
         //bsmPan.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
         //bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 0.85, 0.15);
 
@@ -109,14 +135,14 @@ Widget::Widget(QWidget *parent)
         {
             for(Dot* d: outPanDotVecR)
             {
-                bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
+                bsmPan.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
             }
         }
         else
         {
             for(Dot* d: outPanDotVecL)
             {
-                bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
+                bsmPan.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
             }
         }
         /*
@@ -130,6 +156,8 @@ Widget::Widget(QWidget *parent)
         bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmTilt.GetBundleSeries(m));
         //bsmPan.SetSerPosToItems(&cT);
         bsmTilt.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
+        movingHead[m]->GetTiltMapper()->GetType()->append("Tilt");
+        funcContainerContainers[1].push_back((movingHead[m]->GetTiltMapper()));
         //bsmPan.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
         //bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 0.85, 0.15);
 
@@ -140,29 +168,31 @@ Widget::Widget(QWidget *parent)
        // bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(0.75, 0.5, 0.4, 0.0);
         //bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.75, 0.0, 0.4);
 
-        /*
+        /**/
         if(m&1)
         {
             for(Dot* d: outTiltDotVecR)
             {
-                bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
+                bsmTilt.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
             }
         }
         else
         {
             for(Dot* d: outTiltDotVecL)
             {
-                bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
+                bsmTilt.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
             }
         }
-        */
+
 
 
         bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmDimm.GetBundleSeries(m));
         //bsmDimm.SetSerPosToItems(&cT);
         bsmDimm.RegisterClientToItem(m, movingHead[m]->GetDimmMapper());
+        movingHead[m]->GetDimmMapper()->GetType()->append("Dimm");
+        funcContainerContainers[2].push_back((movingHead[m]->GetDimmMapper()));
 
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 1.0, 1.0);
+        bsmDimm.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     /*
     #define BLINK_BEGIN 0.15
     #define BLINK_END 0.85
@@ -186,7 +216,9 @@ Widget::Widget(QWidget *parent)
         bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmWheel.GetBundleSeries(m));
         //bsmWheel.SetSerPosToItems(&cT);
         bsmWheel.RegisterClientToItem(m, &(colWheel[m]));
-        bsmWheel.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        colWheel[m].GetType()->append("Color Wheel");
+        funcContainerContainers[3].push_back(&(colWheel[m]));
+        bsmWheel.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
 
     }
 /*
@@ -208,7 +240,7 @@ Widget::Widget(QWidget *parent)
 
     }*/
 
-    serial.setPortName("COM5");
+    serial.setPortName("COM9");
     serial.setBaudRate(QSerialPort::Baud115200);
     serial.setDataBits(QSerialPort::Data8);
     serial.setParity(QSerialPort::NoParity);
@@ -223,16 +255,25 @@ Widget::Widget(QWidget *parent)
     QObject::connect(&shiftSpeed, &ClientServer_Top::RequestValue, this, &Widget::Slot_ShiftSpeed);
     QObject::connect(&timer, &QTimer::timeout, this, &Widget::Slot_TimerExpired);
 
+
+    ui->verticalLayout_Dots->addWidget(&effectEditor);
+    effectEditor.SetBundSerMangr(funcContainerContainers);
+    /*
     m_red_shade = new ShadeWidget(ShadeWidget::RedShade, this);
     panShade = new ShadeWidget(ShadeWidget::RedShade, this);
 
-    ui->verticalLayout_Dots->addWidget(m_red_shade);
-    ui->verticalLayout_Dots->addWidget(panShade);
+    ui->verticalLayout_Dots->addWidget(&cusScrollAr);
+    cusScrollAr.AddWidget(m_red_shade);
+    cusScrollAr.AddWidget(panShade);
+    //ui->verticalLayout_Dots->addWidget(m_red_shade);
+    //ui->verticalLayout_Dots->addWidget(panShade);
 
     connect(m_red_shade, SIGNAL(colorsChanged()), this, SLOT(pointsUpdated()));
     connect(m_red_shade, SIGNAL(colorsChanged()), this, SLOT(Slot_MouseRelease()));
     connect(panShade, SIGNAL(colorsChanged()), this, SLOT(Slot_PanRelease()));
-    Slot_MouseRelease();
+    */
+
+    //Slot_MouseRelease();
 
     timer.setInterval(100);
     timer.start();
@@ -310,7 +351,7 @@ void Widget::Slot_TimerExpired()
         *v = 0;
     }
     qDebug() << debugMsg.toLatin1();
-    qDebug() << sendMsg.toLatin1();
+    //qDebug() << sendMsg.toLatin1();
     serial.write(sendMsg.toLatin1());
 }
 
@@ -319,9 +360,10 @@ void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
     float tmpF = (float)ui->horizontalSlider->value() / (float)ui->horizontalSlider->maximum();
     b->Serve(itterration,tmpF);
     ui->label->setText(QString::number(tmpF));
-    m_red_shade->DrawPositionLine(tmpF);
-    panShade->DrawPositionLine(tmpF);
-    qDebug() << "GetValue";
+    effectEditor.DrawPositionLine(tmpF);
+    //m_red_shade->DrawPositionLine(tmpF);
+    //panShade->DrawPositionLine(tmpF);
+   // qDebug() << "GetValue";
 }
 
 void Widget::Slot_GetShift(ClientServer_Top *b, int itterration)
@@ -375,7 +417,7 @@ void Widget::pointsUpdated()
 {
     QPolygonF points;
 
-    points += m_red_shade->points();
+   // points += m_red_shade->points();
 
     std::sort(points.begin(), points.end(), x_less_than);
 
@@ -393,7 +435,7 @@ void Widget::pointsUpdated()
 void Widget::Slot_MouseRelease()
 {
     QPolygonF points;
-    points += m_red_shade->points();
+    //points += m_red_shade->points();
     vector<funcSection_t> sections;
     sections.resize(points.size()-1);
     int i=0;
@@ -406,18 +448,19 @@ void Widget::Slot_MouseRelease()
         s.maxY = points[i+1].y();
         i++;
     }
-
+/*
     for(int m=0; m<AMT_DEVICES; m++)
     {
-        bsmTilt. GetBundleSeries(m)->SetFunctionSections(sections);
+        bsmTilt.GetBundleSeries(m)->funcContainer.SetFunctionSections(sections);
     }
+    */
 }
 
 
 void Widget::Slot_PanRelease()
 {
     QPolygonF points;
-    points += panShade->points();
+    //points += panShade->points();
     vector<funcSection_t> sections;
     sections.resize(points.size()-1);
     int i=0;
@@ -433,6 +476,6 @@ void Widget::Slot_PanRelease()
 
     for(int m=0; m<AMT_DEVICES; m++)
     {
-        bsmPan. GetBundleSeries(m)->SetFunctionSections(sections);
+        bsmPan. GetBundleSeries(m)->GetFuncCont()->SetFunctionSections(sections);
     }
 }

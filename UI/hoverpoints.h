@@ -83,7 +83,7 @@ public:
         CurveConnection
     };
 
-    HoverPoints(QWidget *widget, PointShape shape);
+    HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight);
 
     bool eventFilter(QObject *object, QEvent *event) override;
 
@@ -157,6 +157,8 @@ private:
     QPen m_connectionPen;
 
     QPolygonF positionLine;
+
+    qreal titleHeight;
 
 };
 
