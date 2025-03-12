@@ -82,8 +82,28 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     positionLine << QPointF(0, 0)
                  << QPointF(0, 1.0);
 
+    selectMode = CopyPasteMode::NONE;
+
     connect(this, SIGNAL(pointsChanged(QPolygonF)),
             m_widget, SLOT(update()));
+}
+
+
+void HoverPoints::EnableSelectMode()
+{
+    selectMode = CopyPasteMode::COPY;
+}
+
+void HoverPoints::DisableSelectMode()
+{
+    selectMode = CopyPasteMode::NONE;
+    selectedIndexes.clear();
+    UpdateSelectedPoints();
+}
+
+void HoverPoints::UpdateSelectedPoints()
+{
+    paintPoints();
 }
 
 
@@ -149,7 +169,24 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
             }
 
             if (me->button() == Qt::LeftButton) {
-                if (index == -1) {
+            if(selectMode == CopyPasteMode::PASTE)
+            {
+                Signal_PasteHere();
+                selectMode = CopyPasteMode::NONE;
+
+            }else if((selectMode == CopyPasteMode::COPY) && (index != -1)){
+                    m_currentIndex = -1;
+                    Signal_NoteMeAsActive();
+                    if(selectedIndexes.contains(index))
+                    {
+                        selectedIndexes.remove(index);
+                    }
+                    else
+                    {
+                        selectedIndexes.insert(index);
+                    }
+                    UpdateSelectedPoints();
+            }else if ((index == -1) && (selectMode != CopyPasteMode::COPY)) {
                     if (!m_editable)
                         return false;
                     int pos = 0;
@@ -173,7 +210,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                     m_locks.insert(pos, 0);
                     m_currentIndex = pos;
                     firePointChange();
-                } else {
+                }else {
                     m_currentIndex = index;
                 }
                 return true;
@@ -350,6 +387,16 @@ void HoverPoints::paintPoints()
     p.setBrush(m_pointBrush);
 
     for (int i=0; i<m_points.size(); ++i) {
+        if(selectedIndexes.contains(i))
+        {
+            m_pointBrush.setColor(QColor(191, 191, 0, 255));
+            p.setBrush(m_pointBrush);
+        }
+        else
+        {
+            m_pointBrush.setColor(QColor(191, 191, 191, 127));
+            p.setBrush(m_pointBrush);
+        }
         QRectF bounds = pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y()));
         if (m_shape == CircleShape)
             p.drawEllipse(bounds);
@@ -397,15 +444,24 @@ void HoverPoints::setPoints(const QPolygonF &points)
 {
     if (points.size() != m_points.size())
         m_fingerPointMapping.clear();
-    m_points.clear();
+    if(selectMode != CopyPasteMode::PASTE)
+    {
+        m_points.clear();
+    }
+
     for (int i=0; i<points.size(); ++i)
-        m_points << bound_point(points.at(i), boundingRect(), 0);
+    m_points << bound_point(points.at(i), boundingRect(), 0);
 
     m_locks.clear();
     if (m_points.size() > 0) {
         m_locks.resize(m_points.size());
 
         m_locks.fill(0);
+    }
+
+    if(selectMode == CopyPasteMode::PASTE)
+    {
+        firePointChange();
     }
 }
 
@@ -466,4 +522,24 @@ void HoverPoints::firePointChange()
 //     }
 
     emit pointsChanged(m_points);
+}
+
+void HoverPoints::CopySelectedPoints(QPolygonF &pointsCopied)
+{
+    pointsCopied.clear();
+    int i = 0;
+    for(QPointF &p : m_points)
+    {
+        QPointF copyPoint(p);
+        if(selectedIndexes.contains(i))
+        {
+            pointsCopied.append(copyPoint);
+        }
+        i++;
+    }
+}
+
+void HoverPoints::WaitForPaste()
+{
+    selectMode = CopyPasteMode::PASTE;
 }

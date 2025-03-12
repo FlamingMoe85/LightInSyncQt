@@ -1,5 +1,8 @@
 #include "EffectEditor.h"
 #include "ui_EffectEditor.h"
+#include "hoverpoints.h"
+
+#include "QDebug"
 
 
 EffectEditor::EffectEditor(QWidget *parent) :
@@ -9,11 +12,48 @@ EffectEditor::EffectEditor(QWidget *parent) :
     ui->setupUi(this);
 
     ui->verticalLayout_ScrollArea->addWidget(&scrollArea);
+    connect(ui->pushButton_CopyX, SIGNAL(clicked()), this, SLOT(Slot_CopyX()));
+    connect(ui->pushButton_CopyY, SIGNAL(clicked()), this, SLOT(Slot_CopyY()));
+    connect(ui->pushButton_CopyPoint, SIGNAL(clicked()), this, SLOT(Slot_CopyPoint()));
+    pasteWidget = -1;
 }
 
 EffectEditor::~EffectEditor()
 {
     delete ui;
+}
+
+
+void EffectEditor::keyPressEvent(QKeyEvent *event)
+{
+    if(!event->isAutoRepeat())
+    {
+        qDebug() << "keyPressEvent: " << event->key();
+        if(event->key() == 67)
+        {
+            for(ShadeWidget* sW : shadeWidgets)
+            {
+                sW->hoverPoints()->EnableSelectMode();
+            }
+        }
+
+        if(event->key() == Qt::Key_Escape)
+        {
+            for(ShadeWidget* sW : shadeWidgets)
+            {
+                sW->hoverPoints()->DisableSelectMode();
+            }
+        }
+
+        if(event->key() == 86)
+        {
+            for(ShadeWidget* sW : shadeWidgets)
+            {
+                sW->hoverPoints()->DisableSelectMode();
+                sW->hoverPoints()->WaitForPaste();
+            }
+        }
+    }
 }
 
 void EffectEditor::SetBundSerMangr(vector<vector<FunctionOwners*>> &funcContainerContainers)
@@ -33,9 +73,11 @@ void EffectEditor::SetBundSerMangr(vector<vector<FunctionOwners*>> &funcContaine
         scrollArea.AddWidget(editorItems[i]);
         */
 
-        ShadeWidget* shadeWidget = new ShadeWidget(ShadeWidget::RedShade, (QWidget*)shadeWidget, funcOwnVec);
+        ShadeWidget* shadeWidget = new ShadeWidget(ShadeWidget::RedShade, NULL, funcOwnVec, i);
         shadeWidgets[i] = shadeWidget;
         scrollArea.AddWidget(shadeWidget);
+        connect(shadeWidgets[i], SIGNAL(Signal_NoteMeAsActive(int)), this, SLOT(Slot_GetActivityNote(int)));
+        connect(shadeWidgets[i], SIGNAL(Signal_PasteHere(int)), this, SLOT(Slot_PasteHere(int)));
         i++;
         //connect(shadeWidgets[i], SIGNAL(Signal_colorsChanged(const QPolygonF &points,int index)), this, SLOT(Slot_colorsChanged(const QPolygonF &points, int index)));
         //connect(shadeWidgets[i], SIGNAL(Signal_SignalMouseRelease(const QPolygonF &points, int index)), this, SLOT(Slot_SignalMouseRelease(const QPolygonF &points, int index)));
@@ -79,6 +121,7 @@ void EffectEditor::Slot_SignalMouseRelease(QPolygonF &points, int index)
 
 }
 
+
 void EffectEditor::DrawPositionLine(float _pos)
 {
     for(ShadeWidget *sw : shadeWidgets)
@@ -88,4 +131,62 @@ void EffectEditor::DrawPositionLine(float _pos)
     this->repaint();
 }
 
+void EffectEditor::Slot_GetActivityNote(int pinger)
+{
+    int i=0;
+    activeWidget = pinger;
+    for(ShadeWidget* sW : shadeWidgets)
+    {
+        if(i != pinger)
+        {
+            sW->hoverPoints()->DisableSelectMode();
+        }
+        i++;
+    }
+}
+
+void EffectEditor::Slot_PasteHere(int pasteTarget)
+{
+    shadeWidgets[pasteTarget]->hoverPoints()->setPoints(copiedPoints);
+}
+
+
+void EffectEditor::Slot_CopyX()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->CopySelectedPoints(copiedPoints);
+    }
+
+    for(ShadeWidget* sW : shadeWidgets)
+    {
+        sW->hoverPoints()->axisSelect = PointAxisSelect::X;
+    }
+}
+
+void EffectEditor::Slot_CopyY()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->CopySelectedPoints(copiedPoints);
+    }
+
+    for(ShadeWidget* sW : shadeWidgets)
+    {
+        sW->hoverPoints()->axisSelect = PointAxisSelect::Y;
+    }
+}
+
+void EffectEditor::Slot_CopyPoint()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->CopySelectedPoints(copiedPoints);
+    }
+
+    for(ShadeWidget* sW : shadeWidgets)
+    {
+        sW->hoverPoints()->axisSelect = PointAxisSelect::P;
+    }
+}
 

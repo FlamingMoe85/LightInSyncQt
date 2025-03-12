@@ -5,6 +5,8 @@
 #include <QLabel>
 #include "../../../share/FunctionOwners.hpp"
 
+#include "hoverpoints.h"
+
 class HoverPoints;
 
 class ShadeWidget : public QWidget
@@ -16,7 +18,7 @@ public:
         RedShade
     };
 
-    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect);
+    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index);
 
     void paintEvent(QPaintEvent *e) override;
 
@@ -30,6 +32,8 @@ public:
 signals:
     void Signal_colorsChanged(QPolygonF &points);
     void Signal_SignalMouseRelease(QPolygonF &points);
+    void Signal_NoteMeAsActive(int);
+    void Signal_PasteHere(int);
 
 protected:
     int index;
@@ -47,6 +51,8 @@ private:
 private slots:
     void Slot_colorsChanged();
     void Slot_SignalMouseRelease();
+    void Slot_GetActivityNote();
+    void Slot_PasteHere();
 };
 
 #endif // SHADEWIDGET_H

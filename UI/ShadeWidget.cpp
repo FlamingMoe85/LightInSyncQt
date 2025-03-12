@@ -1,9 +1,8 @@
 #include "ShadeWidget.h"
-#include "hoverpoints.h"
 
 #define TITLE_HEIGHT    30
 
-ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect)
+ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index)
     : QWidget(parent), m_shade_type(type), m_alpha_gradient(QLinearGradient(0, 0, 0, 0))
 {
 
@@ -13,6 +12,8 @@ ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners 
     {
         funcContVect.push_back(fo->GetFuncCont());
     }
+
+    index = _index;
 
     QPolygonF points;
     points << QPointF(0, 0)
@@ -32,12 +33,15 @@ ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners 
     m_hoverPoints->setPointLock(1, HoverPoints::LockToRight);
     m_hoverPoints->setSortType(HoverPoints::XSort);
 
-    setMinimumHeight(200);
+    setMinimumHeight(100);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setGeometry(0,0,400, 200);
 
     connect(m_hoverPoints, SIGNAL(pointsChanged(QPolygonF)), this, SLOT(Slot_colorsChanged()));
     connect(m_hoverPoints, SIGNAL(SignalMouseRelease(QPolygonF)), this, SLOT(Slot_SignalMouseRelease()));
+    connect(m_hoverPoints, SIGNAL(Signal_NoteMeAsActive()), this, SLOT(Slot_GetActivityNote()));
+    connect(m_hoverPoints, SIGNAL(Signal_PasteHere()), this, SLOT(Slot_PasteHere()));
 }
 
 QPolygonF ShadeWidget::points() const
@@ -56,6 +60,7 @@ void ShadeWidget::paintEvent(QPaintEvent *)
     p.setPen(QColor(146, 146, 146));
     p.drawRect(0, TITLE_HEIGHT, width() - 1, height() - (1+TITLE_HEIGHT));
 }
+
 
 /**/
 void ShadeWidget::generateShade()
@@ -116,4 +121,14 @@ void ShadeWidget::Slot_SignalMouseRelease()
         //bsmTilt.GetBundleSeries(m)->funcContainer.SetFunctionSections(sections);
     }
     //qDebug() << "Slot_SignalMouseRelease";
+}
+
+void ShadeWidget::Slot_GetActivityNote()
+{
+    Signal_NoteMeAsActive(index);
+}
+
+void ShadeWidget::Slot_PasteHere()
+{
+    Signal_PasteHere(index);
 }

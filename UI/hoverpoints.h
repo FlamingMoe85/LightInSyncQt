@@ -53,6 +53,18 @@
 
 #include <QtWidgets>
 
+enum PointAxisSelect {
+    X,
+    Y,
+    P
+};
+
+enum CopyPasteMode{
+    NONE,
+    COPY,
+    PASTE
+};
+
 QT_FORWARD_DECLARE_CLASS(QBypassWidget)
 
 class HoverPoints : public QObject
@@ -82,6 +94,8 @@ public:
         LineConnection,
         CurveConnection
     };
+
+
 
     HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight);
 
@@ -120,6 +134,14 @@ public:
     QPointF TranslateAbsToRel(qreal x, qreal y);
     QPointF TranslateRelToAbs(qreal x, qreal y);
 
+    void EnableSelectMode();
+    void DisableSelectMode();
+    void WaitForPaste();
+
+    void CopySelectedPoints(QPolygonF &pointsCopied);
+    PointAxisSelect axisSelect;
+
+
 public slots:
     void setEnabled(bool enabled);
     void setDisabled(bool disabled) { setEnabled(!disabled); }
@@ -127,6 +149,8 @@ public slots:
 signals:
     void pointsChanged(const QPolygonF &points);
     void SignalMouseRelease(const QPolygonF &points);
+    void Signal_NoteMeAsActive();
+    void Signal_PasteHere();
 
 public:
     void firePointChange();
@@ -147,6 +171,7 @@ private:
 
     QSizeF m_pointSize;
     int m_currentIndex;
+    QSet<int> selectedIndexes;
     bool m_editable;
     bool m_enabled;
 
@@ -160,6 +185,8 @@ private:
 
     qreal titleHeight;
 
+    CopyPasteMode selectMode;
+    void UpdateSelectedPoints();
 };
 
 

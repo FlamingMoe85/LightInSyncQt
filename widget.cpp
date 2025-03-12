@@ -350,9 +350,9 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
-    qDebug() << debugMsg.toLatin1();
+    //qDebug() << debugMsg.toLatin1();
     //qDebug() << sendMsg.toLatin1();
-    serial.write(sendMsg.toLatin1());
+    //serial.write(sendMsg.toLatin1());
 }
 
 void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
