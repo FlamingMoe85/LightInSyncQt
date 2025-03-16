@@ -543,3 +543,29 @@ void HoverPoints::WaitForPaste()
 {
     selectMode = CopyPasteMode::PASTE;
 }
+
+void HoverPoints::SetXonSelected(float _x)
+{
+    for(int i : selectedIndexes)
+    {
+        m_points[i].setX(_x);
+    }
+    firePointChange();
+}
+void HoverPoints::SetYonSelected(float _y)
+{
+    for(int i : selectedIndexes)
+    {
+        m_points[i].setY(_y);
+    }
+    firePointChange();
+}
+void HoverPoints::SetPonSelected(float _x, float _y)
+{
+    for(int i : selectedIndexes)
+    {
+        m_points[i].setX(_x);
+        m_points[i].setY(_y);
+    }
+    firePointChange();
+}

@@ -1,4 +1,4 @@
-QT       += core gui serialport
+QT       += core gui serialport multimedia
 
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
@@ -32,10 +32,13 @@ SOURCES += \
     ../../share/Mapper/HandThrough.cpp \
     ../../share/Mapper/HandTroughMapper.cpp \
     ../../share/Mapper/OneChannelMapper.cpp \
+    Audio/AudioPlayer.cpp \
+    Audio/AudioPlayerFrontend.cpp \
     ClientServer_Top.cpp \
     UI/CustomScrollArea.cpp \
     UI/EditorItem.cpp \
     UI/EffectEditor.cpp \
+    UI/HorSliderSelfCentering.cpp \
     UI/ShadeWidget.cpp \
     UI/hoverpoints.cpp \
     main.cpp \
@@ -83,18 +86,23 @@ HEADERS += \
     ../../share/Mapper/HandThrough.h \
     ../../share/Mapper/HandTroughMapper.h \
     ../../share/Mapper/OneChannelMapper.h \
+    Audio/AudioPlayer.h \
+    Audio/AudioPlayerFrontend.h \
     ClientServer_Top.h \
     UI/CustomScrollArea.h \
     UI/EditorItem.h \
     UI/EffectEditor.h \
+    UI/HorSliderSelfCentering.h \
     UI/ShadeWidget.h \
     UI/hoverpoints.h \
     widget.h
 
 FORMS += \
+    Audio/AudioPlayerFrontend.ui \
     UI/CustomScrollArea.ui \
     UI/EditorItem.ui \
     UI/EffectEditor.ui \
+    UI/HorSliderSelfCentering.ui \
     widget.ui
 
 # Default rules for deployment.

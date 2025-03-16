@@ -5,12 +5,14 @@
 
 Widget::Widget(QWidget *parent)
     :   QWidget(parent),
-        ui(new Ui::Widget)
+        ui(new Ui::Widget),
+        audioPlayerFrontEnd(audioPlayer, this)
         /*dimmMapper(dimm, 1.0, 1.0),
         panMapper(pan, 1.0, 0.0),
         tiltMapper(tilt, 1.0, 0.0)*/
 {
     ui->setupUi(this);
+    ui->verticalLayout_Player->addWidget(&audioPlayerFrontEnd);
 
     for(int i=0; i<UNIV_LENGTH; i++)
     {
@@ -122,8 +124,7 @@ Widget::Widget(QWidget *parent)
 
         bundleSeriesDevice.GetBundleSeries(m)->SetSerParamShift(&shiftTop);
 
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmPan.GetBundleSeries(m));
-        bsmPan.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetPanMapper());
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetPanMapper());
         movingHead[m]->GetPanMapper()->GetType()->append("Pan");
         funcContainerContainers[0].push_back((movingHead[m]->GetPanMapper()));
         //bsmPan.RegisterClientToItem(m, movingHead[m]->GetPanMapper());
@@ -153,9 +154,7 @@ Widget::Widget(QWidget *parent)
         bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.75, 0.5, 0.25);
         */
 
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmTilt.GetBundleSeries(m));
-        //bsmPan.SetSerPosToItems(&cT);
-        bsmTilt.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetTiltMapper());
         movingHead[m]->GetTiltMapper()->GetType()->append("Tilt");
         funcContainerContainers[1].push_back((movingHead[m]->GetTiltMapper()));
         //bsmPan.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
@@ -184,11 +183,7 @@ Widget::Widget(QWidget *parent)
             }
         }
 
-
-
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmDimm.GetBundleSeries(m));
-        //bsmDimm.SetSerPosToItems(&cT);
-        bsmDimm.RegisterClientToItem(m, movingHead[m]->GetDimmMapper());
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetDimmMapper());
         movingHead[m]->GetDimmMapper()->GetType()->append("Dimm");
         funcContainerContainers[2].push_back((movingHead[m]->GetDimmMapper()));
 
@@ -214,7 +209,6 @@ Widget::Widget(QWidget *parent)
     */
 
         bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmWheel.GetBundleSeries(m));
-        //bsmWheel.SetSerPosToItems(&cT);
         bsmWheel.RegisterClientToItem(m, &(colWheel[m]));
         colWheel[m].GetType()->append("Color Wheel");
         funcContainerContainers[3].push_back(&(colWheel[m]));
@@ -297,6 +291,8 @@ void Widget::Slot_SendMsg()
 
 void Widget::Slot_TimerExpired()
 {
+
+    audioPlayerFrontEnd.UpdateCurrentTime();
     itteration++;
     for(int m=0; m<AMT_DEVICES; m++)
     {
@@ -350,9 +346,13 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
-    //qDebug() << debugMsg.toLatin1();
-    //qDebug() << sendMsg.toLatin1();
-    //serial.write(sendMsg.toLatin1());
+    qDebug() << debugMsg.toLatin1();
+    qDebug() << sendMsg.toLatin1();
+    if(serial.isOpen())
+    {
+      serial.write(sendMsg.toLatin1());
+    }
+    //
 }
 
 void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)

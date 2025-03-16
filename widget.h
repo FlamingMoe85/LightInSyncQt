@@ -21,6 +21,9 @@
 #include "../../Ui/CustomScrollArea.h"
 #include "../../Ui/EffectEditor.h"
 
+#include "Audio/AudioPlayer.h"
+#include "Audio/AudioPlayerFrontend.h"
+
 #define AMT_DEVICES 6
 #define UNIV_LENGTH 1 + (AMT_DEVICES*10)
 
@@ -66,6 +69,9 @@ private:
     //ShadeWidget *m_red_shade, *panShade;
     //CustomScrollArea cusScrollAr;
     EffectEditor effectEditor;
+
+    AudioPlayer audioPlayer;
+    AudioPlayerFrontend audioPlayerFrontEnd;
 
 private slots:
     void Slot_SendMsg();

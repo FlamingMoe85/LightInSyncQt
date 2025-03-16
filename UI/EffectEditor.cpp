@@ -15,6 +15,10 @@ EffectEditor::EffectEditor(QWidget *parent) :
     connect(ui->pushButton_CopyX, SIGNAL(clicked()), this, SLOT(Slot_CopyX()));
     connect(ui->pushButton_CopyY, SIGNAL(clicked()), this, SLOT(Slot_CopyY()));
     connect(ui->pushButton_CopyPoint, SIGNAL(clicked()), this, SLOT(Slot_CopyPoint()));
+    connect(ui->pushButton_setX, SIGNAL(clicked()), this, SLOT(Slot_SetX()));
+    connect(ui->pushButton_setY, SIGNAL(clicked()), this, SLOT(Slot_SetY()));
+    connect(ui->pushButton_setP, SIGNAL(clicked()), this, SLOT(Slot_SetBoth()));
+
     pasteWidget = -1;
 }
 
@@ -190,3 +194,27 @@ void EffectEditor::Slot_CopyPoint()
     }
 }
 
+void EffectEditor::Slot_SetX()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->SetXonSelected(ui->doubleSpinBox_X->value());
+        shadeWidgets[activeWidget]->Slot_SignalMouseRelease();
+    }
+}
+void EffectEditor::Slot_SetY()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->SetYonSelected(ui->doubleSpinBox_Y->value());
+        shadeWidgets[activeWidget]->Slot_SignalMouseRelease();
+    }
+}
+void EffectEditor::Slot_SetBoth()
+{
+    if(activeWidget != -1)
+    {
+        shadeWidgets[activeWidget]->hoverPoints()->SetPonSelected(ui->doubleSpinBox_X->value(), ui->doubleSpinBox_Y->value());
+        shadeWidgets[activeWidget]->Slot_SignalMouseRelease();
+    }
+}

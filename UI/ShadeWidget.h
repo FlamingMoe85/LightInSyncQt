@@ -29,6 +29,10 @@ public:
 
     void DrawPositionLine(float _pos);
 
+public slots:
+
+    void Slot_SignalMouseRelease();
+
 signals:
     void Signal_colorsChanged(QPolygonF &points);
     void Signal_SignalMouseRelease(QPolygonF &points);
@@ -50,7 +54,6 @@ private:
 
 private slots:
     void Slot_colorsChanged();
-    void Slot_SignalMouseRelease();
     void Slot_GetActivityNote();
     void Slot_PasteHere();
 };

@@ -55,6 +55,9 @@ private slots:
     void Slot_CopyX();
     void Slot_CopyY();
     void Slot_CopyPoint();
+    void Slot_SetX();
+    void Slot_SetY();
+    void Slot_SetBoth();
 };
 
 #endif // EFFECTEDITOR_H

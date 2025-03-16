@@ -141,6 +141,10 @@ public:
     void CopySelectedPoints(QPolygonF &pointsCopied);
     PointAxisSelect axisSelect;
 
+    void SetXonSelected(float _x);
+    void SetYonSelected(float _y);
+    void SetPonSelected(float _x, float _y);
+
 
 public slots:
     void setEnabled(bool enabled);
