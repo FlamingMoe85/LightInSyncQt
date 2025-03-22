@@ -3,8 +3,8 @@
 AudioPlayer::AudioPlayer()
 {
     player.setParent(this);
-    player.setMedia(QUrl::fromLocalFile("C:/Users/fischeju/Music/Music/Branko - Lost Arps.mp3"));
-    player.setVolume(50);
+    player.setMedia(QUrl::fromLocalFile("C:/Musik/Zouk/Fly On.mp3"));
+    player.setVolume(20);
     Play();
     QObject::connect(&player, SIGNAL(durationChanged(qint64)), this, SLOT(Slot_DurationChanged()));
 }

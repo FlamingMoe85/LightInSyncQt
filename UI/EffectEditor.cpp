@@ -5,7 +5,7 @@
 #include "QDebug"
 
 
-EffectEditor::EffectEditor(QWidget *parent) :
+EffectEditor::EffectEditor(int x, int y, int w, int h, QWidget *parent) :
     QWidget(parent),
     ui(new Ui::EffectEditor)
 {
@@ -20,6 +20,7 @@ EffectEditor::EffectEditor(QWidget *parent) :
     connect(ui->pushButton_setP, SIGNAL(clicked()), this, SLOT(Slot_SetBoth()));
 
     pasteWidget = -1;
+    geometry.setRect(x, y, w, h);
 }
 
 EffectEditor::~EffectEditor()
@@ -77,7 +78,7 @@ void EffectEditor::SetBundSerMangr(vector<vector<FunctionOwners*>> &funcContaine
         scrollArea.AddWidget(editorItems[i]);
         */
 
-        ShadeWidget* shadeWidget = new ShadeWidget(ShadeWidget::RedShade, NULL, funcOwnVec, i);
+        ShadeWidget* shadeWidget = new ShadeWidget(ShadeWidget::RedShade, NULL, funcOwnVec, i, geometry);
         shadeWidgets[i] = shadeWidget;
         scrollArea.AddWidget(shadeWidget);
         connect(shadeWidgets[i], SIGNAL(Signal_NoteMeAsActive(int)), this, SLOT(Slot_GetActivityNote(int)));

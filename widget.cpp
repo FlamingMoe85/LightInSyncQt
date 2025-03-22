@@ -6,10 +6,8 @@
 Widget::Widget(QWidget *parent)
     :   QWidget(parent),
         ui(new Ui::Widget),
+        effectEditor(0,0,400,200, this),
         audioPlayerFrontEnd(audioPlayer, this)
-        /*dimmMapper(dimm, 1.0, 1.0),
-        panMapper(pan, 1.0, 0.0),
-        tiltMapper(tilt, 1.0, 0.0)*/
 {
     ui->setupUi(this);
     ui->verticalLayout_Player->addWidget(&audioPlayerFrontEnd);

@@ -2,7 +2,7 @@
 
 #define TITLE_HEIGHT    30
 
-ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index)
+ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index, QRect &geometry)
     : QWidget(parent), m_shade_type(type), m_alpha_gradient(QLinearGradient(0, 0, 0, 0))
 {
 
@@ -36,7 +36,8 @@ ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners 
     setMinimumHeight(100);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    setGeometry(0,0,400, 200);
+    setGeometry(geometry);
+
 
     connect(m_hoverPoints, SIGNAL(pointsChanged(QPolygonF)), this, SLOT(Slot_colorsChanged()));
     connect(m_hoverPoints, SIGNAL(SignalMouseRelease(QPolygonF)), this, SLOT(Slot_SignalMouseRelease()));

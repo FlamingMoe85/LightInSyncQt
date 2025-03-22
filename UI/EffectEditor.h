@@ -24,7 +24,7 @@ public:
 
 
 
-    explicit EffectEditor(QWidget *parent = nullptr);
+    explicit EffectEditor(int x, int y, int w, int h, QWidget *parent = nullptr);
     ~EffectEditor();
     void SetBundSerMangr(vector<vector<FunctionOwners *> > &funcContainerContainers);
     void DrawPositionLine(float _pos);
@@ -45,6 +45,7 @@ private:
     void RemoveAllShadeWidgets();
     QPolygonF copiedPoints;
     int activeWidget, pasteWidget;
+    QRect geometry;
 
 private slots:
 

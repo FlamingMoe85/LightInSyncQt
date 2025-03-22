@@ -18,7 +18,7 @@ public:
         RedShade
     };
 
-    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index);
+    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index, QRect &geometry);
 
     void paintEvent(QPaintEvent *e) override;
 

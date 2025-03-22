@@ -24,6 +24,7 @@ SOURCES += \
     ../../share/EffectStructureBlocks/BundleSeriesManager.cpp \
     ../../share/EffectStructureBlocks/ComponentBundle.cpp \
     ../../share/EffectStructureBlocks/EffectComponent.cpp \
+    ../../share/EffectStructureBlocks/Positioner.cpp \
     ../../share/Functions/FunctionContainer.cpp \
     ../../share/Functions/FunctionContainerSpan.cpp \
     ../../share/Functions/FunctionSection_Base.cpp \
@@ -74,6 +75,7 @@ HEADERS += \
     ../../share/EffectStructureBlocks/BundleSeriesManager.h \
     ../../share/EffectStructureBlocks/ComponentBundle.h \
     ../../share/EffectStructureBlocks/EffectComponent.h \
+    ../../share/EffectStructureBlocks/Positioner.h \
     ../../share/FunctionOwners.hpp \
     ../../share/Functions/FunctionContainer.h \
     ../../share/Functions/FunctionContainerSpan.h \

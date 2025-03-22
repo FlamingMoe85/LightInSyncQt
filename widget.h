@@ -17,9 +17,9 @@
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
 #include "../../../share/FunctionOwners.hpp"
 
-#include "../../Ui/ShadeWidget.h"
-#include "../../Ui/CustomScrollArea.h"
-#include "../../Ui/EffectEditor.h"
+#include "../Ui/ShadeWidget.h"
+#include "../Ui/CustomScrollArea.h"
+#include "../Ui/EffectEditor.h"
 
 #include "Audio/AudioPlayer.h"
 #include "Audio/AudioPlayerFrontend.h"
