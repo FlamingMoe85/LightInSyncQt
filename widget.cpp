@@ -10,7 +10,14 @@ Widget::Widget(QWidget *parent)
         audioPlayerFrontEnd(audioPlayer, this)
 {
     ui->setupUi(this);
-    ui->verticalLayout_Player->addWidget(&audioPlayerFrontEnd);
+    for(int i = ui->stackedWidget->count(); i >= 0; i--)
+    {
+        QWidget* widget = ui->stackedWidget->widget(i);
+        ui->stackedWidget->removeWidget(widget);
+        widget->deleteLater();
+    }
+    ui->stackedWidget->addWidget(&audioPlayerFrontEnd);
+    //ui->verticalLayout_Player->addWidget(&audioPlayerFrontEnd);
 
     for(int i=0; i<UNIV_LENGTH; i++)
     {
@@ -232,7 +239,7 @@ Widget::Widget(QWidget *parent)
 
     }*/
 
-    serial.setPortName("COM9");
+    serial.setPortName("COM5");
     serial.setBaudRate(QSerialPort::Baud115200);
     serial.setDataBits(QSerialPort::Data8);
     serial.setParity(QSerialPort::NoParity);
@@ -247,8 +254,12 @@ Widget::Widget(QWidget *parent)
     QObject::connect(&shiftSpeed, &ClientServer_Top::RequestValue, this, &Widget::Slot_ShiftSpeed);
     QObject::connect(&timer, &QTimer::timeout, this, &Widget::Slot_TimerExpired);
 
+    QObject::connect(ui->pushButton_prv, &QPushButton::clicked, this, &Widget::Slot_PrvStackedIndex);
+    QObject::connect(ui->pushButton_nxt, &QPushButton::clicked, this, &Widget::Slot_NxtStackedIndex);
 
-    ui->verticalLayout_Dots->addWidget(&effectEditor);
+
+    //ui->verticalLayout_Dots->addWidget(&effectEditor);
+    ui->stackedWidget->addWidget(&effectEditor);
     effectEditor.SetBundSerMangr(funcContainerContainers);
     /*
     m_red_shade = new ShadeWidget(ShadeWidget::RedShade, this);
@@ -476,4 +487,20 @@ void Widget::Slot_PanRelease()
     {
         bsmPan. GetBundleSeries(m)->GetFuncCont()->SetFunctionSections(sections);
     }
+}
+
+void Widget::Slot_PrvStackedIndex()
+{
+    int curIndx = ui->stackedWidget->currentIndex();
+    if(curIndx > 0) curIndx--;
+    else curIndx = ui->stackedWidget->count()-1;
+    ui->stackedWidget->setCurrentIndex(curIndx);
+}
+
+void Widget::Slot_NxtStackedIndex()
+{
+    int curIndx = ui->stackedWidget->currentIndex();
+    curIndx++;
+    if(curIndx == ui->stackedWidget->count()) curIndx = 0;
+    ui->stackedWidget->setCurrentIndex(curIndx);
 }

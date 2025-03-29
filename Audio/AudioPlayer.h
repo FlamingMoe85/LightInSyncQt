@@ -19,6 +19,7 @@ public:
     float GetCurrentPosRel(){return (float)GetCurrentPosAbs() / (float)player.duration();};
     void GetCurTime(QTime &time);
     void GetLength(QTime &time);
+    void GetLength(qint64 &time);
 
 private:
     QMediaPlayer player;

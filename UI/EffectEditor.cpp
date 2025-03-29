@@ -61,6 +61,16 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
     }
 }
 
+void EffectEditor::SetItemGeometry(int x, int y, int w, int h)
+{
+    geometry.setRect(x, y, w, h);
+}
+
+void EffectEditor::SetWidth(int _w)
+{
+    scrollArea.SetWidthOfItems(_w);
+}
+
 void EffectEditor::SetBundSerMangr(vector<vector<FunctionOwners*>> &funcContainerContainers)
 {
     RemoveAllShadeWidgets();

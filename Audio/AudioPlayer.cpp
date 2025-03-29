@@ -34,6 +34,11 @@ void AudioPlayer::GetLength(QTime &time)
     millisToTime(time, player.duration());
 }
 
+void AudioPlayer::GetLength(qint64 &time)
+{
+    time = player.duration();
+}
+
 void AudioPlayer::GetCurTime(QTime &time)
 {
     millisToTime(time, GetCurrentPosAbs());

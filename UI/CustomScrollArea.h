@@ -18,6 +18,8 @@ public:
 
     void AddWidget(QWidget* w);
     void RemoveWidget(QWidget* w);
+    void SetHeightOfItems(int _h);
+    void SetWidthOfItems(int _w);
 
 private:
     Ui::CustomScrollArea *ui;
@@ -25,7 +27,7 @@ private:
     QWidget* scrollWidget;
     QVBoxLayout* vLayout;
 
-    unsigned int height;
+    unsigned int height, h;
 };
 
 #endif // CUSTOMSCROLLAREA_H

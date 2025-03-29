@@ -90,5 +90,8 @@ private slots:
     void pointsUpdated();
     void Slot_MouseRelease();
     void Slot_PanRelease();
+
+    void Slot_PrvStackedIndex();
+    void Slot_NxtStackedIndex();
 };
 #endif // WIDGET_H

@@ -12,6 +12,7 @@ CustomScrollArea::CustomScrollArea(QWidget *parent) :
     scrollWidget->setLayout(vLayout);
     ui->scrollArea->setWidget(scrollWidget);
     height = 0;
+    h = 0;
 }
 
 CustomScrollArea::~CustomScrollArea()
@@ -22,14 +23,28 @@ CustomScrollArea::~CustomScrollArea()
 void CustomScrollArea::AddWidget(QWidget* w)
 {
     scrollWidget->layout()->addWidget(w);
-    height += w->geometry().height();
+    if(h == 0)height += w->geometry().height();
+    else height = scrollWidget->layout()->count()*h;
     scrollWidget->setFixedHeight(height);
 }
 
 void CustomScrollArea::RemoveWidget(QWidget* w)
 {
     scrollWidget->layout()->removeWidget(w);
-    height -= w->geometry().height();
+    if(h == 0)height -= w->geometry().height();
+    else height = scrollWidget->layout()->count()*h;
+    //height -= w->geometry().height();
     scrollWidget->setFixedHeight(height);
 }
 
+void CustomScrollArea::SetHeightOfItems(int _h)
+{
+    h = _h;
+    height = scrollWidget->layout()->count()*h;
+    scrollWidget->setFixedHeight(height);
+}
+
+void CustomScrollArea::SetWidthOfItems(int _w)
+{
+    scrollWidget->setFixedWidth(_w);
+}

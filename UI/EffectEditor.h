@@ -31,6 +31,8 @@ public:
 
 
     void keyPressEvent(QKeyEvent *event) override;
+    void SetItemGeometry(int x, int y, int w, int h);
+    void SetWidth(int _w);
 
 protected:
 
