@@ -10,7 +10,7 @@ Widget::Widget(QWidget *parent)
         audioPlayerFrontEnd(audioPlayer, this)
 {
     ui->setupUi(this);
-    for(int i = ui->stackedWidget->count(); i >= 0; i--)
+    for(int i = ui->stackedWidget->count()-1; i >= 0; i--)
     {
         QWidget* widget = ui->stackedWidget->widget(i);
         ui->stackedWidget->removeWidget(widget);
@@ -355,8 +355,8 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
-    qDebug() << debugMsg.toLatin1();
-    qDebug() << sendMsg.toLatin1();
+    //qDebug() << debugMsg.toLatin1();
+    //qDebug() << sendMsg.toLatin1();
     if(serial.isOpen())
     {
       serial.write(sendMsg.toLatin1());
