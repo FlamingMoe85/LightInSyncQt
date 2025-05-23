@@ -23,7 +23,7 @@ Widget::Widget(QWidget *parent)
     bsmWheel.GenerateBundleSeries(AMT_DEVICES);
     bsmWheel.SetSerParamSpanMinToItems(&spanMinTop);
     bsmWheel.SetSerParamSpanMaxToItems(&spanMaxTop);
-    bsmWheel.SetSerParamSpanOffsetToItems(&spanOffsetTop);
+    //bsmWheel.SetSerParamSpanOffsetToItems(&spanOffsetTop);
     bsmWheel.SetSerParamSpeedToItems(&shiftSpeed);
 
     RGBW_16B_Dimm_Init_t rgbw16B_Init;
@@ -54,13 +54,16 @@ Widget::Widget(QWidget *parent)
             colWheel[indexAbs].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
             bsmSection[section].RegisterClientToItem(device, &(colWheel[indexAbs]));
             bsmSection[section].GetBundleSeries(device)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+            bsmSection[section].GetBundleSeries(device)->SetSerParamShift(&shiftDeviceTop);
 
             // build Level 1
             bsmOfSections.RegisterClientToItem(section, (bsmSection[section].GetBundleSeries(device)));
         }
 
-        //build Level 2
+        // build Level 2
         bsmMaster.RegisterClient(bsmOfSections.GetBundleSeries(section));
+        bsmOfSections.GetBundleSeries(section)->SetSerParamShift(&shiftSectionTop);
+        bsmOfSections.GetBundleSeries(section)->SetSerParamSpanOffset(&(spanOffsetTopSection[section]));
         bsmOfSections.GetBundleSeries(section)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     }
 
@@ -71,9 +74,14 @@ Widget::Widget(QWidget *parent)
     serial.setStopBits(QSerialPort::OneStop);
     serial.open(QIODevice::ReadWrite);
 
-    /*
-    QObject::connect(&shiftTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetShift);
-    QObject::connect(&spanMinTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMin);
+
+    QObject::connect(&shiftSectionTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSectionShift);
+    QObject::connect(&shiftDeviceTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDeviceShift);
+
+    QObject::connect(&(spanOffsetTopSection[0]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_1);
+    QObject::connect(&(spanOffsetTopSection[1]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_2);
+    QObject::connect(&(spanOffsetTopSection[2]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_3);
+            /*QObject::connect(&spanMinTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMin);
     QObject::connect(&spanMaxTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMax);
     QObject::connect(&spanOffsetTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffset);
     QObject::connect(&shiftSpeed, &ClientServer_Top::RequestValue, this, &Widget::Slot_ShiftSpeed);
@@ -113,6 +121,33 @@ void Widget::Slot_TimerExpired()
         rgbw16Bdevices[i]->SetDimmChnlVal((uint8_t)(255.0*dimm));
     }
     colWheel[0].GetRequested(itteration);
+
+    /*
+    int tmpItt = itteration - 1;
+    if(ui->checkBox_WheelDisable_1->isChecked())
+    {
+
+        bsmSection[0].GetBundleSeries(0)->Consume(tmpItt, 0.0);
+        bsmSection[0].GetBundleSeries(1)->Consume(tmpItt, 0.0);
+        bsmSection[0].GetBundleSeries(2)->Consume(tmpItt, 0.0);
+        bsmSection[0].GetBundleSeries(3)->Consume(tmpItt, 0.0);
+    }
+    if(ui->checkBox_WheelDisable_2->isChecked())
+    {
+        colWheel[4].Consume(tmpItt, 0.0);
+        colWheel[5].Consume(tmpItt, 0.0);
+        colWheel[6].Consume(tmpItt, 0.0);
+        colWheel[7].Consume(tmpItt, 0.0);
+    }
+    if(ui->checkBox_WheelDisable_3->isChecked())
+    {
+        colWheel[8].Consume(tmpItt, 0.0);
+        colWheel[9].Consume(tmpItt, 0.0);
+        colWheel[10].Consume(tmpItt, 0.0);
+        colWheel[11].Consume(tmpItt, 0.0);
+
+    }
+    */
     /*
     for(int m=0; m<AMT_DEVICES; m++)
     {
@@ -120,37 +155,68 @@ void Widget::Slot_TimerExpired()
     }
     */
 
-    /*
-    if(ui->checkBox->isChecked())
+
+    if(ui->checkBox_AutoIncMainPos->isChecked())
     {
-        int v = ui->horizontalSlider->value();
-        v -= v%(ui->horizontalSlider_Speed->value());
-        v += (ui->horizontalSlider_Speed->value());
-        if(v > ui->horizontalSlider->maximum()) v=0;
-        ui->horizontalSlider->setSliderPosition(v);
+        int v = ui->horizontalSlider_MainPosition->value();
+        v += (ui->horizontalSlider_SpeedMainPos->value());
+        if(v > ui->horizontalSlider_MainPosition->maximum()) v=0;
+        ui->horizontalSlider_MainPosition->setSliderPosition(v);
     }
-    if(ui->checkBox_Shift->isChecked())
+
+    if(ui->checkBox_AutoIncSectionShift->isChecked())
     {
-        if(dir == 0)
+        if(dirSectionShift == 0)
         {
 
-           int v = ui->horizontalSlider_2->value();
-                v -= v%4;
-                v += 4;
-                if(v > ui->horizontalSlider_2->maximum()) dir = 1;
-                ui->horizontalSlider_2->setSliderPosition(v);
+           int v = ui->horizontalSlider_SectionShift->value();
+                v += ui->horizontalSlider_SpeedSectionShift->value();
+                if(v > ui->horizontalSlider_SectionShift->maximum()) dirSectionShift = 1;
+                ui->horizontalSlider_SectionShift->setSliderPosition(v);
         }
         else
         {
-           int v = ui->horizontalSlider_2->value();
-                    v += v%2;
-                    v -= 2;
-                    if(v == 0) dir = 0;
-                    ui->horizontalSlider_2->setSliderPosition(v);
+           int v = ui->horizontalSlider_SectionShift->value();
+                    if(v < ui->horizontalSlider_SpeedSectionShift->value())
+                    {
+                        dirSectionShift = 0;
+                        v = 0;
+                    }
+                    else
+                    {
+                        v -= ui->horizontalSlider_SpeedSectionShift->value();
+                    }
+                    ui->horizontalSlider_SectionShift->setSliderPosition(v);
         }
     }
 
-    if(ui->checkBox_Offset->isChecked())
+    if(ui->checkBox_AutoIncDevicesShift->isChecked())
+    {
+        if(dirDeviceShift == 0)
+        {
+
+           int v = ui->horizontalSlider_DeviceShift->value();
+                v += ui->horizontalSlider_SpeedDevicesShift->value();
+                if(v > ui->horizontalSlider_DeviceShift->maximum()) dirDeviceShift = 1;
+                ui->horizontalSlider_DeviceShift->setSliderPosition(v);
+        }
+        else
+        {
+           int v = ui->horizontalSlider_DeviceShift->value();
+                    if(v < ui->horizontalSlider_SpeedDevicesShift->value())
+                    {
+                        dirDeviceShift = 0;
+                        v = 0;
+                    }
+                    else
+                    {
+                        v -= ui->horizontalSlider_SpeedDevicesShift->value();
+                    }
+                    ui->horizontalSlider_DeviceShift->setSliderPosition(v);
+        }
+    }
+
+ /*   if(ui->checkBox_Offset->isChecked())
     {
         int v = ui->horizontalSlider_SpanOffset->value();
         v += 1;
@@ -181,14 +247,46 @@ void Widget::Slot_TimerExpired()
 void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
 {
     float tmpF = (float)ui->horizontalSlider_MainPosition->value() / (float)ui->horizontalSlider_MainPosition->maximum();
+    ui->label_MainPosition->setText(QString::number(tmpF));
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetSectionShift(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_SectionShift->value() / (float)ui->horizontalSlider_SectionShift->maximum());
+    tmpF = tmpF * (float)(ui->horizontalSlider_sectionShiftMulti->value());
+    ui->label_SectionShift->setText(QString::number(tmpF));
+    b->Serve(itterration,tmpF);
+}
+
+
+
+void Widget::Slot_GetDeviceShift(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_DeviceShift->value() / (float)ui->horizontalSlider_DeviceShift->maximum());
+    tmpF = tmpF * (float)(ui->horizontalSlider_SpeedDevicesShift->value());
+    ui->label_DeviceShift->setText(QString::number(tmpF));
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetSpanOffsetSection_1(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_OffsetSection_1->value() / (float)ui->horizontalSlider_OffsetSection_1->maximum());
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetSpanOffsetSection_2(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_OffsetSection_2->value() / (float)ui->horizontalSlider_OffsetSection_2->maximum());
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_OffsetSection_3->value() / (float)ui->horizontalSlider_OffsetSection_3->maximum());
     b->Serve(itterration,tmpF);
 }
 /*
-void Widget::Slot_GetShift(ClientServer_Top *b, int itterration)
-{
-    float tmpF = (float)ui->horizontalSlider_2->value() / (float)ui->horizontalSlider_2->maximum();
-    b->Serve(itterration,tmpF);
-}
 void Widget::Slot_GetSpanMin(ClientServer_Top *b, int itterration)
 {
     float m, n;

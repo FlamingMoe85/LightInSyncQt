@@ -68,13 +68,15 @@ private:
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
     RGBW_16B_Dimm* rgbw16Bdevices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
-    ClientServer_Top cT, shiftTop, spanMinTop, spanMaxTop, spanOffsetTop, shiftSpeed;
+    ClientServer_Top cT, shiftSectionTop, shiftDeviceTop, spanMinTop, spanMaxTop,
+                        spanOffsetTopSection[AMT_SECTIONS],
+                        shiftSpeed;
 
     QTimer timer;
     std::vector<uint8_t*> universum;
     uint8_t buf[UNIV_LENGTH];
     int itteration;
-    int dir;
+    int dirSectionShift, dirDeviceShift;
 
 
 private slots:
@@ -82,8 +84,12 @@ private slots:
     void Slot_TimerExpired();
 
     void Slot_GetValue(ClientServer_Top *b, int itterration);
+    void Slot_GetSectionShift(ClientServer_Top *b, int itterration);
+    void Slot_GetDeviceShift(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanOffsetSection_1(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanOffsetSection_2(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration);
     /*
-    void Slot_GetShift(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMin(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMax(ClientServer_Top *b, int itterration);
     void Slot_GetSpanOffset(ClientServer_Top *b, int itterration);
