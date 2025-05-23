@@ -30,9 +30,12 @@ SOURCES += \
     ../../share/Functions/FunctionSection_Base.cpp \
     ../../share/Functions/FunctionSection_Linear.cpp \
     ../../share/Mapper/ColorWheelMapper.cpp \
+    ../../share/Mapper/Dimm_Mapper.cpp \
     ../../share/Mapper/HandThrough.cpp \
     ../../share/Mapper/HandTroughMapper.cpp \
     ../../share/Mapper/OneChannelMapper.cpp \
+    ../../share/Mapper/WhiteDimm_Mapper.cpp \
+    ../../share/Mapper/White_Mapper.cpp \
     Audio/AudioPlayer.cpp \
     Audio/AudioPlayerFrontend.cpp \
     ClientServer_Top.cpp \
@@ -57,6 +60,7 @@ HEADERS += \
     ../../share/Devices/DmxDevices/Device_RGBW.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
+    ../../share/Devices/DmxDevices/RGBW_16B_DImm.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
     ../../share/Devices/Interfaces/I_DmxChannelBlue_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelDimm_8Bit.hpp \
@@ -65,6 +69,7 @@ HEADERS += \
     ../../share/Devices/Interfaces/I_DmxChannelRandom.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelRed_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelTilt_8Bit.hpp \
+    ../../share/Devices/Interfaces/I_DmxChannelWhiteDimm_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelWhite_8Bit.hpp \
     ../../share/Devices/Interfaces/I_HowMany.hpp \
     ../../share/Devices/Interfaces/I_PositionConsumer.h \
@@ -72,6 +77,7 @@ HEADERS += \
     ../../share/Devices/Interfaces/I_RGBW.hpp \
     ../../share/Devices/Interfaces/I_RGBW_Dimm.hpp \
     ../../share/Devices/Interfaces/I_White.hpp \
+    ../../share/Devices/Interfaces/I_WhiteDimm.hpp \
     ../../share/EffectStructureBlocks/BundleSeries.h \
     ../../share/EffectStructureBlocks/BundleSeriesManager.h \
     ../../share/EffectStructureBlocks/ComponentBundle.h \
@@ -86,9 +92,12 @@ HEADERS += \
     ../../share/GlobalDefines_Shared.h \
     ../../share/Helper.hpp \
     ../../share/Mapper/ColorWheelMapper.h \
+    ../../share/Mapper/Dimm_Mapper.hpp \
     ../../share/Mapper/HandThrough.h \
     ../../share/Mapper/HandTroughMapper.h \
     ../../share/Mapper/OneChannelMapper.h \
+    ../../share/Mapper/WhiteDimm_Mapper.hpp \
+    ../../share/Mapper/White_Mapper.hpp \
     Audio/AudioPlayer.h \
     Audio/AudioPlayerFrontend.h \
     ClientServer_Top.h \

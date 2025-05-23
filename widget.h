@@ -15,6 +15,7 @@
 #include "../../../share/Mapper/OneChannelMapper.h"
 #include "../../../share/Mapper/HandThrough.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
+#include "../../../share/Devices/DmxDevices/RGBW_16B_DImm.hpp"
 #include "../../../share/FunctionOwners.hpp"
 
 #include "../Ui/ShadeWidget.h"
@@ -24,8 +25,13 @@
 #include "Audio/AudioPlayer.h"
 #include "Audio/AudioPlayerFrontend.h"
 
+#define AMT_SECTIONS    3
+#define AMT_DEVS_PER_SECTION    4
+#define CHNLS_PER_CAN 8
+#define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN)
+
 #define AMT_DEVICES 6
-#define UNIV_LENGTH 1 + (AMT_DEVICES*10)
+//#define UNIV_LENGTH 1 + (AMT_DEVICES*10)
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -51,12 +57,16 @@ private:
                             bsmPan,
                             bsmTilt,
                             bsmDimm,
-                            bsmWheel;
+                            bsmWheel,
+
+                            bsmOfSections,
+                            bsmSection[AMT_SECTIONS];
 
     BundleSeries bsmMaster;
 
     RGBWA_UV_MiniMovingHead* movingHead[AMT_DEVICES];
-    ColorWheelMapper colWheel[AMT_DEVICES];
+    ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
+    RGBW_16B_Dimm* rgbw16Bdevices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
     ClientServer_Top cT, shiftTop, spanMinTop, spanMaxTop, spanOffsetTop, shiftSpeed;
 
@@ -66,32 +76,24 @@ private:
     int itteration;
     int dir;
 
-    //ShadeWidget *m_red_shade, *panShade;
-    //CustomScrollArea cusScrollAr;
-    EffectEditor effectEditor;
-
-    AudioPlayer audioPlayer;
-    AudioPlayerFrontend audioPlayerFrontEnd;
 
 private slots:
     void Slot_SendMsg();
     void Slot_TimerExpired();
+
     void Slot_GetValue(ClientServer_Top *b, int itterration);
+    /*
     void Slot_GetShift(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMin(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMax(ClientServer_Top *b, int itterration);
     void Slot_GetSpanOffset(ClientServer_Top *b, int itterration);
     void Slot_ShiftSpeed(ClientServer_Top *b, int itterration);
 
+
     float GetSpanMin();
     float GetSpanMax();
     float GetSpanOffset();
+*/
 
-    void pointsUpdated();
-    void Slot_MouseRelease();
-    void Slot_PanRelease();
-
-    void Slot_PrvStackedIndex();
-    void Slot_NxtStackedIndex();
 };
 #endif // WIDGET_H
