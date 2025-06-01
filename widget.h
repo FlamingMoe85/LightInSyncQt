@@ -13,10 +13,15 @@
 #include "../../../share/EffectStructureBlocks/BundleSeriesManager.h"
 #include "../../../share/Mapper/ColorWheelMapper.h"
 #include "../../../share/Mapper/OneChannelMapper.h"
+#include "../../../share/Mapper/HandTroughMapper_T.hpp"
 #include "../../../share/Mapper/HandThrough.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
 #include "../../../share/Devices/DmxDevices/RGBW_16B_DImm.hpp"
 #include "../../../share/FunctionOwners.hpp"
+
+
+#include "../../../share/Devices/Channel/Channel_8Bit_T.hpp"
+#include "../../../share/Devices/DmxDevices/Device.hpp"
 
 #include "../Ui/ShadeWidget.h"
 #include "../Ui/CustomScrollArea.h"
@@ -62,21 +67,23 @@ private:
                             bsmOfSections,
                             bsmSection[AMT_SECTIONS];
 
-    BundleSeries bsmMaster;
+    BundleSeries bsmMaster, bsDimm;
 
     RGBWA_UV_MiniMovingHead* movingHead[AMT_DEVICES];
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
-    RGBW_16B_Dimm* rgbw16Bdevices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
+    Device* devices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
     ClientServer_Top cT, shiftSectionTop, shiftDeviceTop, spanMinTop, spanMaxTop,
                         spanOffsetTopSection[AMT_SECTIONS],
-                        shiftSpeed;
+                        shiftSpeed, dimmShift, dimmValueTop;
+
+    Device device;
 
     QTimer timer;
     std::vector<uint8_t*> universum;
     uint8_t buf[UNIV_LENGTH];
     int itteration;
-    int dirSectionShift, dirDeviceShift;
+    int dirSectionShift, dirDeviceShift, dirDimmShift, dirDimm;
 
 
 private slots:
@@ -89,6 +96,8 @@ private slots:
     void Slot_GetSpanOffsetSection_1(ClientServer_Top *b, int itterration);
     void Slot_GetSpanOffsetSection_2(ClientServer_Top *b, int itterration);
     void Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration);
+    void Slot_GetDimmValue(ClientServer_Top *b, int itterration);
+    void Slot_GetDimmShift(ClientServer_Top *b, int itterration);
     /*
     void Slot_GetSpanMin(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMax(ClientServer_Top *b, int itterration);

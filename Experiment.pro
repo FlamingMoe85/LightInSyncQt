@@ -33,6 +33,8 @@ SOURCES += \
     ../../share/Mapper/Dimm_Mapper.cpp \
     ../../share/Mapper/HandThrough.cpp \
     ../../share/Mapper/HandTroughMapper.cpp \
+    ../../share/Mapper/Mapper_Channel.cpp \
+    ../../share/Mapper/Mapper_InternalValue.cpp \
     ../../share/Mapper/OneChannelMapper.cpp \
     ../../share/Mapper/WhiteDimm_Mapper.cpp \
     ../../share/Mapper/White_Mapper.cpp \
@@ -55,13 +57,21 @@ HEADERS += \
     ../../share/BrokerClientServer/I_Client.hpp \
     ../../share/BrokerClientServer/I_Server.hpp \
     ../../share/Devices/AbstractDevices/Device_RGB_I.hpp \
+    ../../share/Devices/Channel/ChannelTypes.hpp \
+    ../../share/Devices/Channel/Channel_8Bit.hpp \
+    ../../share/Devices/Channel/Channel_8BitValue_8BitDimm.hpp \
+    ../../share/Devices/Channel/Channel_8BitValue_8BitDimm_T.hpp \
+    ../../share/Devices/Channel/Channel_8Bit_T.hpp \
     ../../share/Devices/Channel/DmxChannel_8Bit.hpp \
+    ../../share/Devices/DmxDevices/Device.hpp \
     ../../share/Devices/DmxDevices/Device_RGB.hpp \
     ../../share/Devices/DmxDevices/Device_RGBW.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
     ../../share/Devices/DmxDevices/RGBW_16B_DImm.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
+    ../../share/Devices/Interfaces/I_Channel_8Bit.hpp \
+    ../../share/Devices/Interfaces/I_Channel_8Bit_T.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelBlue_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelDimm_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelGreen_8Bit.hpp \
@@ -95,6 +105,9 @@ HEADERS += \
     ../../share/Mapper/Dimm_Mapper.hpp \
     ../../share/Mapper/HandThrough.h \
     ../../share/Mapper/HandTroughMapper.h \
+    ../../share/Mapper/HandTroughMapper_T.hpp \
+    ../../share/Mapper/Mapper_Channel.h \
+    ../../share/Mapper/Mapper_InternalValue.h \
     ../../share/Mapper/OneChannelMapper.h \
     ../../share/Mapper/WhiteDimm_Mapper.hpp \
     ../../share/Mapper/White_Mapper.hpp \

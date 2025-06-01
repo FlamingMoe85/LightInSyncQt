@@ -14,6 +14,9 @@ public:
 
 signals:
     void RequestValue(ClientServer_Top* b, int itteration);
+
+private:
+    int myCntId;
 };
 
 #endif // CLIENTSERVER_TOP_H

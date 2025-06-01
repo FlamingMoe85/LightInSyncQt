@@ -5,7 +5,8 @@
 
 Widget::Widget(QWidget *parent)
     :   QWidget(parent),
-        ui(new Ui::Widget)
+        ui(new Ui::Widget),
+        device(universum)
 {
     ui->setupUi(this);
 
@@ -14,10 +15,11 @@ Widget::Widget(QWidget *parent)
     for(int i=0; i<UNIV_LENGTH; i++)
     {
         universum.push_back(&(buf[i]));
+        buf[i] = 0;
     }
 
 
-
+/*
     bundleSeriesDevice.GenerateBundleSeries(AMT_DEVICES);
     bsmDimm.GenerateBundleSeries(AMT_DEVICES);
     bsmWheel.GenerateBundleSeries(AMT_DEVICES);
@@ -25,16 +27,37 @@ Widget::Widget(QWidget *parent)
     bsmWheel.SetSerParamSpanMaxToItems(&spanMaxTop);
     //bsmWheel.SetSerParamSpanOffsetToItems(&spanOffsetTop);
     bsmWheel.SetSerParamSpeedToItems(&shiftSpeed);
+    */
 
-    RGBW_16B_Dimm_Init_t rgbw16B_Init;
-    rgbw16B_Init.red = 0;
-    rgbw16B_Init.green = 2;
-    rgbw16B_Init.blue = 4;
-    rgbw16B_Init.white = 6;
+    /*
+    Device_t deviceInit;
+    deviceInit.adr = 0;
+    deviceInit.red = 0;
+    deviceInit.green = 2;
+    deviceInit.blue = 4;
+    deviceInit.white = 6;
+    device.Init(deviceInit);
+    int k = 1234;
+    device.GetRgbDimmMapper()->Consume(k, 0.5);
+    device.GetRedMapper()->Consume(k, 1.0);
+    device.GetWhiteDimmMapper()->Consume(k, 0.5);
+    device.GetWhiteMapper()->Consume(k, 0.5);
+    */
+
+
+    Device_t deviceInit;
+    deviceInit.red = 0;
+    deviceInit.green = 2;
+    deviceInit.blue = 4;
+    deviceInit.white = 6;
 
     cT.RegisterClient(&bsmMaster);
+    dimmValueTop.RegisterClient(&bsDimm);
+
     bsmMaster.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+    bsDimm.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     bsmOfSections.GenerateBundleSeries(AMT_SECTIONS);
+    bsmDimm.GenerateBundleSeries(AMT_SECTIONS*AMT_DEVS_PER_SECTION);
     for(int section=0; section<AMT_SECTIONS; section++)
     {
         //
@@ -44,17 +67,22 @@ Widget::Widget(QWidget *parent)
             int indexAbs = (section*AMT_DEVS_PER_SECTION)+device;
 
             // create devices
-            rgbw16Bdevices[indexAbs] = new RGBW_16B_Dimm(universum);
-            rgbw16B_Init.adr = 1+(indexAbs*CHNLS_PER_CAN);
-            rgbw16Bdevices[indexAbs]->Init(rgbw16B_Init);
-            rgbw16Bdevices[indexAbs]->SetDimmChnlVal(255);
+            devices[indexAbs] = new Device(universum);
+            deviceInit.adr = 1+(indexAbs*CHNLS_PER_CAN);
+            devices[indexAbs]->Init(deviceInit);
 
             // build Level 0
-            colWheel[indexAbs].SetRgbDevice((rgbw16Bdevices[indexAbs]));
+            colWheel[indexAbs].SetRgbDevice((devices[indexAbs]));
             colWheel[indexAbs].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
             bsmSection[section].RegisterClientToItem(device, &(colWheel[indexAbs]));
             bsmSection[section].GetBundleSeries(device)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
             bsmSection[section].GetBundleSeries(device)->SetSerParamShift(&shiftDeviceTop);
+
+            bsDimm.RegisterClient(bsmDimm.GetBundleSeries(indexAbs));
+            bsmDimm.GetBundleSeries(indexAbs)->SetSerParamShift(&dimmShift);
+            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.25);
+            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.25, 1.0);
+            bsmDimm.GetBundleSeries(indexAbs)->RegisterClient(devices[indexAbs]->GetRgbDimmMapper());
 
             // build Level 1
             bsmOfSections.RegisterClientToItem(section, (bsmSection[section].GetBundleSeries(device)));
@@ -74,14 +102,16 @@ Widget::Widget(QWidget *parent)
     serial.setStopBits(QSerialPort::OneStop);
     serial.open(QIODevice::ReadWrite);
 
-
     QObject::connect(&shiftSectionTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSectionShift);
     QObject::connect(&shiftDeviceTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDeviceShift);
 
     QObject::connect(&(spanOffsetTopSection[0]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_1);
     QObject::connect(&(spanOffsetTopSection[1]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_2);
     QObject::connect(&(spanOffsetTopSection[2]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_3);
-            /*QObject::connect(&spanMinTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMin);
+    QObject::connect(&dimmValueTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmValue);
+    QObject::connect(&dimmShift, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmShift);
+
+    /*QObject::connect(&spanMinTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMin);
     QObject::connect(&spanMaxTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMax);
     QObject::connect(&spanOffsetTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffset);
     QObject::connect(&shiftSpeed, &ClientServer_Top::RequestValue, this, &Widget::Slot_ShiftSpeed);
@@ -89,7 +119,6 @@ Widget::Widget(QWidget *parent)
 
     QObject::connect(&cT, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetValue);
     QObject::connect(&timer, &QTimer::timeout, this, &Widget::Slot_TimerExpired);
-
 
 
     timer.setInterval(100);
@@ -115,12 +144,15 @@ void Widget::Slot_SendMsg()
 void Widget::Slot_TimerExpired()
 {
     itteration++;
+    /*
     float dimm = (float)ui->horizontalSlider_rgbDimm->value() / (float)ui->horizontalSlider_rgbDimm->maximum();
     for(int i=0; i<AMT_SECTIONS*AMT_DEVS_PER_SECTION; i++)
     {
-        rgbw16Bdevices[i]->SetDimmChnlVal((uint8_t)(255.0*dimm));
+        devices[i]->GetRgbDimmMapper()->Consume(itteration, dimm);
     }
+    */
     colWheel[0].GetRequested(itteration);
+    bsDimm.GetRequested(itteration);
 
     /*
     int tmpItt = itteration - 1;
@@ -216,6 +248,52 @@ void Widget::Slot_TimerExpired()
         }
     }
 
+    if(ui->checkBox_AutoIncRgbDimmShift->isChecked())
+    {
+        if(dirDimmShift == 0)
+        {
+
+           int v = ui->horizontalSlider_DimmShift->value();
+           v += 5;
+                if(v >= ui->horizontalSlider_DimmShift->maximum()) dirDimmShift = 1;
+                ui->horizontalSlider_DimmShift->setSliderPosition(v);
+        }
+        else
+        {
+           int v = ui->horizontalSlider_DimmShift->value();
+           v -= 5;
+           if(v <= ui->horizontalSlider_DimmShift->minimum())
+           {
+               dirDimmShift = 0;
+               v = ui->horizontalSlider_DimmShift->minimum();
+           }
+           ui->horizontalSlider_DimmShift->setSliderPosition(v);
+        }
+    }
+
+    if(ui->checkBox_AutoIncRgbDimm->isChecked())
+    {
+        if(dirDimm == 0)
+        {
+
+           int v = ui->horizontalSlider_rgbDimm->value();
+           v += ui->horizontalSlider_SpeedRgbDimm->value();
+                if(v >= ui->horizontalSlider_rgbDimm->maximum()) dirDimm = 1;
+                ui->horizontalSlider_rgbDimm->setSliderPosition(v);
+        }
+        else
+        {
+           int v = ui->horizontalSlider_rgbDimm->value();
+           v -= ui->horizontalSlider_SpeedRgbDimm->value();
+           if(v <= ui->horizontalSlider_rgbDimm->minimum())
+           {
+               dirDimm = 0;
+               v = ui->horizontalSlider_rgbDimm->minimum();
+           }
+           ui->horizontalSlider_rgbDimm->setSliderPosition(v);
+        }
+    }
+
  /*   if(ui->checkBox_Offset->isChecked())
     {
         int v = ui->horizontalSlider_SpanOffset->value();
@@ -243,6 +321,11 @@ void Widget::Slot_TimerExpired()
     //
 }
 
+void Widget::Slot_GetDimmValue(ClientServer_Top *b, int itterration)
+{
+    float tmpF = (float)ui->horizontalSlider_rgbDimm->value() / (float)ui->horizontalSlider_rgbDimm->maximum();
+    b->Serve(itterration,tmpF);
+}
 
 void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
 {
@@ -284,6 +367,12 @@ void Widget::Slot_GetSpanOffsetSection_2(ClientServer_Top *b, int itterration)
 void Widget::Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration)
 {
     float tmpF = ((float)ui->horizontalSlider_OffsetSection_3->value() / (float)ui->horizontalSlider_OffsetSection_3->maximum());
+    b->Serve(itterration,tmpF);
+}
+void Widget::Slot_GetDimmShift(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_DimmShift->value() / (float)ui->horizontalSlider_DimmShift->maximum());
+    tmpF = tmpF * (float)(ui->horizontalSlider_dimmShiftMulti->value());
     b->Serve(itterration,tmpF);
 }
 /*
