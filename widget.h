@@ -13,14 +13,9 @@
 #include "../../../share/EffectStructureBlocks/BundleSeriesManager.h"
 #include "../../../share/Mapper/ColorWheelMapper.h"
 #include "../../../share/Mapper/OneChannelMapper.h"
-#include "../../../share/Mapper/HandTroughMapper_T.hpp"
-#include "../../../share/Mapper/HandThrough.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
-#include "../../../share/Devices/DmxDevices/RGBW_16B_DImm.hpp"
 #include "../../../share/FunctionOwners.hpp"
 
-
-#include "../../../share/Devices/Channel/Channel_8Bit_T.hpp"
 #include "../../../share/Devices/DmxDevices/Device.hpp"
 
 #include "../Ui/ShadeWidget.h"
