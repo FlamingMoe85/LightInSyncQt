@@ -50,15 +50,8 @@ private:
 
     QSerialPort serial;
 
-    BundleSeries bsShift;
-
     BundleSeriesManager
-                            bundleSeriesDevice,
-                            bsmPan,
-                            bsmTilt,
                             bsmDimm,
-                            bsmWheel,
-
                             bsmOfSections,
                             bsmSection[AMT_SECTIONS];
 
@@ -68,7 +61,7 @@ private:
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
     Device* devices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
-    ClientServer_Top cT, shiftSectionTop, shiftDeviceTop, spanMinTop, spanMaxTop,
+    ClientServer_Top cT, shiftSectionTop, shiftDeviceTop,
                         spanOffsetTopSection[AMT_SECTIONS],
                         shiftSpeed, dimmShift, dimmValueTop;
 
@@ -93,17 +86,6 @@ private slots:
     void Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration);
     void Slot_GetDimmValue(ClientServer_Top *b, int itterration);
     void Slot_GetDimmShift(ClientServer_Top *b, int itterration);
-    /*
-    void Slot_GetSpanMin(ClientServer_Top *b, int itterration);
-    void Slot_GetSpanMax(ClientServer_Top *b, int itterration);
-    void Slot_GetSpanOffset(ClientServer_Top *b, int itterration);
-    void Slot_ShiftSpeed(ClientServer_Top *b, int itterration);
-
-
-    float GetSpanMin();
-    float GetSpanMax();
-    float GetSpanOffset();
-*/
 
 };
 #endif // WIDGET_H

@@ -19,30 +19,6 @@ Widget::Widget(QWidget *parent)
     }
 
 
-/*
-    bundleSeriesDevice.GenerateBundleSeries(AMT_DEVICES);
-    bsmDimm.GenerateBundleSeries(AMT_DEVICES);
-    bsmWheel.GenerateBundleSeries(AMT_DEVICES);
-    bsmWheel.SetSerParamSpanMinToItems(&spanMinTop);
-    bsmWheel.SetSerParamSpanMaxToItems(&spanMaxTop);
-    //bsmWheel.SetSerParamSpanOffsetToItems(&spanOffsetTop);
-    bsmWheel.SetSerParamSpeedToItems(&shiftSpeed);
-    */
-
-    /*
-    Device_t deviceInit;
-    deviceInit.adr = 0;
-    deviceInit.red = 0;
-    deviceInit.green = 2;
-    deviceInit.blue = 4;
-    deviceInit.white = 6;
-    device.Init(deviceInit);
-    int k = 1234;
-    device.GetRgbDimmMapper()->Consume(k, 0.5);
-    device.GetRedMapper()->Consume(k, 1.0);
-    device.GetWhiteDimmMapper()->Consume(k, 0.5);
-    device.GetWhiteMapper()->Consume(k, 0.5);
-    */
 
 
     Device_t deviceInit;
@@ -111,12 +87,6 @@ Widget::Widget(QWidget *parent)
     QObject::connect(&dimmValueTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmValue);
     QObject::connect(&dimmShift, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmShift);
 
-    /*QObject::connect(&spanMinTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMin);
-    QObject::connect(&spanMaxTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMax);
-    QObject::connect(&spanOffsetTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffset);
-    QObject::connect(&shiftSpeed, &ClientServer_Top::RequestValue, this, &Widget::Slot_ShiftSpeed);
-    */
-
     QObject::connect(&cT, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetValue);
     QObject::connect(&timer, &QTimer::timeout, this, &Widget::Slot_TimerExpired);
 
@@ -153,39 +123,6 @@ void Widget::Slot_TimerExpired()
     */
     colWheel[0].GetRequested(itteration);
     bsDimm.GetRequested(itteration);
-
-    /*
-    int tmpItt = itteration - 1;
-    if(ui->checkBox_WheelDisable_1->isChecked())
-    {
-
-        bsmSection[0].GetBundleSeries(0)->Consume(tmpItt, 0.0);
-        bsmSection[0].GetBundleSeries(1)->Consume(tmpItt, 0.0);
-        bsmSection[0].GetBundleSeries(2)->Consume(tmpItt, 0.0);
-        bsmSection[0].GetBundleSeries(3)->Consume(tmpItt, 0.0);
-    }
-    if(ui->checkBox_WheelDisable_2->isChecked())
-    {
-        colWheel[4].Consume(tmpItt, 0.0);
-        colWheel[5].Consume(tmpItt, 0.0);
-        colWheel[6].Consume(tmpItt, 0.0);
-        colWheel[7].Consume(tmpItt, 0.0);
-    }
-    if(ui->checkBox_WheelDisable_3->isChecked())
-    {
-        colWheel[8].Consume(tmpItt, 0.0);
-        colWheel[9].Consume(tmpItt, 0.0);
-        colWheel[10].Consume(tmpItt, 0.0);
-        colWheel[11].Consume(tmpItt, 0.0);
-
-    }
-    */
-    /*
-    for(int m=0; m<AMT_DEVICES; m++)
-    {
-        colWheel[m].GetRequested(itteration);
-    }
-    */
 
 
     if(ui->checkBox_AutoIncMainPos->isChecked())
@@ -374,47 +311,5 @@ void Widget::Slot_GetDimmShift(ClientServer_Top *b, int itterration)
     float tmpF = ((float)ui->horizontalSlider_DimmShift->value() / (float)ui->horizontalSlider_DimmShift->maximum());
     tmpF = tmpF * (float)(ui->horizontalSlider_dimmShiftMulti->value());
     b->Serve(itterration,tmpF);
-}
-/*
-void Widget::Slot_GetSpanMin(ClientServer_Top *b, int itterration)
-{
-    float m, n;
-    m = GetSpanMin();
-    n = GetSpanMax();
-    b->Serve(itterration,m);
-    ui->label_SpanMin->setText(QString::number(m));
-    ui->label_SpanDiff->setText(QString::number(n-m));
-}
-
-void Widget::Slot_GetSpanMax(ClientServer_Top *b, int itterration)
-{
-    float m, n;
-    m = GetSpanMin();
-    n = GetSpanMax();
-    b->Serve(itterration,n);
-    ui->label_SpanMax->setText(QString::number(n));
-    ui->label_SpanDiff->setText(QString::number(n-m));
-}
-
-void Widget::Slot_GetSpanOffset(ClientServer_Top *b, int itterration)
-{
-    float o = GetSpanOffset();
-    b->Serve(itterration, o);
-    ui->label_SpanOffset->setText(QString::number(o));
-}
-
-void Widget::Slot_ShiftSpeed(ClientServer_Top *b, int itterration)
-{
-    float f = ((float)ui->horizontalSlider_ShiftSpeed->value() / (float)ui->horizontalSlider_ShiftSpeed->maximum());
-    b->Serve(itterration, f);
-}
-
-float Widget::GetSpanMin(){return (float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum();}
-float Widget::GetSpanMax(){return (float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum();}
-float Widget::GetSpanOffset(){return (float)ui->horizontalSlider_SpanOffset->value() / (float)ui->horizontalSlider_SpanOffset->maximum();}
-*/
-inline static bool x_less_than(const QPointF &p1, const QPointF &p2)
-{
-    return p1.x() < p2.x();
 }
 
