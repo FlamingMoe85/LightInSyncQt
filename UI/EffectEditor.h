@@ -9,7 +9,7 @@ using std::vector;
 #include "EditorItem.h"
 #include "CustomScrollArea.h"
 #include "ShadeWidget.h"
-#include "../../../share/FunctionOwners.hpp"
+#include "../../../share/Mapper/Mapper_Base.hpp"
 
 namespace Ui {
 class EffectEditor;
@@ -26,7 +26,7 @@ public:
 
     explicit EffectEditor(int x, int y, int w, int h, QWidget *parent = nullptr);
     ~EffectEditor();
-    void SetBundSerMangr(vector<vector<FunctionOwners *> > &funcContainerContainers);
+    void SetBundSerMangr(vector<vector<Mapper_Base *> > &funcContainerContainers);
     void DrawPositionLine(float _pos);
 
 

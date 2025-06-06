@@ -71,13 +71,13 @@ void EffectEditor::SetWidth(int _w)
     scrollArea.SetWidthOfItems(_w);
 }
 
-void EffectEditor::SetBundSerMangr(vector<vector<FunctionOwners*>> &funcContainerContainers)
+void EffectEditor::SetBundSerMangr(vector<vector<Mapper_Base*>> &funcContainerContainers)
 {
     RemoveAllShadeWidgets();
     shadeWidgets.resize(funcContainerContainers.size());
     //editorItems.resize(funcContainerContainers.size());
     int i=0;
-    for(vector<FunctionOwners*> &funcOwnVec :  funcContainerContainers)
+    for(vector<Mapper_Base*> &funcOwnVec :  funcContainerContainers)
     {
         /*
         editorItems[i] = new EditorItem((QWidget*)this);

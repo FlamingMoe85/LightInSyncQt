@@ -3,7 +3,7 @@
 
 #include <QWidget>
 #include <QLabel>
-#include "../../../share/FunctionOwners.hpp"
+#include "../../../share/Mapper/Mapper_Base.hpp"
 
 #include "hoverpoints.h"
 
@@ -18,7 +18,7 @@ public:
         RedShade
     };
 
-    ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index, QRect &geometry);
+    ShadeWidget(ShadeType type, QWidget *parent, vector<Mapper_Base *> &_funcContVect, int _index, QRect &geometry);
 
     void paintEvent(QPaintEvent *e) override;
 

@@ -22,16 +22,15 @@ SOURCES += \
     ../../share/BrokerClientServer/ClientServerBase.cpp \
     ../../share/EffectStructureBlocks/BundleSeries.cpp \
     ../../share/EffectStructureBlocks/BundleSeriesManager.cpp \
-    ../../share/EffectStructureBlocks/ComponentBundle.cpp \
-    ../../share/EffectStructureBlocks/EffectComponent.cpp \
     ../../share/EffectStructureBlocks/Positioner.cpp \
     ../../share/Functions/FunctionContainer.cpp \
     ../../share/Functions/FunctionContainerSpan.cpp \
     ../../share/Functions/FunctionSection_Base.cpp \
     ../../share/Functions/FunctionSection_Linear.cpp \
     ../../share/Mapper/ColorWheelMapper.cpp \
-    ../../share/Mapper/HandThrough.cpp \
     ../../share/Mapper/HandTroughMapper.cpp \
+    ../../share/Mapper/Mapper_Channel.cpp \
+    ../../share/Mapper/Mapper_InternalValue.cpp \
     ../../share/Mapper/OneChannelMapper.cpp \
     Audio/AudioPlayer.cpp \
     Audio/AudioPlayerFrontend.cpp \
@@ -51,10 +50,13 @@ HEADERS += \
     ../../share/BrokerClientServer/ClientServerBase.hpp \
     ../../share/BrokerClientServer/I_Client.hpp \
     ../../share/BrokerClientServer/I_Server.hpp \
-    ../../share/Devices/AbstractDevices/Device_RGB_I.hpp \
+    ../../share/Devices/Channel/Channel_8Bit.hpp \
+    ../../share/Devices/Channel/Channel_8BitValue_8BitDimm.hpp \
     ../../share/Devices/Channel/DmxChannel_8Bit.hpp \
+    ../../share/Devices/DmxDevices/Device.hpp \
     ../../share/Devices/DmxDevices/Device_RGB.hpp \
     ../../share/Devices/DmxDevices/Device_RGBW.hpp \
+    ../../share/Devices/DmxDevices/MovingHead_RGBWA_UV.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
@@ -65,6 +67,7 @@ HEADERS += \
     ../../share/Devices/Interfaces/I_DmxChannelRandom.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelRed_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelTilt_8Bit.hpp \
+    ../../share/Devices/Interfaces/I_DmxChannelUV_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelWhite_8Bit.hpp \
     ../../share/Devices/Interfaces/I_HowMany.hpp \
     ../../share/Devices/Interfaces/I_PositionConsumer.h \
@@ -74,8 +77,6 @@ HEADERS += \
     ../../share/Devices/Interfaces/I_White.hpp \
     ../../share/EffectStructureBlocks/BundleSeries.h \
     ../../share/EffectStructureBlocks/BundleSeriesManager.h \
-    ../../share/EffectStructureBlocks/ComponentBundle.h \
-    ../../share/EffectStructureBlocks/EffectComponent.h \
     ../../share/EffectStructureBlocks/Positioner.h \
     ../../share/FunctionOwners.hpp \
     ../../share/Functions/FunctionContainer.h \
@@ -86,8 +87,10 @@ HEADERS += \
     ../../share/GlobalDefines_Shared.h \
     ../../share/Helper.hpp \
     ../../share/Mapper/ColorWheelMapper.h \
-    ../../share/Mapper/HandThrough.h \
     ../../share/Mapper/HandTroughMapper.h \
+    ../../share/Mapper/Mapper_Base.hpp \
+    ../../share/Mapper/Mapper_Channel.h \
+    ../../share/Mapper/Mapper_InternalValue.h \
     ../../share/Mapper/OneChannelMapper.h \
     Audio/AudioPlayer.h \
     Audio/AudioPlayerFrontend.h \

@@ -2,7 +2,7 @@
 
 #define TITLE_HEIGHT    30
 
-ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<FunctionOwners *> &_funcContVect, int _index, QRect &geometry)
+ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<Mapper_Base *> &_funcContVect, int _index, QRect &geometry)
     : QWidget(parent), m_shade_type(type), m_alpha_gradient(QLinearGradient(0, 0, 0, 0))
 {
 

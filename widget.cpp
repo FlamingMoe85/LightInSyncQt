@@ -24,7 +24,7 @@ Widget::Widget(QWidget *parent)
         universum.push_back(&(buf[i]));
     }
 
-    RGBWA_UV_MiniMovingHead_Init_t RGBW_Dimm_MovingHead_Init;
+    MovingHead_RGBWA_UV_t RGBW_Dimm_MovingHead_Init;
 
     RGBW_Dimm_MovingHead_Init.red = 3;
     RGBW_Dimm_MovingHead_Init.green = 4;
@@ -101,8 +101,8 @@ Widget::Widget(QWidget *parent)
     GenerateSequentialXvalues(inTiltVecL, outTiltDotVecL, 1.0);
     */
 
-    vector<FunctionOwners *> funcCont_1, funcCont_2, funcCont_3,funcCont_4;
-    vector<vector<FunctionOwners *> > funcContainerContainers;
+    vector<Mapper_Base *> funcCont_1, funcCont_2, funcCont_3,funcCont_4;
+    vector<vector<Mapper_Base *> > funcContainerContainers;
     funcContainerContainers.push_back(funcCont_1);
     funcContainerContainers.push_back(funcCont_2);
     funcContainerContainers.push_back(funcCont_3);
@@ -110,7 +110,7 @@ Widget::Widget(QWidget *parent)
 
     for(int m=0; m<AMT_DEVICES; m++)
     {
-        movingHead[m] = new RGBWA_UV_MiniMovingHead(universum);
+        movingHead[m] = new MovingHead_RGBWA_UV(universum);
         RGBW_Dimm_MovingHead_Init.adr = (m*10)+1;
         movingHead[m]->Init(RGBW_Dimm_MovingHead_Init);
         colWheel[m].SetRgbDevice((movingHead[m]));
@@ -119,13 +119,7 @@ Widget::Widget(QWidget *parent)
         //bundleSeriesManager.RegisterClientToItem(0, &colWheel);
 
         bsmMaster.RegisterClient(bundleSeriesDevice.GetBundleSeries(m));
-        //bundleSeriesDevice[m].SetSerPosToItems(&bsmMaster);
-    /**/
-
-
         bundleSeriesDevice.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
-        //bundleSeriesDevice.GetBundleSeries(m)->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.0);
-        //bundleSeriesDevice.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.5, 0.0, 1.0);
 
         bundleSeriesDevice.GetBundleSeries(m)->SetSerParamShift(&shiftTop);
 
@@ -305,7 +299,6 @@ void Widget::Slot_TimerExpired()
     itteration++;
     for(int m=0; m<AMT_DEVICES; m++)
     {
-        movingHead[m]->Ping(itteration);
         colWheel[m].GetRequested(itteration);
     }
     if(ui->checkBox->isChecked())
@@ -355,8 +348,8 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
-    //qDebug() << debugMsg.toLatin1();
-    //qDebug() << sendMsg.toLatin1();
+    qDebug() <<  debugMsg.toLatin1();
+    qDebug() <<  "_";
     if(serial.isOpen())
     {
       serial.write(sendMsg.toLatin1());
@@ -370,9 +363,6 @@ void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
     b->Serve(itterration,tmpF);
     ui->label->setText(QString::number(tmpF));
     effectEditor.DrawPositionLine(tmpF);
-    //m_red_shade->DrawPositionLine(tmpF);
-    //panShade->DrawPositionLine(tmpF);
-   // qDebug() << "GetValue";
 }
 
 void Widget::Slot_GetShift(ClientServer_Top *b, int itterration)
@@ -417,77 +407,6 @@ float Widget::GetSpanMin(){return (float)ui->horizontalSlider_SpanMin->value() /
 float Widget::GetSpanMax(){return (float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum();}
 float Widget::GetSpanOffset(){return (float)ui->horizontalSlider_SpanOffset->value() / (float)ui->horizontalSlider_SpanOffset->maximum();}
 
-inline static bool x_less_than(const QPointF &p1, const QPointF &p2)
-{
-    return p1.x() < p2.x();
-}
-
-void Widget::pointsUpdated()
-{
-    QPolygonF points;
-
-   // points += m_red_shade->points();
-
-    std::sort(points.begin(), points.end(), x_less_than);
-
-    /*
-    QString dots;
-    for (int i = 0; i < points.size(); ++i) {
-        float x = (points.at(i).x());
-        float y = (points.at(i).y());
-        dots += " [X:" + QString::number(x) +"/Y: " + QString::number(y) + "]";
-    }
-    qDebug() << dots;
-    */
-}
-
-void Widget::Slot_MouseRelease()
-{
-    QPolygonF points;
-    //points += m_red_shade->points();
-    vector<funcSection_t> sections;
-    sections.resize(points.size()-1);
-    int i=0;
-    for(funcSection_t &s : sections)
-    {
-        s.minX = points[i].x();
-        s.minY = points[i].y();
-
-        s.maxX = points[i+1].x();
-        s.maxY = points[i+1].y();
-        i++;
-    }
-/*
-    for(int m=0; m<AMT_DEVICES; m++)
-    {
-        bsmTilt.GetBundleSeries(m)->funcContainer.SetFunctionSections(sections);
-    }
-    */
-}
-
-
-void Widget::Slot_PanRelease()
-{
-    QPolygonF points;
-    //points += panShade->points();
-    vector<funcSection_t> sections;
-    sections.resize(points.size()-1);
-    int i=0;
-    for(funcSection_t &s : sections)
-    {
-        s.minX = points[i].x();
-        s.minY = points[i].y();
-
-        s.maxX = points[i+1].x();
-        s.maxY = points[i+1].y();
-        i++;
-    }
-
-    for(int m=0; m<AMT_DEVICES; m++)
-    {
-        bsmPan. GetBundleSeries(m)->GetFuncCont()->SetFunctionSections(sections);
-    }
-}
 
 void Widget::Slot_PrvStackedIndex()
 {
