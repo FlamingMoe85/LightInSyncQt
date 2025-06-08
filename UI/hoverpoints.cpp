@@ -130,7 +130,7 @@ QPointF HoverPoints::TranslateAbsToRel(qreal x, qreal y)
 {
     QPointF rP;
     rP.rx() = (x-boundingRect().x())/boundingRect().width();
-    rP.ry() = (y-(boundingRect().y()-titleHeight))/(boundingRect().height()+titleHeight);
+    rP.ry() = (y-(boundingRect().y()+titleHeight))/(boundingRect().height()-titleHeight);
     return rP;
 }
 
