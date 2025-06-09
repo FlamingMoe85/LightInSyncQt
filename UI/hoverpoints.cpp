@@ -77,7 +77,7 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     m_connectionPen = QPen(QColor(255, 255, 255, 127), 2);
     m_pointBrush = QBrush(QColor(191, 191, 191, 127));
     m_pointSize = QSize(11, 11);
-    m_currentIndex = -1;
+    m_currentIndex = NO_POINT_SELECTED;
     m_editable = true;
     m_enabled = true;
 
@@ -202,7 +202,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
             emit SignalMouseRelease(m_points);
             if (!m_fingerPointMapping.isEmpty())
                 return true;
-            m_currentIndex = -1;
+            m_currentIndex = NO_POINT_SELECTED;
             break;
 
         case QEvent::MouseMove:
@@ -224,7 +224,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                         {
                             // find the point, move it
                             QSet<int> activePoints = QSet<int>::fromList(m_fingerPointMapping.values());
-                            int activePoint = -1;
+                            int activePoint = NO_POINT_SELECTED;
                             qreal distance = -1;
                             const int pointsCount = m_points.size();
                             const int activePointCount = activePoints.size();
@@ -243,7 +243,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
 
                                 }
                             }
-                            if (activePoint != -1) {
+                            if (activePoint != NO_POINT_SELECTED) {
                                 m_fingerPointMapping.insert(touchPoint.id(), activePoint);
                                 movePoint(activePoint, TranslateAbsToRel(touchPoint.pos().x(), touchPoint.pos().y()));
                             }
@@ -260,7 +260,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                     case Qt::TouchPointMoved:
                         {
                             // move the point
-                            const int pointIdx = m_fingerPointMapping.value(id, -1);
+                            const int pointIdx = m_fingerPointMapping.value(id, NO_POINT_SELECTED);
                             if (pointIdx >= 0) // do we track this point?
                                 movePoint(pointIdx, TranslateAbsToRel(touchPoint.pos().x(), touchPoint.pos().y()));
                         }
@@ -455,7 +455,7 @@ void HoverPoints::firePointChange()
     if (m_sortType != NoSort) {
 
         QPointF oldCurrent;
-        if (m_currentIndex != -1) {
+        if (m_currentIndex != NO_POINT_SELECTED) {
             oldCurrent = m_points[m_currentIndex];
         }
 
@@ -465,7 +465,7 @@ void HoverPoints::firePointChange()
             std::sort(m_points.begin(), m_points.end(), y_less_than);
 
         // Compensate for changed order...
-        if (m_currentIndex != -1) {
+        if (m_currentIndex != NO_POINT_SELECTED) {
             for (int i=0; i<m_points.size(); ++i) {
                 if (m_points[i] == oldCurrent) {
                     m_currentIndex = i;
