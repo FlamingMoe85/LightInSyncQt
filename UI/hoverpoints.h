@@ -59,8 +59,8 @@ enum PointAxisSelect {
     P
 };
 
-enum CopyPasteMode{
-    NONE,
+enum OpMode{
+    DEFAULT,
     COPY,
     PASTE
 };
@@ -100,6 +100,8 @@ public:
     HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight);
 
     bool eventFilter(QObject *object, QEvent *event) override;
+    bool eventFilterIdleMode(QObject *object, QEvent *event);
+    bool eventFilterCopyPaste(QObject *object, QEvent *event);
 
     void paintPoints();
 
@@ -189,8 +191,75 @@ private:
 
     qreal titleHeight;
 
-    CopyPasteMode selectMode;
+    OpMode opMode;
     void UpdateSelectedPoints();
+
+    void IndexOfClickedPoint(int& _i, QPointF &clickPos)
+    {
+        for (int i=0; i<m_points.size(); ++i) {
+            QPainterPath path;
+            if (m_shape == CircleShape)
+                path.addEllipse(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
+            else
+                path.addRect(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
+
+            if (path.contains(clickPos)) {
+                _i = i;
+                break;
+            }
+        }
+    }
+
+    void Copy(int _index)
+    {
+        m_currentIndex = -1;
+        Signal_NoteMeAsActive();
+        if(selectedIndexes.contains(_index))
+        {
+            selectedIndexes.remove(_index);
+        }
+        else
+        {
+            selectedIndexes.insert(_index);
+        }
+        UpdateSelectedPoints();
+    }
+
+    void InsertPoint(QPointF &clickPos)
+    {
+        int pos = 0;
+        // Insert sort for x or y
+        if (m_sortType == XSort) {
+            for (int i=0; i<m_points.size(); ++i)
+                if (TranslateRelToAbsX(m_points.at(i).x()) > clickPos.x()) {
+                    pos = i;
+                    break;
+                }
+        } else if (m_sortType == YSort) {
+            for (int i=0; i<m_points.size(); ++i)
+                if (TranslateRelToAbsY(m_points.at(i).y()) > clickPos.y()) {
+                    pos = i;
+                    break;
+                }
+        }
+        m_points.insert(pos, TranslateAbsToRel(clickPos.rx(), clickPos.ry()));
+        m_locks.insert(pos, 0);
+        m_currentIndex = pos;
+        firePointChange();
+    }
+
+    void RemovePoint(int index)
+    {
+        if (index >= 0 && m_editable)
+        {
+            if (m_locks[index] == 0)
+            {
+                m_locks.remove(index);
+                m_points.remove(index);
+            }
+            firePointChange();
+        }
+    }
 };
 
 
