@@ -4,6 +4,12 @@
 
 #include "QDebug"
 
+enum OpMode{
+    DEFAULT,
+    COPY,
+    PASTE,
+    SELECT
+};
 
 EffectEditor::EffectEditor(int x, int y, int w, int h, QWidget *parent) :
     QWidget(parent),
@@ -35,25 +41,21 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
     if(!event->isAutoRepeat())
     {
         qDebug() << "keyPressEvent: " << event->key();
-        if(event->key() == 67)
+        if(event->key() == 67)// 'c'
         {
             if(opMode == OpMode::DEFAULT)
             {
-                copiedPoints.clear();
-                opMode = OpMode::COPY;
-                for(ShadeWidget* sW : shadeWidgets)
-                {
-                    sW->hoverPoints()->EnableSelectMode();
-                }
+
             }
         }
 
         if(event->key() == Qt::Key_Escape)
         {
+            copiedPoints.clear();
+            opMode = OpMode::DEFAULT;
             for(ShadeWidget* sW : shadeWidgets)
             {
                 sW->hoverPoints()->DisableSelectMode();
-                copiedPoints.clear();
             }
         }
 
@@ -67,6 +69,19 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
                 {
                     sW->hoverPoints()->DisableSelectMode();
                     sW->hoverPoints()->WaitForPaste();
+                }
+            }
+        }
+
+        if(event->key() == 83) // 's'
+        {
+            if(opMode == OpMode::DEFAULT)
+            {
+                copiedPoints.clear();
+                opMode = OpMode::SELECT;
+                for(ShadeWidget* sW : shadeWidgets)
+                {
+                    sW->hoverPoints()->SetAnnounceMeMode();
                 }
             }
         }
@@ -160,16 +175,18 @@ void EffectEditor::DrawPositionLine(float _pos)
 
 void EffectEditor::Slot_GetActivityNote(int pinger)
 {
+    qDebug() << "Ping" ;
     int i=0;
     activeWidget = pinger;
     for(ShadeWidget* sW : shadeWidgets)
     {
         if(i != pinger)
         {
-            sW->hoverPoints()->DisableSelectMode();
+            sW->hoverPoints()->DisableAnnounceMeMode();
         }
         i++;
     }
+    shadeWidgets[activeWidget]->EnableSelect();
 }
 
 void EffectEditor::Slot_PasteHere(int pasteTarget)

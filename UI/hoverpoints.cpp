@@ -63,6 +63,14 @@
 
 #define NO_POINT_SELECTED   -1
 
+enum OpMode{
+    DEFAULT,
+    ANNOUNCE_ME,
+    COPY,
+    PASTE,
+    SELECT
+};
+
 HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     : QObject(widget), titleHeight(_titleHeight)
 {
@@ -78,6 +86,7 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     m_pointBrush = QBrush(QColor(191, 191, 191, 127));
     m_pointSize = QSize(11, 11);
     m_currentIndex = NO_POINT_SELECTED;
+    m_currentIndexSelect = NO_POINT_SELECTED;
     m_editable = true;
     m_enabled = true;
 
@@ -90,17 +99,45 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
             m_widget, SLOT(update()));
 }
 
+void HoverPoints::SetAnnounceMeMode()
+{
+    opMode = OpMode::ANNOUNCE_ME;
+}
+
+void HoverPoints::DisableAnnounceMeMode()
+{
+    opMode = OpMode::DEFAULT;
+}
 
 void HoverPoints::EnableSelectMode()
 {
-    opMode = OpMode::COPY;
+    opMode = OpMode::SELECT;
+    QPolygonF points;
+    points.clear();
+    points << QPointF(0.5, 0.5)
+           << QPointF(0.75, 0.5)
+           << QPointF(0.75, 0.75)
+           << QPointF(0.5, 0.75);
+    setSelectPoints(points);
+    paintPoints();
 }
 
 void HoverPoints::DisableSelectMode()
 {
-    opMode = OpMode::DEFAULT;
-    selectedIndexes.clear();
-    UpdateSelectedPoints();
+    if(opMode == OpMode::SELECT)
+    {
+        opMode = OpMode::DEFAULT;
+        RemoveSelectPoint(3);
+        RemoveSelectPoint(2);
+        RemoveSelectPoint(1);
+        RemoveSelectPoint(0);
+        /*
+        QPolygonF points;
+        points.clear();
+        setSelectPoints(points);
+        */
+        paintPoints();
+    }
 }
 
 void HoverPoints::UpdateSelectedPoints()
@@ -144,18 +181,92 @@ QPointF HoverPoints::TranslateRelToAbs(qreal x, qreal y)
     return p;
 }
 
-bool eventFilterIdleMode(QObject *object, QEvent *event)
+bool HoverPoints::eventFilterSelect(QObject *object, QEvent *event)
 {
+    if (object == m_widget && m_enabled) {
+        switch (event->type())
+        {
+            case QEvent::MouseButtonPress:
+            {
+                if (!m_fingerPointMappingSelect.isEmpty())return true;
+                QMouseEvent *me = (QMouseEvent *) event;
 
-}
+                QPointF clickPos = me->pos();
+                int newSelectedPoint = NO_POINT_SELECTED;
+                IndexOfClickedPoint(newSelectedPoint, clickPos, select_points);
 
-bool eventFilterCopyPaste(QObject *object, QEvent *event)
-{
+                if (me->button() == Qt::LeftButton)
+                {
+                    if ((newSelectedPoint == NO_POINT_SELECTED) && (opMode == OpMode::SELECT))
+                    {
+                        if (!m_editable) return false;
+                    }
+                    else if(opMode == OpMode::SELECT)//NO_POINT_SELECTED
+                    {
+                        m_currentIndexSelect = newSelectedPoint;
+                    }
+                    else
+                    {
+                        opMode = OpMode::SELECT;
+                        Signal_NoteMeAsActive();
+                    }
+                    return true;
+                }
+                else if (me->button() == Qt::RightButton)
+                {
+                    return true;
+                }
+            }
+            break;
 
+        case QEvent::MouseButtonRelease:
+            emit SignalMouseRelease(searchArea);
+            if (!m_fingerPointMappingSelect.isEmpty())
+                return true;
+            m_currentIndexSelect = NO_POINT_SELECTED;
+            break;
+
+        case QEvent::MouseMove:
+            if (!m_fingerPointMappingSelect.isEmpty())
+                return true;
+            if (m_currentIndexSelect >= 0)
+                moveSelectPoint(m_currentIndexSelect, TranslateAbsToRel(((QMouseEvent *)event)->pos().x(), ((QMouseEvent *)event)->pos().y()));
+            break;
+
+        case QEvent::Resize:
+        {
+            QResizeEvent *e = (QResizeEvent *) event;
+            if (e->oldSize().width() == 0 || e->oldSize().height() == 0)
+                break;
+
+            firePointChange();
+            break;
+        }
+
+        case QEvent::Paint:
+        {
+            QWidget *that_widget = m_widget;
+            m_widget = 0;
+            QApplication::sendEvent(object, event);
+            m_widget = that_widget;
+            paintPoints();
+            return true;
+        }
+        default:
+            break;
+        }
+    }
+
+    return false;
 }
 
 bool HoverPoints::eventFilter(QObject *object, QEvent *event)
 {
+    if((opMode == OpMode::SELECT) || (opMode == OpMode::ANNOUNCE_ME))
+    {
+        return  eventFilterSelect(object, event);
+    }
+
     if (object == m_widget && m_enabled) {
         switch (event->type())
         {
@@ -166,7 +277,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
 
                 QPointF clickPos = me->pos();
                 int newSelectedPoint = NO_POINT_SELECTED;
-                IndexOfClickedPoint(newSelectedPoint, clickPos);
+                IndexOfClickedPoint(newSelectedPoint, clickPos, m_points);
 
                 if (me->button() == Qt::LeftButton)
                 {
@@ -308,13 +419,14 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
             break;
         }
     }
-
     return false;
 }
 
 
 void HoverPoints::paintPoints()
 {
+    PaintSelectPoints();
+
     QPainter p;
     p.begin(m_widget);
     p.setRenderHint(QPainter::Antialiasing);
@@ -367,6 +479,48 @@ void HoverPoints::paintPoints()
     }
 
     p.drawPolyline(positionLine);
+
+}
+
+void HoverPoints::PaintSelectPoints()
+{
+    QPainter p;
+    p.begin(m_widget);
+    p.setRenderHint(QPainter::Antialiasing);
+
+    if (m_connectionPen.style() != Qt::NoPen && select_points.size() > 0) {
+        p.setPen(m_connectionPen);
+
+        QPolygonF polygon;
+        searchArea.setCoords(select_points.at(0).x(),
+                             select_points.at(0).y(),
+                             select_points.at(2).x(),
+                             select_points.at(2).y());
+
+        for(QPointF p : select_points)
+        {
+            polygon.append(TranslateRelToAbs(p.rx(), p.ry()));
+        }
+
+        p.drawRect( polygon.at(0).x(),
+                    polygon.at(0).y(),
+                    polygon.at(2).x() - polygon.at(0).x(),
+                    polygon.at(2).y() - polygon.at(0).y());
+    }
+
+    p.setPen(m_pointPen);
+    p.setBrush(m_pointBrush);
+
+    for (int i=0; i<select_points.size(); ++i) {
+        m_pointBrush.setColor(QColor(255, 191, 191, 127));
+        p.setBrush(m_pointBrush);
+
+        QRectF bounds = pointBoundingRect(i, TranslateRelToAbsX(select_points[i].x()), TranslateRelToAbsY(select_points[i].y()));
+        if (m_shape == CircleShape)
+            p.drawEllipse(bounds);
+        else
+            p.drawRect(bounds);
+    }
 }
 
 void HoverPoints::DrawPositionLine(float _pos)
@@ -436,6 +590,75 @@ void HoverPoints::movePoint(int index, const QPointF &point, bool emitUpdate)
         firePointChange();
 }
 
+void HoverPoints::setSelectPoints(const QPolygonF &points)
+{
+    if (points.size() != select_points.size())
+        m_fingerPointMappingSelect.clear();
+    select_points.clear();
+
+
+    for (int i=0; i<points.size(); ++i)
+    select_points << points.at(i);
+
+    m_locksSelect.clear();
+    if (select_points.size() > 0) {
+        m_locksSelect.resize(select_points.size());
+
+        m_locksSelect.fill(0);
+    }
+
+
+}
+
+
+void HoverPoints::moveSelectPoint(int index, const QPointF &point, bool emitUpdate)
+{
+    QPointF p = point;
+    switch(index)
+    {
+        case 0:
+        {
+            if(p.x() > select_points.at(2).x())p.setX(select_points.at(2).x());
+            if(p.y() > select_points.at(2).y())p.setY(select_points.at(2).y());
+            select_points[1].setY(p.y());
+            select_points[3].setX(p.x());
+            break;
+        }
+
+        case 1:
+        {
+            if(p.x() < select_points.at(3).x())p.setX(select_points.at(3).x());
+            if(p.y() > select_points.at(3).y())p.setY(select_points.at(3).y());
+            select_points[0].setY(p.y());
+            select_points[2].setX(p.x());
+            break;
+        }
+
+        case 2:
+        {
+            if(p.x() < select_points.at(0).x())p.setX(select_points.at(0).x());
+            if(p.y() < select_points.at(0).y())p.setY(select_points.at(0).y());
+            select_points[3].setY(p.y());
+            select_points[1].setX(p.x());
+            break;
+        }
+
+        case 3:
+        {
+            if(p.x() > select_points.at(1).x())p.setX(select_points.at(1).x());
+            if(p.y() < select_points.at(1).y())p.setY(select_points.at(1).y());
+            select_points[2].setY(p.y());
+            select_points[0].setX(p.x());
+            break;
+        }
+    }
+
+    select_points[index].setY(p.y());
+    select_points[index].setX(p.x());
+    //m_points[index] = point;
+    if (emitUpdate)
+        firePointChange();
+}
 
 inline static bool x_less_than(const QPointF &p1, const QPointF &p2)
 {

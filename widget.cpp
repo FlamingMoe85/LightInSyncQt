@@ -24,18 +24,11 @@ Widget::Widget(QWidget *parent)
         universum.push_back(&(buf[i]));
     }
 
-    MovingHead_RGBWA_UV_t RGBW_Dimm_MovingHead_Init;
+    WWA_Strip_t RGBW_Dimm_MovingHead_Init;
 
-    RGBW_Dimm_MovingHead_Init.red = 3;
-    RGBW_Dimm_MovingHead_Init.green = 4;
-    RGBW_Dimm_MovingHead_Init.blue = 5;
-    RGBW_Dimm_MovingHead_Init.white = 6;
-    RGBW_Dimm_MovingHead_Init.dimm = 2;
-    RGBW_Dimm_MovingHead_Init.amber = 7;
-    RGBW_Dimm_MovingHead_Init.uv = 8;
-    RGBW_Dimm_MovingHead_Init.x = 0;
-    RGBW_Dimm_MovingHead_Init.y = 1;
-    RGBW_Dimm_MovingHead_Init.xy = 9;
+    RGBW_Dimm_MovingHead_Init.cold = 0;
+    RGBW_Dimm_MovingHead_Init.warm = 1;
+    RGBW_Dimm_MovingHead_Init.amber = 2;
 
     cT.RegisterClient(&bsmMaster);
 
@@ -53,185 +46,35 @@ Widget::Widget(QWidget *parent)
     cT.RegisterClient(&bsmMaster);
     bsmMaster.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
 
-    std::vector<ProportionIncrementalDot*> inPanVecR;
-    std::vector<Dot*> outPanDotVecR;
-    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    GenerateSequentialXvalues(inPanVecR, outPanDotVecR, 0.0);
-    /*
-    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.75));
-    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.75));
-    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.25));
-    inPanVecR.push_back(new ProportionIncrementalDot(1.0, 0.25));
-    GenerateSequentialXvalues(inPanVecR, outPanDotVecR, 0.25);
-    */
-
-    std::vector<ProportionIncrementalDot*> inTiltVecR;
-    std::vector<Dot*> outTiltDotVecR;
-    inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    GenerateSequentialXvalues(inTiltVecR, outTiltDotVecR, 0.0);
-    /*
-    inTiltVecR.push_back(new ProportionIncrementalDot(0.5, 0.0));
-    inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    inTiltVecR.push_back(new ProportionIncrementalDot(0.5, 1.0));
-    inTiltVecR.push_back(new ProportionIncrementalDot(1.0, 0.0));
-    GenerateSequentialXvalues(inTiltVecR, outTiltDotVecR, 0.0);
-    */
-
-    std::vector<ProportionIncrementalDot*> inPanVecL;
-    std::vector<Dot*> outPanDotVecL;
-    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    GenerateSequentialXvalues(inPanVecL, outPanDotVecL, 0.0);
-    /*
-    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.25));
-    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.25));
-    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.75));
-    inPanVecL.push_back(new ProportionIncrementalDot(1.0, 0.75));
-    GenerateSequentialXvalues(inPanVecL, outPanDotVecL, 0.75);
-    */
-
-    std::vector<ProportionIncrementalDot*> inTiltVecL;
-    std::vector<Dot*> outTiltDotVecL;
-    inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    GenerateSequentialXvalues(inTiltVecL, outTiltDotVecL, 0.0);
-    /*
-    inTiltVecL.push_back(new ProportionIncrementalDot(0.5, 1.0));
-    inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 0.0));
-    inTiltVecL.push_back(new ProportionIncrementalDot(0.5, 0.0));
-    inTiltVecL.push_back(new ProportionIncrementalDot(1.0, 1.0));
-    GenerateSequentialXvalues(inTiltVecL, outTiltDotVecL, 1.0);
-    */
-
-    vector<Mapper_Base *> funcCont_1, funcCont_2, funcCont_3,funcCont_4;
+    vector<Mapper_Base *> funcCont_1, funcCont_2, funcCont_3;
     vector<vector<Mapper_Base *> > funcContainerContainers;
     funcContainerContainers.push_back(funcCont_1);
     funcContainerContainers.push_back(funcCont_2);
     funcContainerContainers.push_back(funcCont_3);
-    funcContainerContainers.push_back(funcCont_4);
 
     for(int m=0; m<AMT_DEVICES; m++)
     {
-        movingHead[m] = new MovingHead_RGBWA_UV(universum);
-        RGBW_Dimm_MovingHead_Init.adr = (m*10)+1;
+        movingHead[m] = new WWA_Strip(universum);
+        RGBW_Dimm_MovingHead_Init.adr = (m*3)+0;
         movingHead[m]->Init(RGBW_Dimm_MovingHead_Init);
-        colWheel[m].SetRgbDevice((movingHead[m]));
-        //bundleSeriesManager.GenerateBundleSeries(1);
-        //bundleSeriesManager.SetSerPosToItems(&cT);
-        //bundleSeriesManager.RegisterClientToItem(0, &colWheel);
 
         bsmMaster.RegisterClient(bundleSeriesDevice.GetBundleSeries(m));
         bundleSeriesDevice.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
 
         bundleSeriesDevice.GetBundleSeries(m)->SetSerParamShift(&shiftTop);
 
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetPanMapper());
-        movingHead[m]->GetPanMapper()->GetType()->append("Pan");
-        funcContainerContainers[0].push_back((movingHead[m]->GetPanMapper()));
-        //bsmPan.RegisterClientToItem(m, movingHead[m]->GetPanMapper());
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetColdMapper());
+        movingHead[m]->GetColdMapper()->GetType()->append("Cold");
+        funcContainerContainers[0].push_back((movingHead[m]->GetColdMapper()));
 
-        //bsmPan.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
-        //bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 0.85, 0.15);
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetWarmMapper());
+        movingHead[m]->GetWarmMapper()->GetType()->append("Warm");
+        funcContainerContainers[1].push_back((movingHead[m]->GetWarmMapper()));
 
-        if(m&1)
-        {
-            for(Dot* d: outPanDotVecR)
-            {
-                bsmPan.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
-            }
-        }
-        else
-        {
-            for(Dot* d: outPanDotVecL)
-            {
-                bsmPan.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
-            }
-        }
-        /*
-         //#1
-        bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(0.25, 0.0, 0.75, 0.5);
-        bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(0.5, 0.25, 0.5, 0.75);
-        bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(0.75, 0.5, 0.25, 0.5);
-        bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.75, 0.5, 0.25);
-        */
-
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetTiltMapper());
-        movingHead[m]->GetTiltMapper()->GetType()->append("Tilt");
-        funcContainerContainers[1].push_back((movingHead[m]->GetTiltMapper()));
-        //bsmPan.RegisterClientToItem(m, movingHead[m]->GetTiltMapper());
-        //bsmPan.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.0, 0.85, 0.15);
-
-        //#1
-        //bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.0);
-        //bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.5, 0.0, 1.0);
-
-       // bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(0.75, 0.5, 0.4, 0.0);
-        //bsmTilt.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, 0.75, 0.0, 0.4);
-
-        /**/
-        if(m&1)
-        {
-            for(Dot* d: outTiltDotVecR)
-            {
-                bsmTilt.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
-            }
-        }
-        else
-        {
-            for(Dot* d: outTiltDotVecL)
-            {
-                bsmTilt.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(d->maxX, d->minX, d->maxY, d->minY);
-            }
-        }
-
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetDimmMapper());
-        movingHead[m]->GetDimmMapper()->GetType()->append("Dimm");
-        funcContainerContainers[2].push_back((movingHead[m]->GetDimmMapper()));
-
-        bsmDimm.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
-    /*
-    #define BLINK_BEGIN 0.15
-    #define BLINK_END 0.85
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN, 0.0, 1.0, 1.0);
-    #define BLINKS  11
-        int i =0;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 1.0, 1.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 1.0, 1.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 1.0, 1.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 1.0, 1.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 1.0, 1.0); i++;
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)(i+1)), BLINK_BEGIN+(((BLINK_END-BLINK_BEGIN)/(float)BLINKS)*(float)i), 0.0, 0.0);
-        bsmDimm.GetBundleSeries(m)->AddFunctionSectionByParams(1.0, BLINK_END, 1.0, 1.0);
-    */
-
-        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(bsmWheel.GetBundleSeries(m));
-        bsmWheel.RegisterClientToItem(m, &(colWheel[m]));
-        colWheel[m].GetType()->append("Color Wheel");
-        funcContainerContainers[3].push_back(&(colWheel[m]));
-        bsmWheel.GetBundleSeries(m)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
-
+        bundleSeriesDevice.GetBundleSeries(m)->RegisterClient(movingHead[m]->GetAmberMapper());
+        movingHead[m]->GetAmberMapper()->GetType()->append("Amber");
+        funcContainerContainers[2].push_back((movingHead[m]->GetAmberMapper()));
     }
-/*
-    for(int i=0; i<HEADS; i++)
-    {
-        RGBW_Dimm_MovingHead_Init.adr = (i*10)+1;
-        RGBW_Dimm_MovingHead[i].Init(RGBW_Dimm_MovingHead_Init);
-        wheel.RegisterDevice(&(RGBW_Dimm_MovingHead[i]));
-        handTroughBright.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetDimmChnlIndex());
-        handTroughWhite.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetWhiteChnlIndex());
-        handTroughAmber.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetAmberChnlIndex());
-        handTroughUV.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetUvChnlIndex());
-        handTroughX.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetXChnlIndex());
-        handTroughY.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetYChnlIndex());
-        handTroughXY.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetXYChnlIndex());
-        oneChUpDown.RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetYChnlIndex());
-        panArrHandTrough[i].RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetXChnlIndex());
-        tiltArrHandTrough[i].RegisterDmxIndex(RGBW_Dimm_MovingHead[i].GetYChnlIndex());
-
-    }*/
 
     serial.setPortName("COM5");
     serial.setBaudRate(QSerialPort::Baud115200);
@@ -255,22 +98,6 @@ Widget::Widget(QWidget *parent)
     //ui->verticalLayout_Dots->addWidget(&effectEditor);
     ui->stackedWidget->addWidget(&effectEditor);
     effectEditor.SetBundSerMangr(funcContainerContainers);
-    /*
-    m_red_shade = new ShadeWidget(ShadeWidget::RedShade, this);
-    panShade = new ShadeWidget(ShadeWidget::RedShade, this);
-
-    ui->verticalLayout_Dots->addWidget(&cusScrollAr);
-    cusScrollAr.AddWidget(m_red_shade);
-    cusScrollAr.AddWidget(panShade);
-    //ui->verticalLayout_Dots->addWidget(m_red_shade);
-    //ui->verticalLayout_Dots->addWidget(panShade);
-
-    connect(m_red_shade, SIGNAL(colorsChanged()), this, SLOT(pointsUpdated()));
-    connect(m_red_shade, SIGNAL(colorsChanged()), this, SLOT(Slot_MouseRelease()));
-    connect(panShade, SIGNAL(colorsChanged()), this, SLOT(Slot_PanRelease()));
-    */
-
-    //Slot_MouseRelease();
 
     timer.setInterval(100);
     timer.start();
@@ -297,10 +124,12 @@ void Widget::Slot_TimerExpired()
 
     audioPlayerFrontEnd.UpdateCurrentTime();
     itteration++;
+
     for(int m=0; m<AMT_DEVICES; m++)
-    {
-        colWheel[m].GetRequested(itteration);
-    }
+        {
+            bundleSeriesDevice.GetBundleSeries(0)->GetRequested(itteration);
+        }
+
     if(ui->checkBox->isChecked())
     {
         int v = ui->horizontalSlider->value();
@@ -348,8 +177,8 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
-    qDebug() <<  debugMsg.toLatin1();
-    qDebug() <<  "_";
+    //qDebug() <<  debugMsg.toLatin1();
+    //qDebug() <<  "_";
     if(serial.isOpen())
     {
       serial.write(sendMsg.toLatin1());
@@ -368,6 +197,7 @@ void Widget::Slot_GetValue(ClientServer_Top *b, int itterration)
 void Widget::Slot_GetShift(ClientServer_Top *b, int itterration)
 {
     float tmpF = (float)ui->horizontalSlider_2->value() / (float)ui->horizontalSlider_2->maximum();
+    tmpF *= 20;
     b->Serve(itterration,tmpF);
 }
 void Widget::Slot_GetSpanMin(ClientServer_Top *b, int itterration)

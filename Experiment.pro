@@ -60,6 +60,7 @@ HEADERS += \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
+    ../../share/Devices/DmxDevices/WWA_Strip.h \
     ../../share/Devices/Interfaces/I_DmxChannelBlue_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelDimm_8Bit.hpp \
     ../../share/Devices/Interfaces/I_DmxChannelGreen_8Bit.hpp \

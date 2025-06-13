@@ -29,6 +29,10 @@ public:
 
     void DrawPositionLine(float _pos);
 
+    void EnableSelect();
+
+    bool eventFilter(QObject *object, QEvent *event) override;
+
 public slots:
 
     void Slot_SignalMouseRelease();
@@ -56,6 +60,7 @@ private slots:
     void Slot_colorsChanged();
     void Slot_GetActivityNote();
     void Slot_PasteHere();
+    void Slot_SelectionChanged(QRectF searchArea);
 };
 
 #endif // SHADEWIDGET_H

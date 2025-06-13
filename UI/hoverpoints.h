@@ -59,11 +59,7 @@ enum PointAxisSelect {
     P
 };
 
-enum OpMode{
-    DEFAULT,
-    COPY,
-    PASTE
-};
+
 
 QT_FORWARD_DECLARE_CLASS(QBypassWidget)
 
@@ -100,16 +96,17 @@ public:
     HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight);
 
     bool eventFilter(QObject *object, QEvent *event) override;
-    bool eventFilterIdleMode(QObject *object, QEvent *event);
-    bool eventFilterCopyPaste(QObject *object, QEvent *event);
+    bool eventFilterSelect(QObject *object, QEvent *event);
 
     void paintPoints();
+    void PaintSelectPoints();
 
     inline QRectF boundingRect() const;
     void setBoundingRect(const QRectF &boundingRect) { m_bounds = boundingRect; }
 
     QPolygonF points() const { return m_points; }
     void setPoints(const QPolygonF &points);
+    void setSelectPoints(const QPolygonF &points);
 
     QSizeF pointSize() const { return m_pointSize; }
     void setPointSize(const QSizeF &size) { m_pointSize = size; }
@@ -139,6 +136,8 @@ public:
     void EnableSelectMode();
     void DisableSelectMode();
     void WaitForPaste();
+    void SetAnnounceMeMode();
+    void DisableAnnounceMeMode();
 
     void CopySelectedPoints(QPolygonF &pointsCopied);
     PointAxisSelect axisSelect;
@@ -164,24 +163,30 @@ public:
 private:
     inline QRectF pointBoundingRect(int i, qreal pX, qreal pY) const;
     void movePoint(int i, const QPointF &newPos, bool emitChange = true);
+    void moveSelectPoint(int i, const QPointF &newPos, bool emitChange = true);
 
     QWidget *m_widget;
 
     QPolygonF m_points;
+    QPolygonF select_points;
     QRectF m_bounds;
+    QRectF searchArea;
     PointShape m_shape;
     SortType m_sortType;
     ConnectionType m_connectionType;
 
     QVector<uint> m_locks;
+    QVector<uint> m_locksSelect;
 
     QSizeF m_pointSize;
     int m_currentIndex;
+    int m_currentIndexSelect;
     QSet<int> selectedIndexes;
     bool m_editable;
     bool m_enabled;
 
     QHash<int, int> m_fingerPointMapping;
+    QHash<int, int> m_fingerPointMappingSelect;
 
     QPen m_pointPen;
     QBrush m_pointBrush;
@@ -191,17 +196,17 @@ private:
 
     qreal titleHeight;
 
-    OpMode opMode;
+    int opMode;
     void UpdateSelectedPoints();
 
-    void IndexOfClickedPoint(int& _i, QPointF &clickPos)
+    void IndexOfClickedPoint(int& _i, QPointF &clickPos, QPolygonF &points)
     {
-        for (int i=0; i<m_points.size(); ++i) {
+        for (int i=0; i<points.size(); ++i) {
             QPainterPath path;
             if (m_shape == CircleShape)
-                path.addEllipse(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
+                path.addEllipse(pointBoundingRect(i, TranslateRelToAbsX(points[i].x()), TranslateRelToAbsY(points[i].y())));
             else
-                path.addRect(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
+                path.addRect(pointBoundingRect(i, TranslateRelToAbsX(points[i].x()), TranslateRelToAbsY(points[i].y())));
 
             if (path.contains(clickPos)) {
                 _i = i;
@@ -258,6 +263,14 @@ private:
                 m_points.remove(index);
             }
             firePointChange();
+        }
+    }
+
+    void RemoveSelectPoint(int index)
+    {
+        if (index >= 0 && m_editable)
+        {
+            select_points.remove(index);
         }
     }
 };

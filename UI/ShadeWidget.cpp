@@ -2,6 +2,8 @@
 
 #define TITLE_HEIGHT    30
 
+
+
 ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<Mapper_Base *> &_funcContVect, int _index, QRect &geometry)
     : QWidget(parent), m_shade_type(type), m_alpha_gradient(QLinearGradient(0, 0, 0, 0))
 {
@@ -33,6 +35,18 @@ ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<Mapper_Base *> 
     m_hoverPoints->setPointLock(1, HoverPoints::LockToRight);
     m_hoverPoints->setSortType(HoverPoints::XSort);
 
+    /*
+    points.clear();
+    points << QPointF(0.5, 0.5)
+           << QPointF(0.75, 0.5)
+           << QPointF(0.75, 0.75)
+           << QPointF(0.5, 0.75);
+    selectPoints = new SelectPoints(this, SelectPoints::CircleShape, TITLE_HEIGHT);
+    selectPoints->setPoints(points);
+
+
+    connect(selectPoints, SIGNAL(SignalMouseRelease(QRectF)), this, SLOT(Slot_SelectionChanged(QRectF)));
+*/
     setMinimumHeight(100);
 
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
@@ -45,11 +59,22 @@ ShadeWidget::ShadeWidget(ShadeType type, QWidget *parent, vector<Mapper_Base *> 
     connect(m_hoverPoints, SIGNAL(Signal_PasteHere()), this, SLOT(Slot_PasteHere()));
 }
 
+void ShadeWidget::EnableSelect()
+{
+    hoverPoints()->EnableSelectMode();
+
+}
+
 QPolygonF ShadeWidget::points() const
 {
     return m_hoverPoints->points();
 }
 
+bool ShadeWidget::eventFilter(QObject *object, QEvent *event)
+{
+    qDebug() << "ShadeWidget::eventFilter";
+    return false;
+}
 
 void ShadeWidget::paintEvent(QPaintEvent *)
 {
@@ -132,4 +157,9 @@ void ShadeWidget::Slot_GetActivityNote()
 void ShadeWidget::Slot_PasteHere()
 {
     Signal_PasteHere(index);
+}
+
+void ShadeWidget::Slot_SelectionChanged(QRectF searchArea)
+{
+    qDebug() << searchArea;
 }

@@ -15,6 +15,7 @@
 #include "../../../share/Mapper/OneChannelMapper.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
 #include "../../../share/Devices/DmxDevices/MovingHead_RGBWA_UV.hpp"
+#include "../../../share/Devices/DmxDevices/WWA_Strip.h"
 #include "../../../share/FunctionOwners.hpp"
 
 #include "../Ui/ShadeWidget.h"
@@ -25,7 +26,7 @@
 #include "Audio/AudioPlayerFrontend.h"
 
 #define AMT_DEVICES 1
-#define UNIV_LENGTH 1 + (AMT_DEVICES*10)
+#define UNIV_LENGTH 0 + (AMT_DEVICES*3)
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -55,8 +56,7 @@ private:
 
     BundleSeries bsmMaster;
 
-    MovingHead_RGBWA_UV* movingHead[AMT_DEVICES];
-    ColorWheelMapper colWheel[AMT_DEVICES];
+    WWA_Strip* movingHead[AMT_DEVICES];
 
     ClientServer_Top cT, shiftTop, spanMinTop, spanMaxTop, spanOffsetTop, shiftSpeed;
 
