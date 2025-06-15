@@ -138,6 +138,7 @@ public:
     void WaitForPaste();
     void SetAnnounceMeMode();
     void DisableAnnounceMeMode();
+    void GetPointInSelectArea(QPolygonF &points);
 
     void CopySelectedPoints(QPolygonF &pointsCopied);
     PointAxisSelect axisSelect;

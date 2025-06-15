@@ -63,6 +63,11 @@
 
 #define NO_POINT_SELECTED   -1
 
+#define LOW_X_LOW_Y 0
+#define HIGH_X_LOW_Y 1
+#define HIGH_X_HIGH_Y 2
+#define LOW_X_HIGH_Y 3
+
 enum OpMode{
     DEFAULT,
     ANNOUNCE_ME,
@@ -99,6 +104,23 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
             m_widget, SLOT(update()));
 }
 
+void HoverPoints::GetPointInSelectArea(QPolygonF &points)
+{
+    if(opMode == OpMode::SELECT)
+    {
+        for(QPointF p : m_points)
+        {
+            if( p.x() >= select_points[LOW_X_LOW_Y].x() &&
+                p.x() <= select_points[HIGH_X_LOW_Y].x() &&
+                p.y() >= select_points[LOW_X_LOW_Y].y() &&
+                p.y() <= select_points[LOW_X_HIGH_Y].y())
+            {
+                points.append(p);
+            }
+        }
+    }
+}
+
 void HoverPoints::SetAnnounceMeMode()
 {
     opMode = OpMode::ANNOUNCE_ME;
@@ -108,6 +130,7 @@ void HoverPoints::DisableAnnounceMeMode()
 {
     opMode = OpMode::DEFAULT;
 }
+
 
 void HoverPoints::EnableSelectMode()
 {

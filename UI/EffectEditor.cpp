@@ -43,9 +43,15 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
         qDebug() << "keyPressEvent: " << event->key();
         if(event->key() == 67)// 'c'
         {
-            if(opMode == OpMode::DEFAULT)
+            if(opMode == OpMode::SELECT)
             {
-
+                opMode = OpMode::PASTE;
+                Slot_CopyPoint();
+                for(ShadeWidget* sW : shadeWidgets)
+                {
+                    sW->hoverPoints()->DisableSelectMode();
+                    sW->hoverPoints()->WaitForPaste();
+                }
             }
         }
 
@@ -61,16 +67,7 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
 
         if(event->key() == 86)
         {
-            if(opMode == OpMode::COPY)
-            {
-                opMode = OpMode::PASTE;
-                Slot_CopyPoint();
-                for(ShadeWidget* sW : shadeWidgets)
-                {
-                    sW->hoverPoints()->DisableSelectMode();
-                    sW->hoverPoints()->WaitForPaste();
-                }
-            }
+
         }
 
         if(event->key() == 83) // 's'
@@ -228,14 +225,15 @@ void EffectEditor::Slot_CopyY()
 
 void EffectEditor::Slot_CopyPoint()
 {
+    copiedPoints.clear();
+    qDebug() << "activeWidget: " << activeWidget;
     if(activeWidget != -1)
     {
-        shadeWidgets[activeWidget]->hoverPoints()->CopySelectedPoints(copiedPoints);
+        shadeWidgets[activeWidget]->hoverPoints()->GetPointInSelectArea(copiedPoints);
     }
-
-    for(ShadeWidget* sW : shadeWidgets)
+    for(QPointF p : copiedPoints)
     {
-        sW->hoverPoints()->axisSelect = PointAxisSelect::P;
+        qDebug() << p;
     }
 }
 
