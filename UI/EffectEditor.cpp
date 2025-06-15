@@ -55,6 +55,15 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
             }
         }
 
+        if(event->key() == 68)// 'd'
+        {
+            if(opMode == OpMode::SELECT)
+            {
+                opMode = OpMode::DEFAULT;
+                Slot_DeletePoint();
+            }
+        }
+
         if(event->key() == Qt::Key_Escape)
         {
             copiedPoints.clear();
@@ -231,9 +240,14 @@ void EffectEditor::Slot_CopyPoint()
     {
         shadeWidgets[activeWidget]->hoverPoints()->GetPointInSelectArea(copiedPoints);
     }
-    for(QPointF p : copiedPoints)
+}
+
+void EffectEditor::Slot_DeletePoint()
+{
+    if(activeWidget != -1)
     {
-        qDebug() << p;
+        shadeWidgets[activeWidget]->hoverPoints()->DeletePointsInSelectArea();
+        shadeWidgets[activeWidget]->hoverPoints()->DisableSelectMode();
     }
 }
 

@@ -139,6 +139,7 @@ public:
     void SetAnnounceMeMode();
     void DisableAnnounceMeMode();
     void GetPointInSelectArea(QPolygonF &points);
+    void DeletePointsInSelectArea();
 
     void CopySelectedPoints(QPolygonF &pointsCopied);
     PointAxisSelect axisSelect;
@@ -182,7 +183,7 @@ private:
     QSizeF m_pointSize;
     int m_currentIndex;
     int m_currentIndexSelect;
-    QSet<int> selectedIndexes;
+    QVector<int> selectedIndexes;
     bool m_editable;
     bool m_enabled;
 
@@ -199,6 +200,9 @@ private:
 
     int opMode;
     void UpdateSelectedPoints();
+
+    void GetIndexesInSelectArea();
+    bool IsPointInSelectArea(QPointF &p);
 
     void IndexOfClickedPoint(int& _i, QPointF &clickPos, QPolygonF &points)
     {
@@ -220,14 +224,17 @@ private:
     {
         m_currentIndex = -1;
         Signal_NoteMeAsActive();
+        selectedIndexes.append(_index);
+        /*
         if(selectedIndexes.contains(_index))
         {
             selectedIndexes.remove(_index);
         }
         else
         {
-            selectedIndexes.insert(_index);
+            selectedIndexes.append(_index);
         }
+        */
         UpdateSelectedPoints();
     }
 
@@ -254,7 +261,7 @@ private:
         firePointChange();
     }
 
-    void RemovePoint(int index)
+    void RemovePoint(int index, bool emitPointChange)
     {
         if (index >= 0 && m_editable)
         {
@@ -263,7 +270,7 @@ private:
                 m_locks.remove(index);
                 m_points.remove(index);
             }
-            firePointChange();
+            if(emitPointChange)firePointChange();
         }
     }
 

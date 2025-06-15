@@ -63,6 +63,7 @@
 
 #define NO_POINT_SELECTED   -1
 
+
 #define LOW_X_LOW_Y 0
 #define HIGH_X_LOW_Y 1
 #define HIGH_X_HIGH_Y 2
@@ -104,16 +105,51 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
             m_widget, SLOT(update()));
 }
 
+bool HoverPoints::IsPointInSelectArea(QPointF &p)
+{
+    qDebug() << "Point: " << p;
+    if(p.x() < select_points[LOW_X_LOW_Y].x()){ qDebug() << "x too small " << p.x() << " " << select_points[LOW_X_LOW_Y].x(); return false;}
+    if(p.x() > select_points[HIGH_X_LOW_Y].x()){ qDebug() << "x too big " << p.x() << " " << select_points[HIGH_X_LOW_Y].x(); return false;}
+    if(p.y() < select_points[LOW_X_LOW_Y].y()){ qDebug() << "y too small " << p.y() << " " << select_points[LOW_X_LOW_Y].y(); return false;}
+    if(p.y() > select_points[LOW_X_HIGH_Y].y()){ qDebug() << "y too big " << p.y() << " " << select_points[LOW_X_HIGH_Y].y(); return false;}
+    /*
+    if( p.x() >= select_points[LOW_X_LOW_Y].x() &&
+        p.x() <= select_points[HIGH_X_LOW_Y].x() &&
+        p.y() >= select_points[LOW_X_LOW_Y].y() &&
+        p.y() <= select_points[LOW_X_HIGH_Y].y())
+    {
+        return true;
+    }
+    */
+
+    return true;
+}
+
+
+
+void HoverPoints::GetIndexesInSelectArea()
+{
+    selectedIndexes.clear();
+    for(int i=0; i<m_points.size(); i++)
+    {
+        qDebug() << "  ";
+        qDebug() << i;
+        if(IsPointInSelectArea(m_points[i]))
+        {
+            selectedIndexes.append(i);
+        }
+        qDebug() << "selectedIndexes: " << selectedIndexes;
+    }
+    //std::sort(selectedIndexes.begin(), selectedIndexes.end(), less_than);
+}
+
 void HoverPoints::GetPointInSelectArea(QPolygonF &points)
 {
     if(opMode == OpMode::SELECT)
     {
         for(QPointF p : m_points)
         {
-            if( p.x() >= select_points[LOW_X_LOW_Y].x() &&
-                p.x() <= select_points[HIGH_X_LOW_Y].x() &&
-                p.y() >= select_points[LOW_X_LOW_Y].y() &&
-                p.y() <= select_points[LOW_X_HIGH_Y].y())
+            if(IsPointInSelectArea(p))
             {
                 points.append(p);
             }
@@ -147,6 +183,7 @@ void HoverPoints::EnableSelectMode()
 
 void HoverPoints::DisableSelectMode()
 {
+    selectedIndexes.clear();
     if(opMode == OpMode::SELECT)
     {
         opMode = OpMode::DEFAULT;
@@ -326,7 +363,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                 }
                 else if (me->button() == Qt::RightButton)
                 {
-                    RemovePoint(newSelectedPoint);
+                    RemovePoint(newSelectedPoint, true);
                     return true;
                 }
             }
@@ -694,6 +731,7 @@ inline static bool y_less_than(const QPointF &p1, const QPointF &p2)
     return p1.y() < p2.y();
 }
 
+
 void HoverPoints::firePointChange()
 {
 //    printf("HoverPoints::firePointChange(), current=%d\n", m_currentIndex);
@@ -745,6 +783,16 @@ void HoverPoints::CopySelectedPoints(QPolygonF &pointsCopied)
         }
         i++;
     }
+}
+
+void HoverPoints::DeletePointsInSelectArea()
+{
+    GetIndexesInSelectArea();
+    for(int i=selectedIndexes.size()-1; i>=0; i--)
+    {
+        RemovePoint(selectedIndexes[i], false);
+    }
+    firePointChange();
 }
 
 void HoverPoints::WaitForPaste()
