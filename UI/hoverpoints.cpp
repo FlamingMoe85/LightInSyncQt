@@ -795,6 +795,21 @@ void HoverPoints::DeletePointsInSelectArea()
     firePointChange();
 }
 
+void HoverPoints::ClearPoints()
+{
+    for(int i=m_points.count()-2; i>0; i--)
+    {
+        RemovePoint(i, false);
+    }
+    m_points[0].setX(0);
+    m_points[0].setY(0);
+
+    m_points[1].setX(1);
+    m_points[1].setY(0);
+
+    firePointChange();
+}
+
 void HoverPoints::WaitForPaste()
 {
     opMode = OpMode::PASTE;

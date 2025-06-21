@@ -42,93 +42,7 @@
        <layout class="QGridLayout" name="gridLayout_2">
         <item row="0" column="0">
          <layout class="QGridLayout" name="gridLayout_Dials">
-          <item row="1" column="0">
-           <widget class="QPushButton" name="pushButton_CopyX">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>X</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="2">
-           <widget class="QPushButton" name="pushButton_setP">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Set Both</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="0">
-           <widget class="QPushButton" name="pushButton_setX">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="text">
-             <string>Set X</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="1">
-           <widget class="QPushButton" name="pushButton_CopyY">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Y</string>
-            </property>
-           </widget>
-          </item>
-          <item row="1" column="2">
-           <widget class="QPushButton" name="pushButton_CopyPoint">
-            <property name="sizePolicy">
-             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-              <horstretch>1</horstretch>
-              <verstretch>1</verstretch>
-             </sizepolicy>
-            </property>
-            <property name="font">
-             <font>
-              <pointsize>12</pointsize>
-              <weight>75</weight>
-              <bold>true</bold>
-             </font>
-            </property>
-            <property name="text">
-             <string>Point</string>
-            </property>
-           </widget>
-          </item>
-          <item row="2" column="1">
+          <item row="5" column="1">
            <widget class="QPushButton" name="pushButton_setY">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -141,8 +55,8 @@
             </property>
            </widget>
           </item>
-          <item row="0" column="0" colspan="3">
-           <widget class="QLabel" name="labelCopy">
+          <item row="4" column="1">
+           <widget class="QPushButton" name="pushButton_CopyY">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>1</horstretch>
@@ -152,19 +66,34 @@
             <property name="font">
              <font>
               <pointsize>12</pointsize>
-              <weight>75</weight>
               <bold>true</bold>
              </font>
             </property>
             <property name="text">
-             <string>Copy</string>
-            </property>
-            <property name="alignment">
-             <set>Qt::AlignCenter</set>
+             <string>Y</string>
             </property>
            </widget>
           </item>
-          <item row="3" column="0">
+          <item row="4" column="0">
+           <widget class="QPushButton" name="pushButton_CopyX">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="0">
            <widget class="QDoubleSpinBox" name="doubleSpinBox_X">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -177,7 +106,61 @@
             </property>
            </widget>
           </item>
-          <item row="3" column="1">
+          <item row="5" column="0">
+           <widget class="QPushButton" name="pushButton_setX">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Set X</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QPushButton" name="pushButton_CopyPoint">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Point</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="3">
+           <widget class="QLabel" name="labelCopy">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="font">
+             <font>
+              <pointsize>12</pointsize>
+              <bold>true</bold>
+             </font>
+            </property>
+            <property name="text">
+             <string>Copy</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1">
            <widget class="QDoubleSpinBox" name="doubleSpinBox_Y">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -189,6 +172,32 @@
              <double>1.000000000000000</double>
             </property>
            </widget>
+          </item>
+          <item row="0" column="0" colspan="3">
+           <widget class="QPushButton" name="pushButton_Save">
+            <property name="text">
+             <string>PushButton</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="3">
+           <widget class="QComboBox" name="comboBox"/>
+          </item>
+          <item row="5" column="2">
+           <widget class="QPushButton" name="pushButton_setP">
+            <property name="sizePolicy">
+             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+              <horstretch>1</horstretch>
+              <verstretch>1</verstretch>
+             </sizepolicy>
+            </property>
+            <property name="text">
+             <string>Set Both</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="3">
+           <widget class="QPlainTextEdit" name="plainTextEdit"/>
           </item>
          </layout>
         </item>

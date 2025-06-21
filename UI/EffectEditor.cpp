@@ -24,10 +24,14 @@ EffectEditor::EffectEditor(int x, int y, int w, int h, QWidget *parent) :
     connect(ui->pushButton_setX, SIGNAL(clicked()), this, SLOT(Slot_SetX()));
     connect(ui->pushButton_setY, SIGNAL(clicked()), this, SLOT(Slot_SetY()));
     connect(ui->pushButton_setP, SIGNAL(clicked()), this, SLOT(Slot_SetBoth()));
+    connect(ui->pushButton_Save, SIGNAL(clicked()), this, SLOT(Slot_Save()));
+    connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(Slot_CurveSelected(int)));
 
     pasteWidget = -1;
     geometry.setRect(x, y, w, h);
     opMode = DEFAULT;
+
+    UpdateAvailableCurves();
 }
 
 EffectEditor::~EffectEditor()
@@ -35,6 +39,16 @@ EffectEditor::~EffectEditor()
     delete ui;
 }
 
+void EffectEditor::UpdateAvailableCurves()
+{
+    QDir dir;
+    qDebug() << "QDir::current(): " << QDir::current();
+    QStringList filter("*.json");
+    availableCurves = QDir::current().entryList(filter);
+    qDebug() << "availableCurves: " << availableCurves;
+    listModel.setStringList(availableCurves);
+    ui->comboBox->setModel(&listModel);
+}
 
 void EffectEditor::keyPressEvent(QKeyEvent *event)
 {
@@ -141,6 +155,12 @@ void EffectEditor::RemoveAllShadeWidgets()
         scrollArea.RemoveWidget(shadeWidgets[i]);
     }
     shadeWidgets.clear();
+}
+
+void EffectEditor::Slot_Save()
+{
+    Save(ui->plainTextEdit->toPlainText());
+    UpdateAvailableCurves();
 }
 
 inline static bool x_less_than(const QPointF &p1, const QPointF &p2)
@@ -274,4 +294,9 @@ void EffectEditor::Slot_SetBoth()
         shadeWidgets[activeWidget]->hoverPoints()->SetPonSelected(ui->doubleSpinBox_X->value(), ui->doubleSpinBox_Y->value());
         shadeWidgets[activeWidget]->Slot_SignalMouseRelease();
     }
+}
+
+void EffectEditor::Slot_CurveSelected(int i)
+{
+    Load(ui->comboBox->itemText(i));
 }

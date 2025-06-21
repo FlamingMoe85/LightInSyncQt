@@ -5,6 +5,7 @@
 using std::vector;
 #include <vector>
 #include <QKeyEvent>
+#include <QStringListModel>
 
 #include "EditorItem.h"
 #include "CustomScrollArea.h"
@@ -34,6 +35,50 @@ public:
     void SetItemGeometry(int x, int y, int w, int h);
     void SetWidth(int _w);
 
+    void UpdateAvailableCurves();
+
+    void Save(QString fileName) const
+    {
+        QString f = fileName += ".json";
+        QFile saveFile(f);
+
+        if (!saveFile.open(QIODevice::WriteOnly)) {
+            qWarning("Couldn't open save file.");
+        }
+
+        QJsonArray saveObject;
+        for(ShadeWidget* sW : shadeWidgets)
+        {
+            saveObject.append(sW->hoverPoints()->toJson());
+        }
+        saveFile.write(QJsonDocument(saveObject).toJson());
+    }
+
+    void Load(QString fileName) const
+    {
+        QFile loadFile(fileName);
+
+        if (!loadFile.open(QIODevice::ReadOnly)) {
+            return;
+        }
+
+        QByteArray saveData = loadFile.readAll();
+        QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+        QJsonArray loadArr = loadDoc.array();
+        int i=0;
+
+        for(ShadeWidget *sW : shadeWidgets)
+        {
+            sW->hoverPoints()->ClearPoints();
+        }
+
+        for (const QJsonValue &v : loadArr)
+        {
+            shadeWidgets[i++]->hoverPoints()->FromJson(v.toObject());
+        }
+    }
+
 protected:
 
     CustomScrollArea scrollArea;
@@ -49,6 +94,8 @@ private:
     int activeWidget, pasteWidget;
     QRect geometry;
     int opMode;
+    QStringListModel listModel;
+    QStringList availableCurves;
 
 private slots:
 
@@ -63,6 +110,8 @@ private slots:
     void Slot_SetX();
     void Slot_SetY();
     void Slot_SetBoth();
+    void Slot_Save();
+    void Slot_CurveSelected(int);
 };
 
 #endif // EFFECTEDITOR_H

@@ -52,6 +52,8 @@
 #define HOVERPOINTS_H
 
 #include <QtWidgets>
+#include <QJsonObject>
+#include <QJsonArray>
 
 enum PointAxisSelect {
     X,
@@ -140,6 +142,7 @@ public:
     void DisableAnnounceMeMode();
     void GetPointInSelectArea(QPolygonF &points);
     void DeletePointsInSelectArea();
+    void ClearPoints();
 
     void CopySelectedPoints(QPolygonF &pointsCopied);
     PointAxisSelect axisSelect;
@@ -161,6 +164,38 @@ signals:
 
 public:
     void firePointChange();
+
+    QJsonObject toJson() const
+    {
+        QJsonObject json;
+        QJsonArray jArr;
+        for(QPointF p : m_points)
+        {
+            QJsonValue jx(p.x());
+            jArr.append(jx);
+            QJsonValue jy(p.y());
+            jArr.append(jy);
+        }
+        json["points"] = jArr;
+        return json;
+    }
+
+    void FromJson(const QJsonObject &json)
+    {
+        QJsonValue v = json["points"];
+        QJsonArray points = v.toArray();
+
+        QPolygonF poly;
+        for(int i=0; i<points.count(); i+=2)
+        {
+            QPointF p;
+            p.setX(points[i].toDouble());
+            p.setY(points[i+1].toDouble());
+            poly.append(p);
+        }
+        qDebug() << poly;
+        setPoints(poly);
+    }
 
 private:
     inline QRectF pointBoundingRect(int i, qreal pX, qreal pY) const;
