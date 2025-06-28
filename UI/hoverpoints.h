@@ -109,6 +109,7 @@ public:
     QPolygonF points() const { return m_points; }
     void setPoints(const QPolygonF &points);
     void setSelectPoints(const QPolygonF &points);
+    void setPointsInSelctedArea(QPolygonF &points);
 
     QSizeF pointSize() const { return m_pointSize; }
     void setPointSize(const QSizeF &size) { m_pointSize = size; }
@@ -168,29 +169,32 @@ public:
     QJsonObject toJson() const
     {
         QJsonObject json;
-        QJsonArray jArr;
+        QJsonArray jArrX, jArrY;
         for(QPointF p : m_points)
         {
             QJsonValue jx(p.x());
-            jArr.append(jx);
+            jArrX.append(jx);
             QJsonValue jy(p.y());
-            jArr.append(jy);
+            jArrY.append(jy);
         }
-        json["points"] = jArr;
+        json["pointsX"] = jArrX;
+        json["pointsY"] = jArrY;
         return json;
     }
 
     void FromJson(const QJsonObject &json)
     {
-        QJsonValue v = json["points"];
-        QJsonArray points = v.toArray();
+        QJsonValue vX = json["pointsX"];
+        QJsonValue vY = json["pointsY"];
+        QJsonArray pointsX = vX.toArray();
+        QJsonArray pointsY = vY.toArray();
 
         QPolygonF poly;
-        for(int i=0; i<points.count(); i+=2)
+        for(int i=0; i<pointsX.count(); i++)
         {
             QPointF p;
-            p.setX(points[i].toDouble());
-            p.setY(points[i+1].toDouble());
+            p.setX(pointsX[i].toDouble());
+            p.setY(pointsY[i].toDouble());
             poly.append(p);
         }
         qDebug() << poly;
@@ -201,6 +205,7 @@ private:
     inline QRectF pointBoundingRect(int i, qreal pX, qreal pY) const;
     void movePoint(int i, const QPointF &newPos, bool emitChange = true);
     void moveSelectPoint(int i, const QPointF &newPos, bool emitChange = true);
+    void scalePointsToSelectedArea(QPolygonF &points);
 
     QWidget *m_widget;
 

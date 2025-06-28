@@ -641,6 +641,22 @@ void HoverPoints::setPoints(const QPolygonF &points)
     }
 }
 
+void HoverPoints::setPointsInSelctedArea(QPolygonF &points)
+{
+    if(opMode != OpMode::SELECT) return
+    DeletePointsInSelectArea();
+    scalePointsToSelectedArea(points);
+    setPoints(points);
+}
+
+void HoverPoints::scalePointsToSelectedArea(QPolygonF &points)
+{
+    for(QPointF &p : points)
+    {
+        p.setX(select_points[LOW_X_LOW_Y].x() + ((select_points[HIGH_X_LOW_Y].x() - select_points[LOW_X_LOW_Y].x()) * p.rx()));
+        p.setY(select_points[LOW_X_LOW_Y].y() + ((select_points[HIGH_X_HIGH_Y].y() - select_points[LOW_X_LOW_Y].y()) * p.ry()));
+    }
+}
 
 void HoverPoints::movePoint(int index, const QPointF &point, bool emitUpdate)
 {
