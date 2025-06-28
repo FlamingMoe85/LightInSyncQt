@@ -21,6 +21,7 @@ EffectEditor::EffectEditor(int x, int y, int w, int h, QWidget *parent) :
 
     pasteWidget = -1;
     geometry.setRect(x, y, w, h);
+    opMode = DEFAULT;
 }
 
 EffectEditor::~EffectEditor()
@@ -36,9 +37,14 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
         qDebug() << "keyPressEvent: " << event->key();
         if(event->key() == 67)
         {
-            for(ShadeWidget* sW : shadeWidgets)
+            if(opMode == OpMode::DEFAULT)
             {
-                sW->hoverPoints()->EnableSelectMode();
+                copiedPoints.clear();
+                opMode = OpMode::COPY;
+                for(ShadeWidget* sW : shadeWidgets)
+                {
+                    sW->hoverPoints()->EnableSelectMode();
+                }
             }
         }
 
@@ -47,15 +53,21 @@ void EffectEditor::keyPressEvent(QKeyEvent *event)
             for(ShadeWidget* sW : shadeWidgets)
             {
                 sW->hoverPoints()->DisableSelectMode();
+                copiedPoints.clear();
             }
         }
 
         if(event->key() == 86)
         {
-            for(ShadeWidget* sW : shadeWidgets)
+            if(opMode == OpMode::COPY)
             {
-                sW->hoverPoints()->DisableSelectMode();
-                sW->hoverPoints()->WaitForPaste();
+                opMode = OpMode::PASTE;
+                Slot_CopyPoint();
+                for(ShadeWidget* sW : shadeWidgets)
+                {
+                    sW->hoverPoints()->DisableSelectMode();
+                    sW->hoverPoints()->WaitForPaste();
+                }
             }
         }
     }
@@ -162,7 +174,12 @@ void EffectEditor::Slot_GetActivityNote(int pinger)
 
 void EffectEditor::Slot_PasteHere(int pasteTarget)
 {
-    shadeWidgets[pasteTarget]->hoverPoints()->setPoints(copiedPoints);
+    if((opMode == OpMode::PASTE) && (pasteTarget != activeWidget) && (copiedPoints.size() > 0))
+    {
+        opMode = OpMode::DEFAULT;
+        shadeWidgets[pasteTarget]->hoverPoints()->setPoints(copiedPoints);
+        activeWidget = -1;
+    }
 }
 
 

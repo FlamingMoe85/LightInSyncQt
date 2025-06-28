@@ -48,6 +48,7 @@ private:
     QPolygonF copiedPoints;
     int activeWidget, pasteWidget;
     QRect geometry;
+    int opMode;
 
 private slots:
 

@@ -61,6 +61,8 @@
 
 #define printf
 
+#define NO_POINT_SELECTED   -1
+
 HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     : QObject(widget), titleHeight(_titleHeight)
 {
@@ -75,14 +77,14 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
     m_connectionPen = QPen(QColor(255, 255, 255, 127), 2);
     m_pointBrush = QBrush(QColor(191, 191, 191, 127));
     m_pointSize = QSize(11, 11);
-    m_currentIndex = -1;
+    m_currentIndex = NO_POINT_SELECTED;
     m_editable = true;
     m_enabled = true;
 
     positionLine << QPointF(0, 0)
                  << QPointF(0, 1.0);
 
-    selectMode = CopyPasteMode::NONE;
+    opMode = OpMode::DEFAULT;
 
     connect(this, SIGNAL(pointsChanged(QPolygonF)),
             m_widget, SLOT(update()));
@@ -91,12 +93,12 @@ HoverPoints::HoverPoints(QWidget *widget, PointShape shape, qreal _titleHeight)
 
 void HoverPoints::EnableSelectMode()
 {
-    selectMode = CopyPasteMode::COPY;
+    opMode = OpMode::COPY;
 }
 
 void HoverPoints::DisableSelectMode()
 {
-    selectMode = CopyPasteMode::NONE;
+    opMode = OpMode::DEFAULT;
     selectedIndexes.clear();
     UpdateSelectedPoints();
 }
@@ -130,7 +132,7 @@ QPointF HoverPoints::TranslateAbsToRel(qreal x, qreal y)
 {
     QPointF rP;
     rP.rx() = (x-boundingRect().x())/boundingRect().width();
-    rP.ry() = (y-(boundingRect().y()-titleHeight))/(boundingRect().height()+titleHeight);
+    rP.ry() = (y-(boundingRect().y()+titleHeight))/(boundingRect().height()-titleHeight);
     return rP;
 }
 
@@ -142,97 +144,65 @@ QPointF HoverPoints::TranslateRelToAbs(qreal x, qreal y)
     return p;
 }
 
+bool eventFilterIdleMode(QObject *object, QEvent *event)
+{
+
+}
+
+bool eventFilterCopyPaste(QObject *object, QEvent *event)
+{
+
+}
+
 bool HoverPoints::eventFilter(QObject *object, QEvent *event)
 {
     if (object == m_widget && m_enabled) {
-        switch (event->type()) {
-
-        case QEvent::MouseButtonPress:
+        switch (event->type())
         {
-            if (!m_fingerPointMapping.isEmpty())
-                return true;
-            QMouseEvent *me = (QMouseEvent *) event;
-
-            QPointF clickPos = me->pos();
-            int index = -1;
-            for (int i=0; i<m_points.size(); ++i) {
-                QPainterPath path;
-                if (m_shape == CircleShape)
-                    path.addEllipse(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
-                else
-                    path.addRect(pointBoundingRect(i, TranslateRelToAbsX(m_points[i].x()), TranslateRelToAbsY(m_points[i].y())));
-
-                if (path.contains(clickPos)) {
-                    index = i;
-                    break;
-                }
-            }
-
-            if (me->button() == Qt::LeftButton) {
-            if(selectMode == CopyPasteMode::PASTE)
+            case QEvent::MouseButtonPress:
             {
-                Signal_PasteHere();
-                selectMode = CopyPasteMode::NONE;
+                if (!m_fingerPointMapping.isEmpty())return true;
+                QMouseEvent *me = (QMouseEvent *) event;
 
-            }else if((selectMode == CopyPasteMode::COPY) && (index != -1)){
-                    m_currentIndex = -1;
-                    Signal_NoteMeAsActive();
-                    if(selectedIndexes.contains(index))
+                QPointF clickPos = me->pos();
+                int newSelectedPoint = NO_POINT_SELECTED;
+                IndexOfClickedPoint(newSelectedPoint, clickPos);
+
+                if (me->button() == Qt::LeftButton)
+                {
+                    if(opMode == OpMode::PASTE)
                     {
-                        selectedIndexes.remove(index);
+                        Signal_PasteHere();
+                        opMode = OpMode::DEFAULT;
                     }
-                    else
+                    else if((newSelectedPoint != NO_POINT_SELECTED) && (opMode == OpMode::COPY))
                     {
-                        selectedIndexes.insert(index);
+                        Copy(newSelectedPoint);
                     }
-                    UpdateSelectedPoints();
-            }else if ((index == -1) && (selectMode != CopyPasteMode::COPY)) {
-                    if (!m_editable)
-                        return false;
-                    int pos = 0;
-                    // Insert sort for x or y
-                    if (m_sortType == XSort) {
-                        for (int i=0; i<m_points.size(); ++i)
-                            if (TranslateRelToAbsX(m_points.at(i).x()) > clickPos.x()) {
-                                pos = i;
-                                break;
-                            }
-                    } else if (m_sortType == YSort) {
-                        for (int i=0; i<m_points.size(); ++i)
-                            if (TranslateRelToAbsY(m_points.at(i).y()) > clickPos.y()) {
-                                pos = i;
-                                break;
-                            }
+                    else if ((newSelectedPoint == NO_POINT_SELECTED) && (opMode == OpMode::DEFAULT))
+                    {
+                        if (!m_editable) return false;
+                        InsertPoint(clickPos);
                     }
-
-
-                    m_points.insert(pos, TranslateAbsToRel(clickPos.rx(), clickPos.ry()));
-                    m_locks.insert(pos, 0);
-                    m_currentIndex = pos;
-                    firePointChange();
-                }else {
-                    m_currentIndex = index;
+                    else//NO_POINT_SELECTED
+                    {
+                        m_currentIndex = newSelectedPoint;
+                    }
+                    return true;
                 }
-                return true;
-
-            } else if (me->button() == Qt::RightButton) {
-                if (index >= 0 && m_editable) {
-                    if (m_locks[index] == 0) {
-                        m_locks.remove(index);
-                        m_points.remove(index);
-                    }
-                    firePointChange();
+                else if (me->button() == Qt::RightButton)
+                {
+                    RemovePoint(newSelectedPoint);
                     return true;
                 }
             }
-        }
-        break;
+            break;
 
         case QEvent::MouseButtonRelease:
             emit SignalMouseRelease(m_points);
             if (!m_fingerPointMapping.isEmpty())
                 return true;
-            m_currentIndex = -1;
+            m_currentIndex = NO_POINT_SELECTED;
             break;
 
         case QEvent::MouseMove:
@@ -254,7 +224,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                         {
                             // find the point, move it
                             QSet<int> activePoints = QSet<int>::fromList(m_fingerPointMapping.values());
-                            int activePoint = -1;
+                            int activePoint = NO_POINT_SELECTED;
                             qreal distance = -1;
                             const int pointsCount = m_points.size();
                             const int activePointCount = activePoints.size();
@@ -273,7 +243,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
 
                                 }
                             }
-                            if (activePoint != -1) {
+                            if (activePoint != NO_POINT_SELECTED) {
                                 m_fingerPointMapping.insert(touchPoint.id(), activePoint);
                                 movePoint(activePoint, TranslateAbsToRel(touchPoint.pos().x(), touchPoint.pos().y()));
                             }
@@ -290,7 +260,7 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
                     case Qt::TouchPointMoved:
                         {
                             // move the point
-                            const int pointIdx = m_fingerPointMapping.value(id, -1);
+                            const int pointIdx = m_fingerPointMapping.value(id, NO_POINT_SELECTED);
                             if (pointIdx >= 0) // do we track this point?
                                 movePoint(pointIdx, TranslateAbsToRel(touchPoint.pos().x(), touchPoint.pos().y()));
                         }
@@ -320,14 +290,6 @@ bool HoverPoints::eventFilter(QObject *object, QEvent *event)
             QResizeEvent *e = (QResizeEvent *) event;
             if (e->oldSize().width() == 0 || e->oldSize().height() == 0)
                 break;
-          /*  qreal stretch_x = e->size().width() / qreal(e->oldSize().width());
-            qreal stretch_y = e->size().height() / qreal(e->oldSize().height());
-
-            for (int i=0; i<m_points.size(); ++i) {
-                QPointF p = TranslateRelToAbs(m_points[i].x(), m_points[i].y());//m_points[i];
-                movePoint(i, QPointF(p.x() * stretch_x, p.y() * stretch_y), false);
-            }
-            */
 
             firePointChange();
             break;
@@ -444,7 +406,7 @@ void HoverPoints::setPoints(const QPolygonF &points)
 {
     if (points.size() != m_points.size())
         m_fingerPointMapping.clear();
-    if(selectMode != CopyPasteMode::PASTE)
+    if(opMode != OpMode::PASTE)
     {
         m_points.clear();
     }
@@ -459,7 +421,7 @@ void HoverPoints::setPoints(const QPolygonF &points)
         m_locks.fill(0);
     }
 
-    if(selectMode == CopyPasteMode::PASTE)
+    if(opMode == OpMode::PASTE)
     {
         firePointChange();
     }
@@ -493,7 +455,7 @@ void HoverPoints::firePointChange()
     if (m_sortType != NoSort) {
 
         QPointF oldCurrent;
-        if (m_currentIndex != -1) {
+        if (m_currentIndex != NO_POINT_SELECTED) {
             oldCurrent = m_points[m_currentIndex];
         }
 
@@ -503,7 +465,7 @@ void HoverPoints::firePointChange()
             std::sort(m_points.begin(), m_points.end(), y_less_than);
 
         // Compensate for changed order...
-        if (m_currentIndex != -1) {
+        if (m_currentIndex != NO_POINT_SELECTED) {
             for (int i=0; i<m_points.size(); ++i) {
                 if (m_points[i] == oldCurrent) {
                     m_currentIndex = i;
@@ -541,7 +503,7 @@ void HoverPoints::CopySelectedPoints(QPolygonF &pointsCopied)
 
 void HoverPoints::WaitForPaste()
 {
-    selectMode = CopyPasteMode::PASTE;
+    opMode = OpMode::PASTE;
 }
 
 void HoverPoints::SetXonSelected(float _x)
