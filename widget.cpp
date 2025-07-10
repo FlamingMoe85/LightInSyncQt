@@ -98,7 +98,7 @@ Widget::Widget(QWidget *parent)
         headInit.adr = 97+(i*10);
         movingHead[i]->Init(headInit);
         movingHead[i]->GetDimmMapper()->GetFuncCont()->ClearSections();
-        movingHead[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        movingHead[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 1.0);
 
         movingHead[i]->GetPanMapper()->GetFuncCont()->ClearSections();
         if(i & 1)
@@ -122,6 +122,52 @@ Widget::Widget(QWidget *parent)
         bsmHeads.GetBundleSeries(i)->RegisterClient(&colWheelHeads[i]);
         bsmHeads.GetBundleSeries(i)->RegisterClient(movingHead[i]->GetPanMapper());
         bsmHeads.GetBundleSeries(i)->RegisterClient(movingHead[i]->GetTiltMapper());
+        bsmHeads.GetBundleSeries(i)->RegisterClient(movingHead[i]->GetDimmMapper());
+    }
+
+    topHeadsColor.RegisterClient(&bsMasterHeadsSpeaker);
+    bsMasterHeadsSpeaker.GetFuncCont()->ClearSections();
+    bsMasterHeadsSpeaker.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+    bsmHeadsSpeaker.GenerateBundleSeries(AMT_SPEAKER_HEADS);
+    for(int i=0; i<AMT_SPEAKER_HEADS; i++)
+    {
+        bsmHeadsSpeaker.GetBundleSeries(i)->GetFuncCont()->ClearSections();
+        bsmHeadsSpeaker.GetBundleSeries(i)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsMasterHeadsSpeaker.RegisterClient(bsmHeadsSpeaker.GetBundleSeries(i));
+        movingHeadSpeaker[i] = new RGBWA_UV_MiniMovingHead(universum);
+        headInit.adr = 137+(i*10);
+        movingHeadSpeaker[i]->Init(headInit);
+        movingHeadSpeaker[i]->GetDimmMapper()->GetFuncCont()->ClearSections();
+        movingHeadSpeaker[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 1.0);
+
+        movingHeadSpeaker[i]->GetPanMapper()->GetFuncCont()->ClearSections();
+        movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->ClearSections();
+        /**/
+        if(i & 1)
+        {
+        movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.0);
+        movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.0, 1.0);
+        }
+        else
+        {
+        movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 0.0, 1.0);
+        movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 1.0, 0.0);
+        }
+
+
+        movingHeadSpeaker[i]->GetPanMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 0.25, 0.25);
+
+
+
+
+
+        colWheelHeadsSpeaker[i].SetRgbDevice(movingHeadSpeaker[i]);
+        colWheelHeadsSpeaker[i].GetFuncCont()->ClearSections();
+        colWheelHeadsSpeaker[i].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(&colWheelHeadsSpeaker[i]);
+        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetPanMapper());
+        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetTiltMapper());
+        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetDimmMapper());
     }
 
     serial.setPortName("COM5");
@@ -178,12 +224,8 @@ void Widget::Slot_TimerExpired()
     */
     colWheel[0].GetRequested(itteration);
     colWheelHeads[0].GetRequested(itteration);
+    colWheelHeadsSpeaker[0].GetRequested(itteration);
     bsDimm.GetRequested(itteration);
-
-    movingHead[0]->GetDimmMapper()->Consume(itteration, 1);
-    movingHead[1]->GetDimmMapper()->Consume(itteration, 1);
-    movingHead[2]->GetDimmMapper()->Consume(itteration, 1);
-    movingHead[3]->GetDimmMapper()->Consume(itteration, 1);
 
 
     if(ui->checkBox_AutoIncMainPos->isChecked())

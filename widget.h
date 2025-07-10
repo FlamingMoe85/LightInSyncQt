@@ -31,9 +31,10 @@
 #define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN)
 
 #define AMT_DEVICES 4
+#define AMT_SPEAKER_HEADS 2
 //#define UNIV_LENGTH 1 + (AMT_DEVICES*10)
 
-#define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN) + (AMT_DEVICES*10)
+#define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN) + (AMT_DEVICES*10) + (AMT_SPEAKER_HEADS*10)
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -56,15 +57,20 @@ private:
                             bsmDimm,
                             bsmOfSections,
                             bsmSection[AMT_SECTIONS],
-                            bsmHeads;
+                            bsmHeads,
+                            bsmHeadsSpeaker;
 
 
-    BundleSeries bsmMaster, bsDimm, bsMasterHeads;
+    BundleSeries bsmMaster, bsDimm, bsMasterHeads, bsMasterHeadsSpeaker;
 
     RGBWA_UV_MiniMovingHead* movingHead[AMT_DEVICES];
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
     ColorWheelMapper colWheelHeads[AMT_DEVICES];
     Device* devices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
+
+
+    RGBWA_UV_MiniMovingHead* movingHeadSpeaker[AMT_SPEAKER_HEADS];
+    ColorWheelMapper colWheelHeadsSpeaker[AMT_SPEAKER_HEADS];
 
     ClientServer_Top cT, shiftSectionTop, shiftDeviceTop,
                         spanOffsetTopSection[AMT_SECTIONS],
