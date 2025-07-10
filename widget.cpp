@@ -56,6 +56,7 @@ Widget::Widget(QWidget *parent)
 
             bsDimm.RegisterClient(bsmDimm.GetBundleSeries(indexAbs));
             bsmDimm.GetBundleSeries(indexAbs)->SetSerParamShift(&dimmShift);
+            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->ClearSections();
             bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.25);
             bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.25, 1.0);
             bsmDimm.GetBundleSeries(indexAbs)->RegisterClient(devices[indexAbs]->GetRgbDimmMapper());
@@ -71,6 +72,58 @@ Widget::Widget(QWidget *parent)
         bsmOfSections.GetBundleSeries(section)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     }
 
+    RGBWA_UV_MiniMovingHead_Init_t headInit;
+
+            headInit.red = 3;
+             headInit.green = 4;
+             headInit.blue = 5;
+             headInit.white = 6;
+             headInit.dimm = 2;
+             headInit.amber = 7;
+             headInit.uv = 8;
+             headInit.x = 0;
+             headInit.y = 1;
+             headInit.xy = 9;
+
+    topHeadsColor.RegisterClient(&bsMasterHeads);
+    bsMasterHeads.GetFuncCont()->ClearSections();
+    bsMasterHeads.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+    bsmHeads.GenerateBundleSeries(AMT_DEVICES);
+    for(int i=0; i<AMT_DEVICES; i++)
+    {
+        bsmHeads.GetBundleSeries(i)->GetFuncCont()->ClearSections();
+        bsmHeads.GetBundleSeries(i)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsMasterHeads.RegisterClient(bsmHeads.GetBundleSeries(i));
+        movingHead[i] = new RGBWA_UV_MiniMovingHead(universum);
+        headInit.adr = 97+(i*10);
+        movingHead[i]->Init(headInit);
+        movingHead[i]->GetDimmMapper()->GetFuncCont()->ClearSections();
+        movingHead[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+
+        movingHead[i]->GetPanMapper()->GetFuncCont()->ClearSections();
+        if(i & 1)
+        {
+            movingHead[i]->GetPanMapper()->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 0.4, 0.6);
+            movingHead[i]->GetPanMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.6, 0.4);
+        }
+        else
+        {
+            movingHead[i]->GetPanMapper()->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 0.6, 0.4);
+            movingHead[i]->GetPanMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.4, 0.6);
+        }
+
+        movingHead[i]->GetTiltMapper()->GetFuncCont()->ClearSections();
+        movingHead[i]->GetTiltMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 0.1, 0.1);
+
+
+        colWheelHeads[i].SetRgbDevice(movingHead[i]);
+        colWheelHeads[i].GetFuncCont()->ClearSections();
+        colWheelHeads[i].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsmHeads.GetBundleSeries(i)->RegisterClient(&colWheelHeads[i]);
+        bsmHeads.GetBundleSeries(i)->RegisterClient(movingHead[i]->GetPanMapper());
+        bsmHeads.GetBundleSeries(i)->RegisterClient(movingHead[i]->GetTiltMapper());
+    }
+
     serial.setPortName("COM5");
     serial.setBaudRate(QSerialPort::Baud115200);
     serial.setDataBits(QSerialPort::Data8);
@@ -83,9 +136,11 @@ Widget::Widget(QWidget *parent)
 
     QObject::connect(&(spanOffsetTopSection[0]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_1);
     QObject::connect(&(spanOffsetTopSection[1]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_2);
-    QObject::connect(&(spanOffsetTopSection[2]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_3);
+    //QObject::connect(&(spanOffsetTopSection[2]), &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanOffsetSection_3);
     QObject::connect(&dimmValueTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmValue);
     QObject::connect(&dimmShift, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmShift);
+
+    QObject::connect(&topHeadsColor, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadColorPos);
 
     QObject::connect(&cT, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetValue);
     QObject::connect(&timer, &QTimer::timeout, this, &Widget::Slot_TimerExpired);
@@ -122,7 +177,13 @@ void Widget::Slot_TimerExpired()
     }
     */
     colWheel[0].GetRequested(itteration);
+    colWheelHeads[0].GetRequested(itteration);
     bsDimm.GetRequested(itteration);
+
+    movingHead[0]->GetDimmMapper()->Consume(itteration, 1);
+    movingHead[1]->GetDimmMapper()->Consume(itteration, 1);
+    movingHead[2]->GetDimmMapper()->Consume(itteration, 1);
+    movingHead[3]->GetDimmMapper()->Consume(itteration, 1);
 
 
     if(ui->checkBox_AutoIncMainPos->isChecked())
@@ -231,6 +292,14 @@ void Widget::Slot_TimerExpired()
         }
     }
 
+    if(ui->checkBox_AutoIncHeadColor->isChecked())
+    {
+        int v = ui->horizontalSlider_PositionHeadsColor->value();
+        v += (ui->horizontalSlider_SpeedHeadsColor->value());
+        if(v > ui->horizontalSlider_PositionHeadsColor->maximum()) v=0;
+        ui->horizontalSlider_PositionHeadsColor->setSliderPosition(v);
+    }
+
  /*   if(ui->checkBox_Offset->isChecked())
     {
         int v = ui->horizontalSlider_SpanOffset->value();
@@ -249,6 +318,7 @@ void Widget::Slot_TimerExpired()
         debugMsg += " " + QString::number(*v);
         *v = 0;
     }
+    qDebug() << " ";
     qDebug() << debugMsg.toLatin1();
     //qDebug() << sendMsg.toLatin1();
     if(serial.isOpen())
@@ -313,3 +383,8 @@ void Widget::Slot_GetDimmShift(ClientServer_Top *b, int itterration)
     b->Serve(itterration,tmpF);
 }
 
+void Widget::Slot_GetHeadColorPos(ClientServer_Top *b, int itterration)
+{
+    float tmpF = (float)ui->horizontalSlider_PositionHeadsColor->value() / (float)ui->horizontalSlider_PositionHeadsColor->maximum();
+    b->Serve(itterration,tmpF);
+}

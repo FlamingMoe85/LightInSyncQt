@@ -25,13 +25,15 @@
 #include "Audio/AudioPlayer.h"
 #include "Audio/AudioPlayerFrontend.h"
 
-#define AMT_SECTIONS    3
-#define AMT_DEVS_PER_SECTION    4
+#define AMT_SECTIONS    2
+#define AMT_DEVS_PER_SECTION    6
 #define CHNLS_PER_CAN 8
 #define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN)
 
-#define AMT_DEVICES 6
+#define AMT_DEVICES 4
 //#define UNIV_LENGTH 1 + (AMT_DEVICES*10)
+
+#define UNIV_LENGTH 1 + (AMT_SECTIONS*AMT_DEVS_PER_SECTION*CHNLS_PER_CAN) + (AMT_DEVICES*10)
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class Widget; }
@@ -53,17 +55,21 @@ private:
     BundleSeriesManager
                             bsmDimm,
                             bsmOfSections,
-                            bsmSection[AMT_SECTIONS];
+                            bsmSection[AMT_SECTIONS],
+                            bsmHeads;
 
-    BundleSeries bsmMaster, bsDimm;
+
+    BundleSeries bsmMaster, bsDimm, bsMasterHeads;
 
     RGBWA_UV_MiniMovingHead* movingHead[AMT_DEVICES];
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
+    ColorWheelMapper colWheelHeads[AMT_DEVICES];
     Device* devices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
     ClientServer_Top cT, shiftSectionTop, shiftDeviceTop,
                         spanOffsetTopSection[AMT_SECTIONS],
-                        shiftSpeed, dimmShift, dimmValueTop;
+                        shiftSpeed, dimmShift, dimmValueTop,
+                        topHeadsColor, topHeadsMove;
 
     Device device;
 
@@ -86,6 +92,8 @@ private slots:
     void Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration);
     void Slot_GetDimmValue(ClientServer_Top *b, int itterration);
     void Slot_GetDimmShift(ClientServer_Top *b, int itterration);
+
+    void Slot_GetHeadColorPos(ClientServer_Top *b, int itterration);
 
 };
 #endif // WIDGET_H
