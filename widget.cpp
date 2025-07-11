@@ -91,6 +91,7 @@ Widget::Widget(QWidget *parent)
     topHeadsColor.RegisterClient(&bsMasterHeads);
     topHeadsMove.RegisterClient(&bsHeadsPan);
     topHeadsDimm.RegisterClient(&bsHeadsDimm);
+
     bsMasterHeads.GetFuncCont()->ClearSections();
     bsMasterHeads.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     bsmHeads.GenerateBundleSeries(AMT_DEVICES);
@@ -126,6 +127,7 @@ Widget::Widget(QWidget *parent)
         colWheelHeads[i].GetFuncCont()->ClearSections();
         colWheelHeads[i].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
         bsmHeads.GetBundleSeries(i)->RegisterClient(bsmHeadsSpan.GetBundleSeries(i));
+
         bsmHeadsSpan.GetBundleSeries(i)->RegisterClient(&colWheelHeads[i]);
         bsmHeadsSpan.GetBundleSeries(i)->GetFuncCont()->ClearSections();
         bsmHeadsSpan.GetBundleSeries(i)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
@@ -143,10 +145,15 @@ Widget::Widget(QWidget *parent)
         bsHeadsDimm.RegisterClient(movingHead[i]->GetDimmMapper());
     }
 
-    topHeadsColor.RegisterClient(&bsMasterHeadsSpeaker);
+    topHeadsColorSpeaker.RegisterClient(&bsMasterHeadsSpeaker);
+    topHeadsMoveSpeaker.RegisterClient(&bsHeadsPanSpeaker);
+    topHeadsDimmSpeaker.RegisterClient(&bsHeadsDimmSpeaker);
+
     bsMasterHeadsSpeaker.GetFuncCont()->ClearSections();
     bsMasterHeadsSpeaker.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
     bsmHeadsSpeaker.GenerateBundleSeries(AMT_SPEAKER_HEADS);
+
+    bsmHeadsSpanSpeaker.GenerateBundleSeries(AMT_SPEAKER_HEADS);
     for(int i=0; i<AMT_SPEAKER_HEADS; i++)
     {
         bsmHeadsSpeaker.GetBundleSeries(i)->GetFuncCont()->ClearSections();
@@ -156,7 +163,7 @@ Widget::Widget(QWidget *parent)
         headInit.adr = 137+(i*10);
         movingHeadSpeaker[i]->Init(headInit);
         movingHeadSpeaker[i]->GetDimmMapper()->GetFuncCont()->ClearSections();
-        movingHeadSpeaker[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 1.0);
+        movingHeadSpeaker[i]->GetDimmMapper()->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 0.5, 0.0);
 
         movingHeadSpeaker[i]->GetPanMapper()->GetFuncCont()->ClearSections();
         movingHeadSpeaker[i]->GetTiltMapper()->GetFuncCont()->ClearSections();
@@ -182,10 +189,23 @@ Widget::Widget(QWidget *parent)
         colWheelHeadsSpeaker[i].SetRgbDevice(movingHeadSpeaker[i]);
         colWheelHeadsSpeaker[i].GetFuncCont()->ClearSections();
         colWheelHeadsSpeaker[i].GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
-        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(&colWheelHeadsSpeaker[i]);
+        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(bsmHeadsSpanSpeaker.GetBundleSeries(i));
+
+        bsmHeadsSpanSpeaker.GetBundleSeries(i)->RegisterClient(&colWheelHeadsSpeaker[i]);
+        bsmHeadsSpanSpeaker.GetBundleSeries(i)->GetFuncCont()->ClearSections();
+        bsmHeadsSpanSpeaker.GetBundleSeries(i)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsmHeadsSpanSpeaker.GetBundleSeries(i)->SetSerParamSpanMax(&spanMaxTopHeadsSpeaker);
+        bsmHeadsSpanSpeaker.GetBundleSeries(i)->SetSerParamSpanMin(&spanMinTopHeadsSpeaker);
+
         bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetPanMapper());
-        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetTiltMapper());
-        bsmHeadsSpeaker.GetBundleSeries(i)->RegisterClient(movingHeadSpeaker[i]->GetDimmMapper());
+
+        bsHeadsPanSpeaker.GetFuncCont()->ClearSections();
+        bsHeadsPanSpeaker.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsHeadsPanSpeaker.RegisterClient(movingHeadSpeaker[i]->GetTiltMapper());
+
+        bsHeadsDimmSpeaker.GetFuncCont()->ClearSections();
+        bsHeadsDimmSpeaker.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
+        bsHeadsDimmSpeaker.RegisterClient(movingHeadSpeaker[i]->GetDimmMapper());
     }
 
     serial.setPortName("COM5");
@@ -211,6 +231,12 @@ Widget::Widget(QWidget *parent)
     QObject::connect(&spanMinTopHeads, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMinHeads);
     QObject::connect(&spanMaxTopHeads, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMaxHeads);
     QObject::connect(&topHeadsDimm, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmHeads);
+
+    QObject::connect(&topHeadsColorSpeaker, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadColorPosSpeaker);
+    QObject::connect(&topHeadsMoveSpeaker, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadMovePosSpeaker);
+    QObject::connect(&spanMinTopHeadsSpeaker, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMinHeadsSpeaker);
+    QObject::connect(&spanMaxTopHeadsSpeaker, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMaxHeadsSpeaker);
+    QObject::connect(&topHeadsDimmSpeaker, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetDimmHeadsSpeaker);
 
     QObject::connect(&cT, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetValue);
     QObject::connect(&topCansWhite, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetCanWhite);
@@ -250,9 +276,13 @@ void Widget::Slot_TimerExpired()
     */
     colWheel[0].GetRequested(itteration);
     colWheelHeads[0].GetRequested(itteration);
-    colWheelHeadsSpeaker[0].GetRequested(itteration);
     bsHeadsPan.GetRequested(itteration);
     bsHeadsDimm.GetRequested(itteration);
+
+    colWheelHeadsSpeaker[0].GetRequested(itteration);
+    bsHeadsPanSpeaker.GetRequested(itteration);
+    bsHeadsDimmSpeaker.GetRequested(itteration);
+
     bsDimm.GetRequested(itteration);
     devices[0]->GetWhiteMapper()->GetRequested(itteration);
 
@@ -377,6 +407,22 @@ void Widget::Slot_TimerExpired()
         v += (ui->horizontalSlider_SpeedHeadsMove->value());
         if(v > ui->horizontalSlider_PositionHeadsMove->maximum()) v=0;
         ui->horizontalSlider_PositionHeadsMove->setSliderPosition(v);
+    }
+    ///////////
+    if(ui->checkBox_AutoIncHeadColorSpeaker->isChecked())
+    {
+        int v = ui->horizontalSlider_PositionHeadsColorSpeaker->value();
+        v += (ui->horizontalSlider_SpeedHeadsColorSpeaker->value());
+        if(v > ui->horizontalSlider_PositionHeadsColorSpeaker->maximum()) v=0;
+        ui->horizontalSlider_PositionHeadsColorSpeaker->setSliderPosition(v);
+    }
+
+    if(ui->checkBox_AutoIncHeadMoveSpeaker->isChecked())
+    {
+        int v = ui->horizontalSlider_PositionHeadsMoveSpeaker->value();
+        v += (ui->horizontalSlider_SpeedHeadsMoveSpeaker->value());
+        if(v > ui->horizontalSlider_PositionHeadsMoveSpeaker->maximum()) v=0;
+        ui->horizontalSlider_PositionHeadsMoveSpeaker->setSliderPosition(v);
     }
 
  /*   if(ui->checkBox_Offset->isChecked())
@@ -512,5 +558,39 @@ void Widget::Slot_GetSpanMaxHeads(ClientServer_Top *b, int itterration)
 void Widget::Slot_GetDimmHeads(ClientServer_Top *b, int itterration)
 {
     float tmpF = ((float)(ui->horizontalSlider_HeadsDimm->value()-1) / (float)ui->horizontalSlider_HeadsDimm->maximum());
+    b->Serve(itterration,tmpF);
+}
+
+//////////
+
+void Widget::Slot_GetHeadColorPosSpeaker(ClientServer_Top *b, int itterration)
+{
+    float tmpF = (float)ui->horizontalSlider_PositionHeadsColorSpeaker->value() / (float)ui->horizontalSlider_PositionHeadsColorSpeaker->maximum();
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetHeadMovePosSpeaker(ClientServer_Top *b, int itterration)
+{
+    float tmpF = (float)ui->horizontalSlider_PositionHeadsMoveSpeaker->value() / (float)ui->horizontalSlider_PositionHeadsMoveSpeaker->maximum();
+    b->Serve(itterration,tmpF);
+}
+
+
+void Widget::Slot_GetSpanMinHeadsSpeaker(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_SpanMinHeadsSpeaker->value() / (float)ui->horizontalSlider_SpanMinHeadsSpeaker->maximum());
+    b->Serve(itterration,tmpF);
+}
+
+void Widget::Slot_GetSpanMaxHeadsSpeaker(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_SpanMaxHeadsSpeaker->value() / (float)ui->horizontalSlider_SpanMaxHeadsSpeaker->maximum());
+    b->Serve(itterration,tmpF);
+}
+
+
+void Widget::Slot_GetDimmHeadsSpeaker(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)(ui->horizontalSlider_HeadsDimmSpeaker->value()-1) / (float)ui->horizontalSlider_HeadsDimmSpeaker->maximum());
     b->Serve(itterration,tmpF);
 }
