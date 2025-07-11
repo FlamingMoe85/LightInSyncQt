@@ -14,6 +14,7 @@
 #include "../../../share/Mapper/ColorWheelMapper.h"
 #include "../../../share/Mapper/OneChannelMapper.h"
 #include "../../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp"
+#include "../../../share/Devices/DmxDevices/MovingHead_RGBWA_UV.hpp"
 #include "../../../share/FunctionOwners.hpp"
 
 #include "../../../share/Devices/DmxDevices/Device.hpp"
@@ -57,25 +58,25 @@ private:
                             bsmDimm,
                             bsmOfSections,
                             bsmSection[AMT_SECTIONS],
-                            bsmHeads,
+                            bsmHeads, bsmHeadsSpan,
                             bsmHeadsSpeaker;
 
 
-    BundleSeries bsmMaster, bsDimm, bsMasterHeads, bsMasterHeadsSpeaker;
+    BundleSeries bsmMaster, bsDimm, bsMasterHeads, bsMasterHeadsSpeaker, bsHeadsPan, bsHeadsDimm;
 
-    RGBWA_UV_MiniMovingHead* movingHead[AMT_DEVICES];
+    MovingHead_RGBWA_UV* movingHead[AMT_DEVICES];
     ColorWheelMapper colWheel[AMT_SECTIONS*AMT_DEVS_PER_SECTION];//colWheel[AMT_DEVICES]
     ColorWheelMapper colWheelHeads[AMT_DEVICES];
     Device* devices[AMT_SECTIONS*AMT_DEVS_PER_SECTION];
 
 
-    RGBWA_UV_MiniMovingHead* movingHeadSpeaker[AMT_SPEAKER_HEADS];
+    MovingHead_RGBWA_UV* movingHeadSpeaker[AMT_SPEAKER_HEADS];
     ColorWheelMapper colWheelHeadsSpeaker[AMT_SPEAKER_HEADS];
 
-    ClientServer_Top cT, shiftSectionTop, shiftDeviceTop,
+    ClientServer_Top cT, shiftSectionTop, shiftDeviceTop, topCansWhite,
                         spanOffsetTopSection[AMT_SECTIONS],
-                        shiftSpeed, dimmShift, dimmValueTop,
-                        topHeadsColor, topHeadsMove;
+                        shiftSpeed, dimmShift, dimmValueTop,spanMinTop, spanMaxTop,
+                        spanMinTopHeads, spanMaxTopHeads,topHeadsColor, topHeadsMove, topHeadsDimm;
 
     Device device;
 
@@ -91,6 +92,7 @@ private slots:
     void Slot_TimerExpired();
 
     void Slot_GetValue(ClientServer_Top *b, int itterration);
+    void Slot_GetCanWhite(ClientServer_Top *b, int itterration);
     void Slot_GetSectionShift(ClientServer_Top *b, int itterration);
     void Slot_GetDeviceShift(ClientServer_Top *b, int itterration);
     void Slot_GetSpanOffsetSection_1(ClientServer_Top *b, int itterration);
@@ -98,8 +100,14 @@ private slots:
     void Slot_GetSpanOffsetSection_3(ClientServer_Top *b, int itterration);
     void Slot_GetDimmValue(ClientServer_Top *b, int itterration);
     void Slot_GetDimmShift(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanMin(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanMax(ClientServer_Top *b, int itterration);
 
     void Slot_GetHeadColorPos(ClientServer_Top *b, int itterration);
+    void Slot_GetHeadMovePos(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanMinHeads(ClientServer_Top *b, int itterration);
+    void Slot_GetSpanMaxHeads(ClientServer_Top *b, int itterration);
+    void Slot_GetDimmHeads(ClientServer_Top *b, int itterration);
 
 };
 #endif // WIDGET_H

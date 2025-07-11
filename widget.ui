@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1800</width>
-    <height>1080</height>
+    <height>900</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -681,7 +681,7 @@
    <property name="geometry">
     <rect>
      <x>20</x>
-     <y>490</y>
+     <y>570</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -699,9 +699,9 @@
   <widget class="QSlider" name="horizontalSlider_PositionHeadsColor">
    <property name="geometry">
     <rect>
-     <x>18</x>
-     <y>531</y>
-     <width>591</width>
+     <x>158</x>
+     <y>581</y>
+     <width>441</width>
      <height>22</height>
     </rect>
    </property>
@@ -721,8 +721,8 @@
   <widget class="QSlider" name="horizontalSlider_SpeedHeadsColor">
    <property name="geometry">
     <rect>
-     <x>653</x>
-     <y>531</y>
+     <x>740</x>
+     <y>580</y>
      <width>241</width>
      <height>22</height>
     </rect>
@@ -746,8 +746,8 @@
   <widget class="QCheckBox" name="checkBox_AutoIncHeadColor">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>490</y>
+     <x>20</x>
+     <y>590</y>
      <width>68</width>
      <height>20</height>
     </rect>
@@ -765,8 +765,8 @@
   <widget class="QLabel" name="label_16">
    <property name="geometry">
     <rect>
-     <x>650</x>
-     <y>490</y>
+     <x>630</x>
+     <y>580</y>
      <width>97</width>
      <height>16</height>
     </rect>
@@ -775,11 +775,11 @@
     <string>Speed Heads Color</string>
    </property>
   </widget>
-  <widget class="QCheckBox" name="checkBox_AutoIncMainPos_3">
+  <widget class="QCheckBox" name="checkBox_AutoIncHeadMove">
    <property name="geometry">
     <rect>
-     <x>210</x>
-     <y>570</y>
+     <x>20</x>
+     <y>650</y>
      <width>68</width>
      <height>20</height>
     </rect>
@@ -797,8 +797,8 @@
   <widget class="QLabel" name="label_17">
    <property name="geometry">
     <rect>
-     <x>652</x>
-     <y>579</y>
+     <x>620</x>
+     <y>640</y>
      <width>121</width>
      <height>16</height>
     </rect>
@@ -810,9 +810,9 @@
   <widget class="QSlider" name="horizontalSlider_SpeedHeadsMove">
    <property name="geometry">
     <rect>
-     <x>655</x>
-     <y>620</y>
-     <width>241</width>
+     <x>745</x>
+     <y>640</y>
+     <width>141</width>
      <height>22</height>
     </rect>
    </property>
@@ -835,8 +835,8 @@
   <widget class="QLabel" name="label_18">
    <property name="geometry">
     <rect>
-     <x>22</x>
-     <y>579</y>
+     <x>20</x>
+     <y>630</y>
      <width>131</width>
      <height>16</height>
     </rect>
@@ -854,9 +854,9 @@
   <widget class="QSlider" name="horizontalSlider_PositionHeadsMove">
    <property name="geometry">
     <rect>
-     <x>20</x>
-     <y>620</y>
-     <width>591</width>
+     <x>160</x>
+     <y>640</y>
+     <width>441</width>
      <height>22</height>
     </rect>
    </property>
@@ -871,6 +871,216 @@
    </property>
    <property name="orientation">
     <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_SpanMin">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>488</y>
+     <width>431</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+   <property name="sliderPosition">
+    <number>0</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_SpanMax">
+   <property name="geometry">
+    <rect>
+     <x>130</x>
+     <y>530</y>
+     <width>431</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="value">
+    <number>1000</number>
+   </property>
+   <property name="sliderPosition">
+    <number>1000</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_19">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>490</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Span Min Cans</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_20">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>530</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Span Max Cans</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_SpanMaxHeads">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>730</y>
+     <width>431</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="value">
+    <number>1000</number>
+   </property>
+   <property name="sliderPosition">
+    <number>1000</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_SpanMinHeads">
+   <property name="geometry">
+    <rect>
+     <x>140</x>
+     <y>688</y>
+     <width>431</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="value">
+    <number>0</number>
+   </property>
+   <property name="sliderPosition">
+    <number>0</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_21">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>730</y>
+     <width>111</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Span Max Heads</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_22">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>690</y>
+     <width>101</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Span Min Heads</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_PosHeadColor">
+   <property name="geometry">
+    <rect>
+     <x>700</x>
+     <y>520</y>
+     <width>49</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>TextLabel</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="horizontalSlider_HeadsDimm">
+   <property name="geometry">
+    <rect>
+     <x>1110</x>
+     <y>580</y>
+     <width>241</width>
+     <height>22</height>
+    </rect>
+   </property>
+   <property name="sizePolicy">
+    <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+     <horstretch>6</horstretch>
+     <verstretch>1</verstretch>
+    </sizepolicy>
+   </property>
+   <property name="minimum">
+    <number>0</number>
+   </property>
+   <property name="maximum">
+    <number>100</number>
+   </property>
+   <property name="value">
+    <number>99</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label_23">
+   <property name="geometry">
+    <rect>
+     <x>1000</x>
+     <y>580</y>
+     <width>97</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Heads Dimm</string>
+   </property>
+  </widget>
+  <widget class="QSlider" name="verticalSlider_CansWhite">
+   <property name="geometry">
+    <rect>
+     <x>1230</x>
+     <y>50</y>
+     <width>22</width>
+     <height>160</height>
+    </rect>
+   </property>
+   <property name="maximum">
+    <number>1000</number>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Vertical</enum>
    </property>
   </widget>
  </widget>

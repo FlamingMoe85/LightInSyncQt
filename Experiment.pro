@@ -56,6 +56,7 @@ HEADERS += \
     ../../share/Devices/Channel/DmxChannel_8Bit.hpp \
     ../../share/Devices/DmxDevices/Device.hpp \
     ../../share/Devices/DmxDevices/Device_RGBW.hpp \
+    ../../share/Devices/DmxDevices/MovingHead_RGBWA_UV.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
@@ -87,6 +88,7 @@ HEADERS += \
     ../../share/Helper.hpp \
     ../../share/Mapper/ColorWheelMapper.h \
     ../../share/Mapper/HandTroughMapper.h \
+    ../../share/Mapper/Mapper_Base.hpp \
     ../../share/Mapper/Mapper_Channel.h \
     ../../share/Mapper/Mapper_InternalValue.h \
     ../../share/Mapper/OneChannelMapper.h \
