@@ -77,7 +77,7 @@ private:
     ClientServer_Top cT, shiftSectionTop, shiftDeviceTop, topCansWhite,
                         spanOffsetTopSection[AMT_SECTIONS],
                         shiftSpeed, dimmShift, dimmValueTop,spanMinTop, spanMaxTop,
-                        spanMinTopHeads, spanMaxTopHeads,topHeadsColor, topHeadsMove, topHeadsDimm,
+                        spanMinTopHeads, spanMaxTopHeads,topHeadsColor, topHeadsMove, topHeadsDimm, topHeadsShift,
                         spanMinTopHeadsSpeaker, spanMaxTopHeadsSpeaker,topHeadsColorSpeaker, topHeadsMoveSpeaker, topHeadsDimmSpeaker;
 
     Device device;
@@ -110,6 +110,7 @@ private slots:
     void Slot_GetSpanMinHeads(ClientServer_Top *b, int itterration);
     void Slot_GetSpanMaxHeads(ClientServer_Top *b, int itterration);
     void Slot_GetDimmHeads(ClientServer_Top *b, int itterration);
+    void Slot_GetHeadsShift(ClientServer_Top *b, int itterration);
 
 
 

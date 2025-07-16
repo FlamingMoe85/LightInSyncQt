@@ -60,8 +60,8 @@ Widget::Widget(QWidget *parent)
             bsDimm.RegisterClient(bsmDimm.GetBundleSeries(indexAbs));
             bsmDimm.GetBundleSeries(indexAbs)->SetSerParamShift(&dimmShift);
             bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->ClearSections();
-            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.25);
-            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.25, 1.0);
+            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(0.5, 0.0, 1.0, 0.0);//0.25);
+            bsmDimm.GetBundleSeries(indexAbs)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.5, 0.0, 1.0);//0.25, 1.0);
             bsmDimm.GetBundleSeries(indexAbs)->RegisterClient(devices[indexAbs]->GetRgbDimmMapper());
 
             // build Level 1
@@ -91,6 +91,7 @@ Widget::Widget(QWidget *parent)
     topHeadsColor.RegisterClient(&bsMasterHeads);
     topHeadsMove.RegisterClient(&bsHeadsPan);
     topHeadsDimm.RegisterClient(&bsHeadsDimm);
+    //topHeadsShift
 
     bsMasterHeads.GetFuncCont()->ClearSections();
     bsMasterHeads.GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
@@ -129,6 +130,7 @@ Widget::Widget(QWidget *parent)
         bsmHeads.GetBundleSeries(i)->RegisterClient(bsmHeadsSpan.GetBundleSeries(i));
 
         bsmHeadsSpan.GetBundleSeries(i)->RegisterClient(&colWheelHeads[i]);
+        bsmHeadsSpan.SetSerParamShiftToItems(&topHeadsShift);
         bsmHeadsSpan.GetBundleSeries(i)->GetFuncCont()->ClearSections();
         bsmHeadsSpan.GetBundleSeries(i)->GetFuncCont()->AddFunctionSectionByParams(1.0, 0.0, 1.0, 0.0);
         bsmHeadsSpan.GetBundleSeries(i)->SetSerParamSpanMax(&spanMaxTopHeads);
@@ -227,6 +229,7 @@ Widget::Widget(QWidget *parent)
     QObject::connect(&spanMaxTop, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMax);
 
     QObject::connect(&topHeadsColor, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadColorPos);
+    QObject::connect(&topHeadsShift, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadsShift);
     QObject::connect(&topHeadsMove, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetHeadMovePos);
     QObject::connect(&spanMinTopHeads, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMinHeads);
     QObject::connect(&spanMaxTopHeads, &ClientServer_Top::RequestValue, this, &Widget::Slot_GetSpanMaxHeads);
@@ -532,6 +535,14 @@ void Widget::Slot_GetHeadColorPos(ClientServer_Top *b, int itterration)
 {
     float tmpF = (float)ui->horizontalSlider_PositionHeadsColor->value() / (float)ui->horizontalSlider_PositionHeadsColor->maximum();
     ui->label_PosHeadColor->setText(QString::number(tmpF));
+    b->Serve(itterration,tmpF);
+}
+
+
+void Widget::Slot_GetHeadsShift(ClientServer_Top *b, int itterration)
+{
+    float tmpF = ((float)ui->horizontalSlider_HeadsShift->value() / (float)ui->horizontalSlider_HeadsShift->maximum());
+    tmpF = tmpF * (float)(ui->horizontalSlider_SpeedHeadsShift->value());
     b->Serve(itterration,tmpF);
 }
 
