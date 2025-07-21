@@ -11,6 +11,7 @@ public:
     ClientServer_Top();
     void Request(int& itterration)override;
     void Consume(int& _itterationCntr, float _pos) override;
+    void RegisterCLient(I_Client* c){RegisterClient(c);}
 
 signals:
     void RequestValue(ClientServer_Top* b, int itteration);

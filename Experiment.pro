@@ -35,6 +35,7 @@ SOURCES += \
     Audio/AudioPlayer.cpp \
     Audio/AudioPlayerFrontend.cpp \
     ClientServer_Top.cpp \
+    ControlInputs/Position.cpp \
     UI/CustomScrollArea.cpp \
     UI/EditorItem.cpp \
     UI/EffectEditor.cpp \
@@ -57,6 +58,7 @@ HEADERS += \
     ../../share/Devices/DmxDevices/Device.hpp \
     ../../share/Devices/DmxDevices/Device_RGBW.hpp \
     ../../share/Devices/DmxDevices/MovingHead_RGBWA_UV.hpp \
+    ../../share/Devices/DmxDevices/MovingHead_RGBW_7x40_BeeEye_51Ch.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_MiniMovingHead.hpp \
     ../../share/Devices/DmxDevices/RGBWA_UV_Stationary.hpp \
     ../../share/Devices/DmxDevices/RGBW_Dimm.h \
@@ -77,6 +79,7 @@ HEADERS += \
     ../../share/Devices/Interfaces/I_White.hpp \
     ../../share/EffectStructureBlocks/BundleSeries.h \
     ../../share/EffectStructureBlocks/BundleSeriesManager.h \
+    ../../share/EffectStructureBlocks/I_AlternateServer.hpp \
     ../../share/EffectStructureBlocks/Positioner.h \
     ../../share/FunctionOwners.hpp \
     ../../share/Functions/FunctionContainer.h \
@@ -95,6 +98,7 @@ HEADERS += \
     Audio/AudioPlayer.h \
     Audio/AudioPlayerFrontend.h \
     ClientServer_Top.h \
+    ControlInputs/Position.h \
     UI/CustomScrollArea.h \
     UI/EditorItem.h \
     UI/EffectEditor.h \
@@ -105,6 +109,7 @@ HEADERS += \
 
 FORMS += \
     Audio/AudioPlayerFrontend.ui \
+    ControlInputs/Position.ui \
     UI/CustomScrollArea.ui \
     UI/EditorItem.ui \
     UI/EffectEditor.ui \
