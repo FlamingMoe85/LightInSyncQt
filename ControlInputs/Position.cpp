@@ -1,16 +1,16 @@
 #include "Position.h"
 #include "ui_Position.h"
 
+#include "QDebug"
 
-Position::Position(QWidget *parent, I_Client* client, QString name, bool _defaultCheck) :
+
+Position::Position(QWidget *parent, QString name, bool _defaultCheck) :
     QWidget(parent),
     ui(new Ui::Position)
 {
     ui->setupUi(this);
     ui->title->setText(name);
     if(_defaultCheck)ui->checkBox->setCheckState(Qt::CheckState::Checked);
-    QObject::connect(&ctPosition, &ClientServer_Top::RequestValue, this, &Position::Slot_GetValue);
-    if(client != nullptr)ctPosition.RegisterCLient(client);
 }
 
 Position::~Position()
@@ -27,36 +27,26 @@ void Position::Ping(int itteration)
         if(v > ui->horizontalSlider_Position->maximum()) v=0;
         ui->horizontalSlider_Position->setSliderPosition(v);
     }
-    //ctPosition.Request(itteration);
 }
 
-bool Position::GetValue(float &_value)
+void Position::PingUi(BundleSeries* bsPtr)
+{
+    bsPtr->SetShift((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum());
+    bsPtr->SetSpanMax((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum());
+    bsPtr->SetSpanMin((float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum());
+    bsPtr->SetMaxSpeedMultiplier((float)ui->horizontalSlider_Speed->value());
+}
+
+void Position::GetValue(float &_value)
 {
     if(ui->checkBox->isChecked())
     {
         _value = (float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum();
-        return true;
+        _value *= (float)ui->horizontalSlider_Mul->value();
     }
-    else return false;
-}
-
-void Position::SetValue(float _value)
-{
-    if(!ui->checkBox->isChecked())
-    ui->horizontalSlider_Position->setSliderPosition(ui->horizontalSlider_Position->maximum()*_value);
-}
-
-void Position::Slot_GetValue(ClientServer_Top *b, int itterration)
-{
-    float tmpF = (float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum();
-
-    if(ui->checkBox->isChecked())
+    else
     {
-        int v = ui->horizontalSlider_Position->value();
-        v += (ui->horizontalSlider_Speed->value());
-        if(v > ui->horizontalSlider_Position->maximum()) v=0;
-        ui->horizontalSlider_Position->setSliderPosition(v);
+        ui->horizontalSlider_Position->setSliderPosition(_value*(float)ui->horizontalSlider_Position->maximum());
     }
-
-    b->Serve(itterration,tmpF);
 }
+

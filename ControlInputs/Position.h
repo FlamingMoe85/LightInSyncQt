@@ -4,7 +4,8 @@
 #include <QWidget>
 #include "../ClientServer_Top.h"
 #include "I_Ping.hpp"
-#include "../../../share/EffectStructureBlocks/I_AlternateServer.hpp"
+#include "../../../share/EffectStructureBlocks/BundleSeries.h"
+#include "../../../share/EffectStructureBlocks/I_BundleSeries_UI.hpp"
 
 
 #include "../../share/BrokerClientServer/ClientServerBase.hpp"
@@ -13,26 +14,20 @@ namespace Ui {
 class Position;
 }
 
-class Position : public QWidget, public I_Ping, public I_AlternateServer
+class Position : public QWidget, public I_Ping, public I_BundleSeries_UI
 {
     Q_OBJECT
 
 public:
-    explicit Position(QWidget *parent = nullptr, I_Client *client = nullptr, QString name = " ", bool _defaultCheck = false);
+    explicit Position(QWidget *parent = nullptr, QString name = " ", bool _defaultCheck = false);
     ~Position();
 
     void Ping(int itteration) override;
-    bool GetValue(float &_value) override;
-    void SetValue(float _value) override;
-
-    I_Server* GetServer(){return &ctPosition;}
+    void PingUi(BundleSeries* bsPtr)override;
+    void GetValue(float &_value)override;
 
 private:
     Ui::Position *ui;
-    ClientServer_Top ctPosition;
-
-private slots:
-    void Slot_GetValue(ClientServer_Top *b, int itterration);
 
 };
 
