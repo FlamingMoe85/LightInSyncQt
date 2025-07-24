@@ -4,13 +4,17 @@
 #include "QDebug"
 
 
-Position::Position(QWidget *parent, QString name, bool _defaultCheck) :
+Position::Position(QWidget *parent, PositionInit_t _init) :
     QWidget(parent),
     ui(new Ui::Position)
 {
     ui->setupUi(this);
-    ui->title->setText(name);
-    if(_defaultCheck)ui->checkBox->setCheckState(Qt::CheckState::Checked);
+    ui->title->setText(_init.name);
+    ui->checkBox->setCheckState(_init.overridePos);
+    ui->horizontalSlider_Shift->setEnabled(_init.enableShift);
+    ui->horizontalSlider_SpanMax->setEnabled(_init.enableSpan);
+    ui->horizontalSlider_SpanMin->setEnabled(_init.enableSpan);
+    ui->horizontalSlider_Speed->setEnabled(_init.enableSpeed);
 }
 
 Position::~Position()
