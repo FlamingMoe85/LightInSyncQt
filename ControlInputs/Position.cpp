@@ -35,7 +35,7 @@ void Position::Ping(int itteration)
 
 void Position::PingUi(BundleSeries* bsPtr)
 {
-    bsPtr->SetShift((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum());
+    bsPtr->SetShift(((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum()) * (float)ui->horizontalSlider_Mul->value());
     bsPtr->SetSpanMax((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum());
     bsPtr->SetSpanMin((float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum());
     bsPtr->SetMaxSpeedMultiplier((float)ui->horizontalSlider_Speed->value());
@@ -46,7 +46,7 @@ void Position::GetValue(float &_value)
     if(ui->checkBox->isChecked())
     {
         _value = (float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum();
-        _value *= (float)ui->horizontalSlider_Mul->value();
+        //_value *= (float)ui->horizontalSlider_Mul->value();
     }
     else
     {
