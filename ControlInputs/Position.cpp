@@ -15,12 +15,42 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     ui->horizontalSlider_SpanMax->setEnabled(_init.enableSpan);
     ui->horizontalSlider_SpanMin->setEnabled(_init.enableSpan);
     ui->horizontalSlider_Speed->setEnabled(_init.enableSpeed);
+
+
+    mySlider.append(ui->horizontalSlider_Position);
+    mySlider.append(ui->horizontalSlider_Shift);
+    mySlider.append(ui->horizontalSlider_SpanMax);
+    mySlider.append(ui->horizontalSlider_SpanMin);
+    mySlider.append(ui->horizontalSlider_Speed);
+    mySlider.append(ui->horizontalSlider_Mul);
 }
 
 Position::~Position()
 {
     delete ui;
 }
+
+bool Position::SupposedToSave()
+{
+    return ui->checkBox_Save->isChecked();
+}
+
+void Position::DoSave(bool _save)
+{
+    if(_save)ui->checkBox_Save->setCheckState(Qt::CheckState::Checked);
+    else ui->checkBox_Save->setCheckState(Qt::CheckState::Unchecked);
+}
+
+bool Position::GetOverride()
+{
+    return ui->checkBox->isChecked();
+}
+
+void Position::SetOverride(bool _override)
+{
+    if(_override)ui->checkBox->setCheckState(Qt::CheckState::Checked);
+}
+
 
 void Position::Ping(int itteration)
 {

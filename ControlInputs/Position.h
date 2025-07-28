@@ -3,6 +3,8 @@
 
 #include <QWidget>
 #include <QString>
+#include <QVector>
+#include <QSlider>
 #include "../ClientServer_Top.h"
 #include "I_Ping.hpp"
 #include "../../../share/EffectStructureBlocks/BundleSeries.h"
@@ -35,8 +37,18 @@ public:
     void PingUi(BundleSeries* bsPtr)override;
     void GetValue(float &_value)override;
 
+    int AmtOfSlider(){return mySlider.count();};
+    int GetSliderValue(int _sel){return mySlider[_sel]->value();};
+    void SetSliderValue(int _sel, int _value){mySlider[_sel]->setValue(_value);}
+    bool GetOverride();
+    void SetOverride(bool _override);
+    bool SupposedToSave();
+    void DoSave(bool _save);
+
 private:
     Ui::Position *ui;
+    QVector<QSlider*> mySlider;
+
 
 };
 
