@@ -23,6 +23,12 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     mySlider.append(ui->horizontalSlider_SpanMin);
     mySlider.append(ui->horizontalSlider_Speed);
     mySlider.append(ui->horizontalSlider_Mul);
+
+    int i=0;
+    for(QSlider* slider : mySlider)
+    {
+        sliderRates[i++].mySlider = slider;
+    }
 }
 
 Position::~Position()

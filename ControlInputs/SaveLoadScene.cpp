@@ -1,17 +1,24 @@
 #include "SaveLoadScene.h"
 #include "ui_SaveLoadScene.h"
 
-SaveLoadScene::SaveLoadScene(QWidget *parent) :
+SaveLoadScene::SaveLoadScene(QWidget *parent, QString _name) :
     QWidget(parent),
     ui(new Ui::SaveLoadScene)
 {
     ui->setupUi(this);
-UpdateAvailableCurves();
+    name = _name;
+    UpdateAvailableCurves();
 
     connect(ui->pushButton_Save, SIGNAL(clicked()), this, SLOT(Slot_Save()));
     connect(ui->pushButton_Load, SIGNAL(clicked()), this, SLOT(Slot_Load()));
     connect(ui->pushButton_SaveAll, SIGNAL(clicked()), this, SLOT(Slot_SaveAll()));
     connect(ui->comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(Slot_SceneSelected(int)));
+
+    connect(&sliderPingTimer, SIGNAL(timeout()), this, SLOT(Slot_SliderPing()));
+
+
+    sliderPingTimer.setInterval(10);
+    sliderPingTimer.start();
 
 
 }
@@ -57,6 +64,14 @@ void SaveLoadScene::UpdateAvailableCurves()
 void SaveLoadScene::Slot_Load()
 {
     Load(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+}
+
+void SaveLoadScene::Slot_SliderPing()
+{
+    for(Position* posUi : posUis)
+    {
+        posUi->PingForSliderMove();
+    }
 }
 
 void SaveLoadScene::Save(QString fileName) const

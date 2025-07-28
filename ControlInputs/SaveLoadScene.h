@@ -8,6 +8,7 @@
 #include <QJsonDocument>
 #include <QJsonObject>
 #include <QDir>
+#include <QTimer>
 
 #include "Position.h"
 
@@ -20,7 +21,7 @@ class SaveLoadScene : public QWidget
     Q_OBJECT
 
 public:
-    explicit SaveLoadScene(QWidget *parent = nullptr);
+    explicit SaveLoadScene(QWidget *parent = nullptr, QString _name = " ");
     ~SaveLoadScene();
 
     void AddPositionUi(Position* posUi){posUis.append(posUi);}
@@ -37,12 +38,14 @@ public:
 private:
     Ui::SaveLoadScene *ui;
     QVector<Position*> posUis;
+    QTimer sliderPingTimer;
 
 private slots:
     void Slot_Save();
     void Slot_SaveAll();
     void Slot_SceneSelected(int);
     void Slot_Load();
+    void Slot_SliderPing();
 };
 
 #endif // SAVELOADSCENE_H

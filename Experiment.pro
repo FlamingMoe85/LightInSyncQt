@@ -36,6 +36,7 @@ SOURCES += \
     Audio/AudioPlayerFrontend.cpp \
     ClientServer_Top.cpp \
     ControlInputs/Position.cpp \
+    ControlInputs/SaveLoadScene.cpp \
     UI/CustomScrollArea.cpp \
     UI/EditorItem.cpp \
     UI/EffectEditor.cpp \
@@ -98,7 +99,9 @@ HEADERS += \
     Audio/AudioPlayer.h \
     Audio/AudioPlayerFrontend.h \
     ClientServer_Top.h \
+    ControlInputs/ChangeSliderAtRate.h \
     ControlInputs/Position.h \
+    ControlInputs/SaveLoadScene.h \
     UI/CustomScrollArea.h \
     UI/EditorItem.h \
     UI/EffectEditor.h \
@@ -110,6 +113,7 @@ HEADERS += \
 FORMS += \
     Audio/AudioPlayerFrontend.ui \
     ControlInputs/Position.ui \
+    ControlInputs/SaveLoadScene.ui \
     UI/CustomScrollArea.ui \
     UI/EditorItem.ui \
     UI/EffectEditor.ui \
