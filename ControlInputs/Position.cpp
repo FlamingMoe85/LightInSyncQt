@@ -55,6 +55,7 @@ bool Position::GetOverride()
 void Position::SetOverride(bool _override)
 {
     if(_override)ui->checkBox->setCheckState(Qt::CheckState::Checked);
+    else ui->checkBox->setCheckState(Qt::CheckState::Unchecked);
 }
 
 
