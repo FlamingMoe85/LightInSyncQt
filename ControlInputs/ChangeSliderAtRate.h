@@ -58,11 +58,15 @@ public:
     {
         if(ratio == 0.0) return _targetRel;
 
-        if(caller == 7)
+        if(caller == 200)
         {
+
             mySlider->setValue((int)((oldSliderVal*ratio)
                                +
                               ((int)(target*(1.0-ratio)))));
+            float retVal = (float)mySlider->value() / mySlider->maximum();
+            //qDebug() << "oldSliderVal: " << oldSliderVal << "  ratio: " << ratio << "  target: " << target << "  retVal: " <<  retVal;
+            return retVal;
         }
         else
         {
@@ -70,7 +74,7 @@ public:
                                  +
                                 ((int)(target*(1.0-ratio)))));
             }
-        return (float)mySlider->value();
+        return (float)mySlider->value() / mySlider->maximum();
     }
 
     QSlider* mySlider;

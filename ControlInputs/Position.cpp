@@ -84,10 +84,10 @@ void Position::Ping(int itteration)
 
 void Position::PingUi(BundleSeries* bsPtr)
 {
-    bsPtr->SetShift(sliderRates[1].GetRelExtValue((float)ui->horizontalSlider_Shift->value(), myInst));// * (float)ui->horizontalSlider_Mul->value());
-    bsPtr->SetSpanMax(sliderRates[2].GetRelExtValue((float)ui->horizontalSlider_SpanMax->value(), myInst));
-    bsPtr->SetSpanMin(sliderRates[3].GetRelExtValue((float)ui->horizontalSlider_SpanMin->value(), myInst));
-    bsPtr->SetMaxSpeedMultiplier(sliderRates[4].GetRelExtValue((float)ui->horizontalSlider_Speed->value(), myInst));
+    bsPtr->SetShift(sliderRates[1].GetRelExtValue((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum(), myInst));// * (float)ui->horizontalSlider_Mul->value());
+    bsPtr->SetSpanMax(sliderRates[2].GetRelExtValue((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum(), myInst));
+    bsPtr->SetSpanMin(sliderRates[3].GetRelExtValue((float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum(), myInst));
+    bsPtr->SetMaxSpeedMultiplier(sliderRates[4].GetRelExtValue((float)ui->horizontalSlider_Speed->value() / (float)ui->horizontalSlider_Speed->maximum(), myInst));
     /*
     bsPtr->SetShift(((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum()) * (float)ui->horizontalSlider_Mul->value());
     bsPtr->SetSpanMax((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum());
@@ -98,6 +98,10 @@ void Position::PingUi(BundleSeries* bsPtr)
 
 void Position::GetValue(float &_value)
 {
+    if(myInst == 7)
+    {
+        qDebug() << myInst;
+    }
     if(!ui->checkBox->isChecked())
     {
         if(oldOverride)sliderRates[0].Load(_value);
@@ -105,7 +109,7 @@ void Position::GetValue(float &_value)
     }
     else
     {
-        _value = sliderRates[0].GetRelExtValue((float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum(), myInst);
+        _value = sliderRates[0].GetRelExtValue((float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum(), myInst*100);
     }
     oldOverride = ui->checkBox->isChecked();
     /*
