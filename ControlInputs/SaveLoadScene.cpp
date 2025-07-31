@@ -132,18 +132,20 @@ void SaveLoadScene::Load(QString fileName) const
         QJsonObject jObj = v.toObject();
         if(v["save"].toBool())
         {
-            posUis[i]->SetOverride(v["override"].toBool());
-            if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
-                slaveSaveLoadScene->GetPosUi(i)->SetOverride(v["override"].toBool());
+
             QJsonArray jAr = v["sliders"].toArray();
             int k=0;
             for(const QJsonValue &v : jAr)
             {
-                posUis[i]->SetSliderValue(k, v.toInt());
+                posUis[i]->Load(k, v.toInt());//v["override"].toBool());
                 if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
-                    slaveSaveLoadScene->GetPosUi(i)->SetSliderValue(k, v.toInt());
+                    slaveSaveLoadScene->GetPosUi(i)->Load(k, v.toInt());//v["override"].toBool());
                 k++;
             }
+
+            posUis[i]->SetOverride(v["override"].toBool());
+            if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
+                slaveSaveLoadScene->GetPosUi(i)->SetOverride(v["override"].toBool());
         }
         i++;
     }

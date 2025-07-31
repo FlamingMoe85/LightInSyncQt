@@ -40,12 +40,14 @@ public:
 
     int AmtOfSlider(){return mySlider.count();};
     int GetSliderValue(int _sel){return mySlider[_sel]->value();};
-    void SetSliderValue(int _sel, int _value){sliderRates[_sel].SetValue(_value);}
+    //void SetSliderValue(int _sel, int _value, bool _edge){sliderRates[_sel].GetRelValue(_value, _edge);}
+    void Load(int _sel, int _val){sliderRates[_sel].Load((float) _val);}
     bool GetOverride();
     void SetOverride(bool _override);
     bool SupposedToSave();
     void DoSave(bool _save);
 
+    /**/
     void PingForSliderMove()
     {
         for(int i=0; i< mySlider.count(); i++)
@@ -54,10 +56,13 @@ public:
         }
     }
 
+
 private:
     Ui::Position *ui;
     QVector<QSlider*> mySlider;
     ChangeSliderAtRate sliderRates[6];
+    bool oldOverride;
+    int myInst;
 
 private slots:
     void Slot_SetPosToMiddle();

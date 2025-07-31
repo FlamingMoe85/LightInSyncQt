@@ -11,14 +11,17 @@ class ChangeSliderAtRate
 public:
     ChangeSliderAtRate()
     {
-        rate = step = 0.0;
+        ratio = 0.0;
         inst = instCntr;
         instCntr++;
     }
 
+
     void Ping()
     {
-        if(rate == 0.0) return;
+        if(ratio > 0.0) ratio -= 0.005;
+        if(ratio < 0.0) ratio = 0;
+      /*  if(rate == 0.0) return;
         step += rate;
         if((step >= 1.0) || (step <= -1.0))
         {
@@ -26,21 +29,56 @@ public:
             mySlider->setValue(mySlider->value()+intStep);
             step -= intStep;
             if(mySlider->value() == target)rate = 0;
-        }
+        }*/
     }
 
-    void SetValue(int _target)
+    void Load(float _target)
     {
-        target = _target;
-        int diff = target - mySlider->value();
-        rate = ((float)diff) / 200.0;
+       target = _target;
+       oldSliderVal = (float)mySlider->value();
+       ratio = 1.0;
+    }
+
+    float GetRelValue(float _targetRel)
+    {
+        if(ratio == 0.0)
+        {
+            mySlider->setValue((int)((float)mySlider->maximum()*_targetRel));
+            return _targetRel;
+        }
+        mySlider->setValue((int)((oldSliderVal*ratio)
+                           +
+                          ((float)mySlider->maximum()*_targetRel*(1.0-ratio))));
+
+
+        return (float)mySlider->value() / (float)mySlider->maximum();
+    }
+
+    float GetRelExtValue(float _targetRel, int caller)
+    {
+        if(ratio == 0.0) return _targetRel;
+
+        if(caller == 7)
+        {
+            mySlider->setValue((int)((oldSliderVal*ratio)
+                               +
+                              ((int)(target*(1.0-ratio)))));
+        }
+        else
+        {
+        mySlider->setValue((int)((oldSliderVal*ratio)
+                                 +
+                                ((int)(target*(1.0-ratio)))));
+            }
+        return (float)mySlider->value();
     }
 
     QSlider* mySlider;
 
 private:
-    float rate, step;
-    int target;
+    float ratio;
+    float oldSliderVal;
+    float target;
     int inst;
 };
 

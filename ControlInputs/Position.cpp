@@ -3,6 +3,7 @@
 
 #include "QDebug"
 
+static int posInstCntr = 0;
 
 Position::Position(QWidget *parent, PositionInit_t _init) :
     QWidget(parent),
@@ -31,6 +32,10 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     }
 
     connect(ui->pushButton_PosToMiddle, SIGNAL(clicked()), this, SLOT(Slot_SetPosToMiddle()));
+    oldOverride = false;
+
+    myInst = posInstCntr++;
+    ui->lcdNumber->display(myInst);
 }
 
 Position::~Position()
@@ -79,14 +84,31 @@ void Position::Ping(int itteration)
 
 void Position::PingUi(BundleSeries* bsPtr)
 {
+    bsPtr->SetShift(sliderRates[1].GetRelExtValue((float)ui->horizontalSlider_Shift->value(), myInst));// * (float)ui->horizontalSlider_Mul->value());
+    bsPtr->SetSpanMax(sliderRates[2].GetRelExtValue((float)ui->horizontalSlider_SpanMax->value(), myInst));
+    bsPtr->SetSpanMin(sliderRates[3].GetRelExtValue((float)ui->horizontalSlider_SpanMin->value(), myInst));
+    bsPtr->SetMaxSpeedMultiplier(sliderRates[4].GetRelExtValue((float)ui->horizontalSlider_Speed->value(), myInst));
+    /*
     bsPtr->SetShift(((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum()) * (float)ui->horizontalSlider_Mul->value());
     bsPtr->SetSpanMax((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum());
     bsPtr->SetSpanMin((float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum());
     bsPtr->SetMaxSpeedMultiplier((float)ui->horizontalSlider_Speed->value());
+    */
 }
 
 void Position::GetValue(float &_value)
 {
+    if(!ui->checkBox->isChecked())
+    {
+        if(oldOverride)sliderRates[0].Load(_value);
+        _value = sliderRates[0].GetRelValue(_value);
+    }
+    else
+    {
+        _value = sliderRates[0].GetRelExtValue((float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum(), myInst);
+    }
+    oldOverride = ui->checkBox->isChecked();
+    /*
     if(ui->checkBox->isChecked())
     {
         _value = (float)ui->horizontalSlider_Position->value() / (float)ui->horizontalSlider_Position->maximum();
@@ -96,5 +118,6 @@ void Position::GetValue(float &_value)
     {
         ui->horizontalSlider_Position->setSliderPosition(_value*(float)ui->horizontalSlider_Position->maximum());
     }
+    */
 }
 
