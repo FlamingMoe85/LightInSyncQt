@@ -20,12 +20,17 @@ SaveLoadScene::SaveLoadScene(QWidget *parent, QString _name) :
     sliderPingTimer.setInterval(10);
     sliderPingTimer.start();
 
-
+    slaveSaveLoadScene = nullptr;
 }
 
 SaveLoadScene::~SaveLoadScene()
 {
     delete ui;
+}
+
+bool SaveLoadScene::OverrideEnabled()
+{
+    return ui->checkBox_OverrideEnable->checkState();
 }
 
 void SaveLoadScene::Slot_Save()
@@ -76,7 +81,7 @@ void SaveLoadScene::Slot_SliderPing()
 
 void SaveLoadScene::Save(QString fileName) const
 {
-    QString f = name + "_" + fileName + name + ".json";
+    QString f = fileName + name + ".json";
     QFile saveFile(f);
 
     if (!saveFile.open(QIODevice::WriteOnly)) {
@@ -128,11 +133,15 @@ void SaveLoadScene::Load(QString fileName) const
         if(v["save"].toBool())
         {
             posUis[i]->SetOverride(v["override"].toBool());
+            if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
+                slaveSaveLoadScene->GetPosUi(i)->SetOverride(v["override"].toBool());
             QJsonArray jAr = v["sliders"].toArray();
             int k=0;
             for(const QJsonValue &v : jAr)
             {
                 posUis[i]->SetSliderValue(k, v.toInt());
+                if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
+                    slaveSaveLoadScene->GetPosUi(i)->SetSliderValue(k, v.toInt());
                 k++;
             }
         }

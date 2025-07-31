@@ -29,6 +29,8 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     {
         sliderRates[i++].mySlider = slider;
     }
+
+    connect(ui->pushButton_PosToMiddle, SIGNAL(clicked()), this, SLOT(Slot_SetPosToMiddle()));
 }
 
 Position::~Position()
@@ -56,6 +58,11 @@ void Position::SetOverride(bool _override)
 {
     if(_override)ui->checkBox->setCheckState(Qt::CheckState::Checked);
     else ui->checkBox->setCheckState(Qt::CheckState::Unchecked);
+}
+
+void Position::Slot_SetPosToMiddle()
+{
+    ui->horizontalSlider_Position->setSliderPosition(ui->horizontalSlider_Position->maximum()/2);
 }
 
 

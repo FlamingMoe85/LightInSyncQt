@@ -25,6 +25,8 @@ public:
     ~SaveLoadScene();
 
     void AddPositionUi(Position* posUi){posUis.append(posUi);}
+    Position* GetPosUi(int _sel){return posUis[_sel];}
+    bool OverrideEnabled();
 
     void UpdateAvailableCurves();
     QStringListModel listModel;
@@ -34,6 +36,7 @@ public:
     void Load(QString fileName) const;
 
     QString name;
+    SaveLoadScene* slaveSaveLoadScene;
 
 private:
     Ui::SaveLoadScene *ui;

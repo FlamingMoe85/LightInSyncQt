@@ -59,6 +59,9 @@ private:
     QVector<QSlider*> mySlider;
     ChangeSliderAtRate sliderRates[6];
 
+private slots:
+    void Slot_SetPosToMiddle();
+
 };
 
 #endif // POSITION_H
