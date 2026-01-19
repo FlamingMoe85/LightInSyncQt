@@ -66,6 +66,11 @@ void SaveLoadScene::UpdateAvailableCurves()
     ui->comboBox->setModel(&listModel);
 }
 
+void SaveLoadScene::Slot_LoadByName(const QString &_name)
+{
+    Load(_name);
+}
+
 void SaveLoadScene::Slot_Load()
 {
     Load(ui->comboBox->itemText(ui->comboBox->currentIndex()));

@@ -43,12 +43,16 @@ private:
     QVector<Position*> posUis;
     QTimer sliderPingTimer;
 
+public slots:
+    void Slot_LoadByName(const QString &_name);
+
 private slots:
     void Slot_Save();
     void Slot_SaveAll();
     void Slot_SceneSelected(int);
     void Slot_Load();
     void Slot_SliderPing();
+
 };
 
 #endif // SAVELOADSCENE_H
