@@ -137,11 +137,14 @@
               <verstretch>1</verstretch>
              </sizepolicy>
             </property>
+            <property name="minimum">
+             <number>1</number>
+            </property>
             <property name="maximum">
-             <number>200</number>
+             <number>10</number>
             </property>
             <property name="value">
-             <number>0</number>
+             <number>1</number>
             </property>
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
