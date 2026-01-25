@@ -32,6 +32,8 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     }
 
     connect(ui->pushButton_PosToMiddle, SIGNAL(clicked()), this, SLOT(Slot_SetPosToMiddle()));
+    connect(ui->pushButton_SpeedDec, SIGNAL(clicked()), this, SLOT(Slot_SpeedDec()));
+    connect(ui->pushButton_SpeedInc, SIGNAL(clicked()), this, SLOT(Slot_SpeedInc()));
     oldOverride = false;
 
     myInst = posInstCntr++;
@@ -70,6 +72,20 @@ void Position::Slot_SetPosToMiddle()
     ui->horizontalSlider_Position->setSliderPosition(ui->horizontalSlider_Position->maximum()/2);
 }
 
+void Position::Slot_SpeedDec()
+{
+    int v = ui->horizontalSlider_Speed->value();
+    if(v > 1) v--;
+    ui->horizontalSlider_Speed->setValue(v);
+}
+
+void Position::Slot_SpeedInc()
+{
+    int v = ui->horizontalSlider_Speed->value();
+    v++;
+    if(v > ui->horizontalSlider_Speed->maximum()) v = ui->horizontalSlider_Speed->maximum();
+    ui->horizontalSlider_Speed->setValue(v);
+}
 
 void Position::Ping(int itteration)
 {
@@ -88,6 +104,8 @@ void Position::PingUi(BundleSeries* bsPtr)
     bsPtr->SetSpanMax(sliderRates[2].GetRelExtValue((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum(), myInst));
     bsPtr->SetSpanMin(sliderRates[3].GetRelExtValue((float)ui->horizontalSlider_SpanMin->value() / (float)ui->horizontalSlider_SpanMin->maximum(), myInst));
     bsPtr->SetMaxSpeedMultiplier(sliderRates[4].GetAbsExtValue((float)ui->horizontalSlider_Speed->value(), myInst));
+
+    ui->lcdNumber_Speed->display(ui->horizontalSlider_Speed->value());
     /*
     bsPtr->SetShift(((float)ui->horizontalSlider_Shift->value() / (float)ui->horizontalSlider_Shift->maximum()) * (float)ui->horizontalSlider_Mul->value());
     bsPtr->SetSpanMax((float)ui->horizontalSlider_SpanMax->value() / (float)ui->horizontalSlider_SpanMax->maximum());

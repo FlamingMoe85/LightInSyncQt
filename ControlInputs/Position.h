@@ -66,7 +66,8 @@ private:
 
 private slots:
     void Slot_SetPosToMiddle();
-
+    void Slot_SpeedDec();
+    void Slot_SpeedInc();
 };
 
 #endif // POSITION_H
