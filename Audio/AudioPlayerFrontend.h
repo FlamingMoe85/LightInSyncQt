@@ -30,6 +30,8 @@ private slots:
     void Slot_DurationChanged();
     void Slot_UpdatePlayerPos(qint64);
 
+    void on_pushButton_BrowseSong_clicked();
+
 public slots:
 
     void UpdateCurrentTime();

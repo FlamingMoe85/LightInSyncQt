@@ -1,6 +1,8 @@
 #include "AudioPlayerFrontend.h"
 #include "ui_AudioPlayerFrontend.h"
 #include <QTime>
+#include <QFileDialog>
+#include <QDir>
 
 AudioPlayerFrontend::AudioPlayerFrontend(AudioPlayer &_audioPlayer, QWidget *parent) :
     QWidget(parent),
@@ -55,3 +57,14 @@ void AudioPlayerFrontend::UpdateCurrentTime()
     Utilities::MillisToTimeString(time, audioPlayer.GetPosition());
     ui->label_curPos->setText(time);
 }
+
+void AudioPlayerFrontend::on_pushButton_BrowseSong_clicked()
+{
+    QString selectedSong =
+        QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Select File"), QDir::currentPath()));
+    selectedSong.replace("\\", "/");
+    qDebug() << selectedSong;
+    if(selectedSong.isEmpty())return;
+    audioPlayer.SetSong(selectedSong);
+}
+

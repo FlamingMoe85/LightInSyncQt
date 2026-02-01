@@ -13,6 +13,18 @@ AudioPlayer::AudioPlayer()
     timer.start();
 }
 
+void AudioPlayer::SetSong(QString &_song)
+{
+    currentSong = _song;
+    player.stop();
+    player.setMedia(QUrl::fromLocalFile(_song));
+}
+
+QString AudioPlayer::GetSong()
+{
+    return currentSong;
+}
+
 void AudioPlayer::Slot_TimerExpired()
 {
     emit Signal_TimerExpired(player.position());

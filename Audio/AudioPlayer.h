@@ -14,6 +14,8 @@ class AudioPlayer : public QObject
 public:
     AudioPlayer();
 
+    void SetSong(QString &_song);
+    QString GetSong();
     void Play(){player.play();};
     void Pause(){player.pause();};
     void SeekTo(int _ms){player.setPosition(_ms);};
@@ -30,7 +32,7 @@ private:
     QMediaPlayer player;
 
     //void millisToTime(int &h, int &m, int &s, int &ms, qint64 _millis);
-
+    QString currentSong;
     QTimer timer;
 
 signals:

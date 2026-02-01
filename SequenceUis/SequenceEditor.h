@@ -57,6 +57,12 @@ private slots:
 
     void on_pushButton_clicked();
 
+    void on_pushButton_NewSequence_clicked();
+
+    void on_pushButton_useSongName_clicked();
+
+    void on_pushButton_OpenSequence_clicked();
+
 private:
     Ui::SequenceEditor *ui;
 
@@ -79,11 +85,15 @@ private:
     void SaveSequence();
 
     void LoadCollections();
-    void LoadSequence();
+    void ClearCollection();
+    void LoadSequence(QString &seqPath);
 
     void RemoveSequenceItem(SequenceItem* _remItem);
     void RemoveAllSequenceItemsFromUi();
+    void ClearAllSequenceItems();
     void AddSequenceItemsFromList();
+
+    QString SequencePath, sequenceSong;
 
 };
 

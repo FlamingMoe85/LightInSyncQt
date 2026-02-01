@@ -2,10 +2,11 @@
 #include "ui_SequenceEditor.h"
 
 #include <QDebug>
+#include <QFileDialog>
 
 const QString SequenceBasePath = "C:/LightInSync/Qt/LightInSync/SequenceDatas/";
 const QString SequenceCollectionsPath = SequenceBasePath + "Collections/";
-const QString SequencesPath = SequenceBasePath + "Sequences/";
+const QString SequencesPathConst = SequenceBasePath + "Sequences/";
 
 SequenceEditor::SequenceEditor(QWidget *parent) :
     QWidget(parent),
@@ -21,7 +22,9 @@ SequenceEditor::SequenceEditor(QWidget *parent) :
     currentTimeChangeTarget = nullptr;
     sequencePlayerRuns = false;
     sequencePlayer.SetTreeWdiget(ui->treeWidget_Collections);
-
+    SequencePath = SequencesPathConst;
+    sequenceSong.clear();
+    LoadCollections();
 }
 
 SequenceEditor::~SequenceEditor()
@@ -206,6 +209,7 @@ void SequenceEditor::LoadCollections()
     if (!loadFile.open(QIODevice::ReadOnly)) {
         return;
     }
+    ClearCollection();
 
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
@@ -226,29 +230,37 @@ void SequenceEditor::LoadCollections()
     }
 }
 
+void SequenceEditor::ClearCollection()
+{
+    ui->treeWidget_Collections->clear();
+}
+
 void SequenceEditor::SaveSequence()
 {
-    QString f = SequencesPath + "Sequence" + ".json";
-    QFile saveFile(f);
+    //QString f = SequencesPathConst + "Sequence" + ".json";
+    QFile saveFile(SequencePath);
 
     if (!saveFile.open(QIODevice::WriteOnly)) {
         qWarning("Couldn't open save file.");
     }
 
+    QJsonObject sequenceObject;
+    sequenceObject["Song"] = sequenceSong;
     QJsonArray sequenceItemArr;
     for(int i=0; i<sequenceItemsList.count(); i++)
     {
         sequenceItemsList.at(i)->Save(sequenceItemArr);
     }
-    saveFile.write(QJsonDocument(sequenceItemArr).toJson());
+    sequenceObject["SequenceItems"] = sequenceItemArr;
+    saveFile.write(QJsonDocument(sequenceObject).toJson());
 }
 
 
-void SequenceEditor::LoadSequence()
+void SequenceEditor::LoadSequence(QString &seqPath)
 {
-    QString f = SequencesPath + "Sequence" + ".json";
-    QFile loadFile(f);
+    QFile loadFile(seqPath);
 
+    ClearAllSequenceItems();
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
         return;
@@ -256,9 +268,15 @@ void SequenceEditor::LoadSequence()
 
     QByteArray saveData = loadFile.readAll();
     QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+    QJsonObject sequenceObj = loadDoc.object();
 
-    QJsonArray sequenceArray = loadDoc.array();
-
+    QString seqSong = sequenceObj["Song"].toString();
+    if(!seqSong.isEmpty())
+    {
+        playerFrontend->audioPlayer.SetSong(seqSong);
+    }
+            //QJsonArray sequenceArray = loadDoc.array();
+    QJsonArray sequenceArray = sequenceObj["SequenceItems"].toArray();
     for (const QJsonValue &v : sequenceArray)
     {
         QJsonObject collectionObj = v.toObject();
@@ -276,7 +294,7 @@ void SequenceEditor::LoadSequence()
 void SequenceEditor::on_pushButton_Load_clicked()
 {
     LoadCollections();
-    LoadSequence();
+    LoadSequence(SequencePath);
 }
 
 void SequenceEditor::RemoveSequenceItem(SequenceItem* _remItem)
@@ -293,6 +311,14 @@ void SequenceEditor::RemoveAllSequenceItemsFromUi()
     sequenceArea.RemoveAllWidgetsFromLayout();
 }
 
+void SequenceEditor::ClearAllSequenceItems()
+{
+    while(sequenceItemsList.count() > 0)
+    {
+        RemoveSequenceItem(sequenceItemsList.last());
+    }
+}
+
 void SequenceEditor::AddSequenceItemsFromList()
 {
     for(SequenceItem* si : sequenceItemsList)
@@ -307,5 +333,32 @@ void SequenceEditor::on_pushButton_clicked()
     {
         RemoveSequenceItem(currentTimeChangeTarget);
     }
+}
+
+
+void SequenceEditor::on_pushButton_NewSequence_clicked()
+{
+    QDir dir;
+    QString p = SequencesPathConst+ui->lineEdit_SequenceName->text();
+    if(ui->lineEdit_SequenceName->text().isEmpty()) return;
+    if(QFile::exists(p+".json")) return;
+    dir.mkdir(p);
+    SequencePath = SequencesPathConst+ui->lineEdit_SequenceName->text()+".json";
+}
+
+void SequenceEditor::on_pushButton_useSongName_clicked()
+{
+   sequenceSong = playerFrontend->audioPlayer.GetSong();
+   ui->lineEdit_SequenceName->setText(sequenceSong);
+}
+
+void SequenceEditor::on_pushButton_OpenSequence_clicked()
+{
+    QString selectedSequence =
+        QDir::toNativeSeparators(QFileDialog::getOpenFileName(this, tr("Select File"), QDir::currentPath()));
+    selectedSequence.replace("\\", "/");
+    qDebug() << selectedSequence;
+    LoadCollections();
+    LoadSequence(selectedSequence);
 }
 
