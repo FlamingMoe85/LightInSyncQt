@@ -37,6 +37,7 @@ public:
     void Ping(int itteration) override;
     void PingUi(BundleSeries* bsPtr)override;
     void GetValue(float &_value)override;
+    void SetFadeIn(qint64 _fadeIn);
 
     int AmtOfSlider(){return mySlider.count();};
     int GetSliderValue(int _sel){return mySlider[_sel]->value();};
@@ -60,7 +61,9 @@ public:
 private:
     Ui::Position *ui;
     QVector<QSlider*> mySlider;
-    ChangeSliderAtRate sliderRates[6];
+
+    #define AMT_SLIDER_RATES    6
+    ChangeSliderAtRate sliderRates[AMT_SLIDER_RATES];
     bool oldOverride;
     int myInst;
 

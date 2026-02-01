@@ -32,6 +32,7 @@ AudioPlayerFrontend::~AudioPlayerFrontend()
 
 void AudioPlayerFrontend::Slot_Play()
 {
+    Signal_Play();
     audioPlayer.Play();
 }
 void AudioPlayerFrontend::Slot_Pause()

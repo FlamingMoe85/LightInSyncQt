@@ -23,6 +23,10 @@ private:
 
     HorSliderSelfCentering seekSlider;
 
+signals:
+    void Signal_Play();
+    void Signal_Stop();
+
 private slots:
     void Slot_Play();
     void Slot_Pause();

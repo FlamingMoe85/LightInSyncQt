@@ -25,6 +25,7 @@ SequenceEditor::SequenceEditor(QWidget *parent) :
     SequencePath = SequencesPathConst;
     sequenceSong.clear();
     LoadCollections();
+    connect(playerFrontend, SIGNAL(Signal_Play()), this, SLOT(Slot_PlayerStarted()));
 }
 
 SequenceEditor::~SequenceEditor()
@@ -159,7 +160,7 @@ void SequenceEditor::on_pushButton_playStopSequence_clicked()
     }
     else
     {
-        sequencePlayer.PlaySequence(&sequenceItemsList);
+        sequencePlayer.StartSequence(&sequenceItemsList);
         sequencePlayerRuns = true;
     }
 
@@ -289,6 +290,8 @@ void SequenceEditor::LoadSequence(QString &seqPath)
         connect(seqItm, SIGNAL(Signal_ConnectForTimeChange(SequenceItem*)), this, SLOT(Slot_ReceiveTimeChangeTarget(SequenceItem*)));
         sequenceItemsList.append(seqItm);
     }
+
+    sequencePlayer.SetSequence(&sequenceItemsList);
 }
 
 void SequenceEditor::on_pushButton_Load_clicked()
@@ -362,3 +365,14 @@ void SequenceEditor::on_pushButton_OpenSequence_clicked()
     LoadSequence(selectedSequence);
 }
 
+
+void SequenceEditor::on_pushButton_Forward_clicked()
+{
+    sequencePlayer.ForwardToPosition(playerFrontend->audioPlayer.GetPosition());
+}
+
+void SequenceEditor::Slot_PlayerStarted()
+{
+    sequencePlayer.StopSecquence();
+    sequencePlayer.Start();
+}

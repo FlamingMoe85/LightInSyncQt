@@ -34,15 +34,29 @@ void SequencePlayer::PlayCollection(QString _collection, qint64 _fadeIn)
 
 void SequencePlayer::Slot_TimerExpired()
 {
+    PlaySequence(false);
+}
+
+bool SequencePlayer::PlaySequence(bool forward)
+{
     while(true)
     {
         if(listToPlay->at(curSeqItem)->GetTimeStamp() <= time)
         {
-            PlayCollection(listToPlay->at(curSeqItem)->GetCollection(), listToPlay->at(curSeqItem)->GetFadeIn());
+            if(forward)
+            {
+                PlayCollection(listToPlay->at(curSeqItem)->GetCollection(), 20000);
+            }
+            else
+            {
+                PlayCollection(listToPlay->at(curSeqItem)->GetCollection(), listToPlay->at(curSeqItem)->GetFadeIn());
+            }
+
             curSeqItem++;
             if(curSeqItem == listToPlay->count())
             {
                 StopSecquence();
+                return true;
                 break;
             }
         }
@@ -53,6 +67,7 @@ void SequencePlayer::Slot_TimerExpired()
     }
 
     time += 10;
+    return false;
 }
 
 void SequencePlayer::StopSecquence()
@@ -61,11 +76,42 @@ void SequencePlayer::StopSecquence()
     timer.stop();
 }
 
-void SequencePlayer::PlaySequence(QList<SequenceItem*> *_listToPlay)
+void SequencePlayer::StartSequence(QList<SequenceItem*> *_listToPlay)
 {
     time = 0;
     curSeqItem = 0;
     listToPlay = _listToPlay;
     QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
     timer.start();
+}
+
+void SequencePlayer::Start()
+{
+    time = 0;
+    curSeqItem = 0;
+    QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
+    timer.start();
+}
+
+void SequencePlayer::SetSequence(QList<SequenceItem*> *_listToPlay)
+{
+    listToPlay = _listToPlay;
+}
+
+void SequencePlayer::ForwardToPosition(qint64 _position)
+{
+    timer.stop();
+    _position = _position;
+    time = 0;
+    curSeqItem = 0;
+
+    while(time < _position)
+    {
+        if(PlaySequence(true))break;
+    }
+
+    for(SaveLoadScene* s : *saveLoadSceneList)
+    {
+        s->SetFadeIn(10);
+    }
 }

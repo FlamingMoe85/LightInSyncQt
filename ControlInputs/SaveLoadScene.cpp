@@ -176,3 +176,11 @@ bool SaveLoadScene::Load(QString fileName, qint64 _fadeIn = 200) const
     */
     return true;
 }
+
+void SaveLoadScene::SetFadeIn(qint64 _fadeIn)
+{
+    for(Position* p : posUis)
+    {
+        p->SetFadeIn(_fadeIn);
+    }
+}

@@ -63,6 +63,10 @@ private slots:
 
     void on_pushButton_OpenSequence_clicked();
 
+    void on_pushButton_Forward_clicked();
+
+    void Slot_PlayerStarted();
+
 private:
     Ui::SequenceEditor *ui;
 

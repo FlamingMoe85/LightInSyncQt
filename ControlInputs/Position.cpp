@@ -139,3 +139,10 @@ void Position::GetValue(float &_value)
     */
 }
 
+void Position::SetFadeIn(qint64 _fadeIn)
+{
+    for(int i=0; i<AMT_SLIDER_RATES; i++)
+    {
+        sliderRates[i].SetFadeIn(_fadeIn);
+    }
+}

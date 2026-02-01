@@ -35,6 +35,7 @@ public:
     bool LoadByNameAndFadeIn(QString &fileName, qint64 _fadeIn);
     void Save(QString fileName) const;
     bool Load(QString fileName, qint64 _fadeIn) const;
+    void SetFadeIn(qint64 _fadeIn);
 
     QString name;
     SaveLoadScene* slaveSaveLoadScene;

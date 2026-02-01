@@ -40,6 +40,11 @@ public:
        ratio = 1.0;
     }
 
+    void SetFadeIn(qint64 _fadeIn)
+    {
+        fadeInc = 1.0/(float)_fadeIn;
+    }
+
     float GetRelValue(float _targetRel)
     {
         if(ratio == 0.0)

@@ -15,10 +15,14 @@ class SequencePlayer : public QObject
 public:
     SequencePlayer();
 
-    void PlaySequence(QList<SequenceItem*> *_listToPlay);
+    void StartSequence(QList<SequenceItem*> *_listToPlay);
+    void SetSequence(QList<SequenceItem*> *_listToPlay);
+    void Start();
     void StopSecquence();
     void SetSaveLoadSceneList(QList<SaveLoadScene*> *_saveLoadSceneList) {saveLoadSceneList = _saveLoadSceneList;}
     void SetTreeWdiget(QTreeWidget *_treeWidget){treeWidget = _treeWidget;}
+    void ForwardToPosition(qint64 _position);
+    bool PlaySequence(bool forward);
 
     QTimer timer;
 
