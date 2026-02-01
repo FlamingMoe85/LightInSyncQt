@@ -32,8 +32,9 @@ public:
     QStringListModel listModel;
     QStringList availableScenes;
 
+    bool LoadByNameAndFadeIn(QString &fileName, qint64 _fadeIn);
     void Save(QString fileName) const;
-    void Load(QString fileName) const;
+    bool Load(QString fileName, qint64 _fadeIn) const;
 
     QString name;
     SaveLoadScene* slaveSaveLoadScene;

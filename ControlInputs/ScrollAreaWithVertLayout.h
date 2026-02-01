@@ -16,6 +16,8 @@ public:
     ~ScrollAreaWithVertLayout();
 
     void AddToScrollArea(QWidget* _widget);
+    void RemoveFromScrollArea(QWidget* _widget);
+    void RemoveAllWidgetsFromLayout();
     QString name;
 
 private:

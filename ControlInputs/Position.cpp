@@ -118,7 +118,7 @@ void Position::GetValue(float &_value)
 {
     if(!ui->checkBox->isChecked())
     {
-        if(oldOverride)sliderRates[0].Load(_value);
+        if(oldOverride)sliderRates[0].Load(_value,200);
         _value = sliderRates[0].GetRelValue(_value);
     }
     else

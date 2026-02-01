@@ -52,7 +52,7 @@ void SaveLoadScene::Slot_SaveAll()
 
 void SaveLoadScene::Slot_SceneSelected(int i)
 {
-    Load(ui->comboBox->itemText(i));
+    Load(ui->comboBox->itemText(i),200);
 }
 
 void SaveLoadScene::UpdateAvailableCurves()
@@ -66,14 +66,21 @@ void SaveLoadScene::UpdateAvailableCurves()
     ui->comboBox->setModel(&listModel);
 }
 
+bool SaveLoadScene::LoadByNameAndFadeIn(QString &fileName, qint64 _fadeIn)
+{
+    if(!fileName.contains(name + ".json")) return false;
+    Load(fileName, _fadeIn);
+    return true;
+}
+
 void SaveLoadScene::Slot_LoadByName(const QString &_name)
 {
-    Load(_name);
+    Load(_name, 200);
 }
 
 void SaveLoadScene::Slot_Load()
 {
-    Load(ui->comboBox->itemText(ui->comboBox->currentIndex()));
+    Load(ui->comboBox->itemText(ui->comboBox->currentIndex()),200);
 }
 
 void SaveLoadScene::Slot_SliderPing()
@@ -116,12 +123,13 @@ void SaveLoadScene::Save(QString fileName) const
     saveFile.write(QJsonDocument(jUiObj).toJson());
 }
 
-void SaveLoadScene::Load(QString fileName) const
+bool SaveLoadScene::Load(QString fileName, qint64 _fadeIn = 200) const
 {
+    if(!fileName.contains(name + ".json")) return false;
     QFile loadFile(fileName);
 
     if (!loadFile.open(QIODevice::ReadOnly)) {
-        return;
+        return false;
     }
 
     QByteArray saveData = loadFile.readAll();
@@ -142,9 +150,9 @@ void SaveLoadScene::Load(QString fileName) const
             int k=0;
             for(const QJsonValue &v : jAr)
             {
-                posUis[i]->Load(k, v.toInt());//v["override"].toBool());
+                posUis[i]->Load(k, v.toInt(),_fadeIn);//v["override"].toBool());
                 if((slaveSaveLoadScene != nullptr) && (slaveSaveLoadScene->OverrideEnabled()))
-                    slaveSaveLoadScene->GetPosUi(i)->Load(k, v.toInt());//v["override"].toBool());
+                    slaveSaveLoadScene->GetPosUi(i)->Load(k, v.toInt(), _fadeIn);//v["override"].toBool());
                 k++;
             }
 
@@ -166,4 +174,5 @@ void SaveLoadScene::Load(QString fileName) const
         shadeWidgets[i++]->hoverPoints()->FromJson(v.toObject());
     }
     */
+    return true;
 }

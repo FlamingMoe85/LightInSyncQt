@@ -4,7 +4,6 @@
 #include <QWidget>
 #include "AudioPlayer.h"
 #include "../UI/HorSliderSelfCentering.h"
-#include "../UI/EffectEditor.h"
 
 namespace Ui {
 class AudioPlayerFrontend;
@@ -17,13 +16,11 @@ class AudioPlayerFrontend : public QWidget
 public:
     explicit AudioPlayerFrontend( AudioPlayer &_audioPlayer, QWidget *parent = nullptr);
     ~AudioPlayerFrontend();
-
-protected:
-    EffectEditor lines;
+    AudioPlayer &audioPlayer;
 
 private:
     Ui::AudioPlayerFrontend *ui;
-    AudioPlayer &audioPlayer;
+
     HorSliderSelfCentering seekSlider;
 
 private slots:
@@ -31,6 +28,7 @@ private slots:
     void Slot_Pause();
     void Slot_Seek(int _seek);
     void Slot_DurationChanged();
+    void Slot_UpdatePlayerPos(qint64);
 
 public slots:
 

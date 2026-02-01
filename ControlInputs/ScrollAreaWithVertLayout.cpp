@@ -18,3 +18,19 @@ void ScrollAreaWithVertLayout::AddToScrollArea(QWidget* _widget)
 {
     ui->scrollAreaWidgetContents->layout()->addWidget(_widget);
 }
+
+void ScrollAreaWithVertLayout::RemoveFromScrollArea(QWidget* _widget)
+{
+    ui->scrollAreaWidgetContents->layout()->removeWidget(_widget);
+    _widget->hide();
+
+}
+
+
+void ScrollAreaWithVertLayout::RemoveAllWidgetsFromLayout()
+{
+   while (ui->scrollAreaWidgetContents->layout()->itemAt(0) != 0)
+   {
+       ui->scrollAreaWidgetContents->layout()->takeAt(0);
+   }
+}

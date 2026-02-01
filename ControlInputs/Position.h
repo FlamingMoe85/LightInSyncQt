@@ -41,7 +41,7 @@ public:
     int AmtOfSlider(){return mySlider.count();};
     int GetSliderValue(int _sel){return mySlider[_sel]->value();};
     //void SetSliderValue(int _sel, int _value, bool _edge){sliderRates[_sel].GetRelValue(_value, _edge);}
-    void Load(int _sel, int _val){sliderRates[_sel].Load((float) _val);}
+    void Load(int _sel, int _val, qint64 fadeIn){sliderRates[_sel].Load((float) _val, fadeIn);}
     bool GetOverride();
     void SetOverride(bool _override);
     bool SupposedToSave();

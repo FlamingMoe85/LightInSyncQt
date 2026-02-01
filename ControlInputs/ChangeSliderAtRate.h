@@ -19,7 +19,7 @@ public:
 
     void Ping()
     {
-        if(ratio > 0.0) ratio -= 0.005;
+        if(ratio > 0.0) ratio -= fadeInc;
         if(ratio < 0.0) ratio = 0;
       /*  if(rate == 0.0) return;
         step += rate;
@@ -32,8 +32,9 @@ public:
         }*/
     }
 
-    void Load(float _target)
+    void Load(float _target, qint64 _fadeIn)
     {
+       fadeInc = 1.0/(float)_fadeIn;
        target = _target;
        oldSliderVal = (float)mySlider->value();
        ratio = 1.0;
@@ -107,6 +108,7 @@ private:
     float oldSliderVal;
     float target;
     int inst;
+    float fadeInc;
 };
 
 #endif // CHANGESLIDERATRATE_H

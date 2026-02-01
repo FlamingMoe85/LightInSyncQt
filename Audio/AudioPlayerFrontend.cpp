@@ -6,17 +6,21 @@ AudioPlayerFrontend::AudioPlayerFrontend(AudioPlayer &_audioPlayer, QWidget *par
     QWidget(parent),
     ui(new Ui::AudioPlayerFrontend),
     audioPlayer(_audioPlayer),
-    seekSlider(this, -5000, 5000),
-    lines(0,0,400,200, this)
+    seekSlider(this, -5000, 5000)
 {
     ui->setupUi(this);
     ui->verticalLayout_seekSlider->addWidget(&seekSlider);
-    ui->verticalLayout_lines->addWidget(&lines);
 
     QObject::connect(ui->pushButton_Play, SIGNAL(clicked()), this, SLOT(Slot_Play()));
     QObject::connect(ui->pushButton_Pause, SIGNAL(clicked()), this, SLOT(Slot_Pause()));
     QObject::connect(&seekSlider, SIGNAL(ValueChangedAbs(int)), this, SLOT(Slot_Seek(int)));
     QObject::connect(&audioPlayer, SIGNAL(Signal_DurationChanged()), this, SLOT(Slot_DurationChanged()));
+    QObject::connect(&_audioPlayer, SIGNAL(Signal_TimerExpired(qint64)), this, SLOT(Slot_UpdatePlayerPos(qint64)));
+}
+
+void AudioPlayerFrontend::Slot_UpdatePlayerPos(qint64 playerPos)
+{
+    UpdateCurrentTime();
 }
 
 AudioPlayerFrontend::~AudioPlayerFrontend()
@@ -38,19 +42,16 @@ void AudioPlayerFrontend::Slot_Seek(int _seek)
 }
 void AudioPlayerFrontend::Slot_DurationChanged()
 {
-    QTime time;
-    audioPlayer.GetLength(time);
-    ui->label_duration->setText(time.toString("hh:mm:ss:ms"));
-
-    qint64 length;
-    audioPlayer.GetLength(length);
-    length /= 10;
-    lines.SetWidth(length);
+    QString time;
+    //audioPlayer.GetLength(time);
+    //ui->label_duration->setText(time);
+    Utilities::MillisToTimeString(time, audioPlayer.GetLength());
+    ui->label_duration->setText(time);
 }
 
 void AudioPlayerFrontend::UpdateCurrentTime()
 {
-    QTime time;
-    audioPlayer.GetCurTime(time);
-    ui->label_curPos->setText(time.toString("hh:mm:ss:ms"));
+    QString time;
+    Utilities::MillisToTimeString(time, audioPlayer.GetPosition());
+    ui->label_curPos->setText(time);
 }

@@ -1,5 +1,6 @@
 #include "AudioPlayer.h"
 
+
 AudioPlayer::AudioPlayer()
 {
     player.setParent(this);
@@ -7,11 +8,19 @@ AudioPlayer::AudioPlayer()
     player.setVolume(20);
     //Play();
     QObject::connect(&player, SIGNAL(durationChanged(qint64)), this, SLOT(Slot_DurationChanged()));
+    QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(Slot_TimerExpired()));
+    timer.setInterval(10);
+    timer.start();
 }
 
-void AudioPlayer::millisToTime(QTime &_time, qint64 _millis)
+void AudioPlayer::Slot_TimerExpired()
 {
-    qint64 h, m, s, ms;
+    emit Signal_TimerExpired(player.position());
+}
+
+/*
+void AudioPlayer::millisToTime(int &h, int &m, int &s, int &ms, qint64 _millis)
+{
 
     ms = _millis % 1000;
     _millis -= ms;
@@ -26,23 +35,53 @@ void AudioPlayer::millisToTime(QTime &_time, qint64 _millis)
 
     h = _millis / (60*60*1000);
 
-    _time.setHMS(h, m, s, ms);
 }
 
-void AudioPlayer::GetLength(QTime &time)
+void AudioPlayer::MillisToTimeString(QString &_timeString, qint64 _millis)
 {
-    millisToTime(time, player.duration());
+    Utilities::
+    int h,m,s,ms;
+    _timeString.clear();
+    millisToTime(h,m,s,ms, _millis);
+
+    if(h<10) _timeString = "0";
+    _timeString += QString::number(h);
+    _timeString += ":";
+
+    if(m<10) _timeString += "0";
+    _timeString += QString::number(m);
+    _timeString += ":";
+
+    if(s<10) _timeString += "0";
+    _timeString += QString::number(s);
+    _timeString += ":";
+
+    if(ms<100) _timeString += "0";
+    if(ms<10) _timeString += "0";
+    _timeString += QString::number(ms);
 }
 
-void AudioPlayer::GetLength(qint64 &time)
+
+void AudioPlayer::GetLength(QString &time)
 {
-    time = player.duration();
+    MillisToTimeString(time, player.duration());
+}
+*/
+qint64 AudioPlayer::GetLength()
+{
+    return player.duration();
 }
 
-void AudioPlayer::GetCurTime(QTime &time)
+qint64 AudioPlayer::GetPosition()
 {
-    millisToTime(time, GetCurrentPosAbs());
+    return player.position();
 }
+/*
+void AudioPlayer::GetCurTime(QString &time)
+{
+    MillisToTimeString(time, GetCurrentPosAbs());
+}
+*/
 
 void AudioPlayer::Slot_DurationChanged()
 {
