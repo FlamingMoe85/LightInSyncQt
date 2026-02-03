@@ -7,14 +7,17 @@ AudioPlayer::AudioPlayer()
     player.setMedia(QUrl::fromLocalFile("C:/Musik/Zouk/Fly On.mp3"));
     player.setVolume(20);
     //Play();
+    oldPlayerState = QMediaPlayer::State::StoppedState;
     QObject::connect(&player, SIGNAL(durationChanged(qint64)), this, SLOT(Slot_DurationChanged()));
+    QObject::connect(&player, SIGNAL(stateChanged(QMediaPlayer::State)), this, SLOT(Slot_PlayerSTateChanged(QMediaPlayer::State)));
     QObject::connect(&timer, SIGNAL(timeout()), this, SLOT(Slot_TimerExpired()));
     timer.setInterval(10);
     timer.start();
 }
 
-void AudioPlayer::SetSong(QString &_song)
+void AudioPlayer::SetSong(QString &_song, bool _changedByUSer)
 {
+    changedByUser = _changedByUSer;
     currentSong = _song;
     player.stop();
     player.setMedia(QUrl::fromLocalFile(_song));
@@ -98,4 +101,15 @@ void AudioPlayer::GetCurTime(QString &time)
 void AudioPlayer::Slot_DurationChanged()
 {
     Signal_DurationChanged();
+}
+
+void AudioPlayer::Slot_PlayerSTateChanged(QMediaPlayer::State state)
+{
+    /**/
+    if((state == QMediaPlayer::State::StoppedState) && (oldPlayerState == QMediaPlayer::State::PlayingState) && (!changedByUser))
+    {
+        Signal_SongFinsihed();
+    }
+    oldPlayerState = state;
+    changedByUser = false;
 }

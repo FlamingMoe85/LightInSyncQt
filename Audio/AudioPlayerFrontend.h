@@ -22,14 +22,14 @@ private:
     Ui::AudioPlayerFrontend *ui;
 
     HorSliderSelfCentering seekSlider;
+    bool songWasPlaying, durChanged;
 
 signals:
     void Signal_Play();
     void Signal_Stop();
+    void Signal_SongFinsihed();
 
 private slots:
-    void Slot_Play();
-    void Slot_Pause();
     void Slot_Seek(int _seek);
     void Slot_DurationChanged();
     void Slot_UpdatePlayerPos(qint64);
@@ -39,6 +39,8 @@ private slots:
 public slots:
 
     void UpdateCurrentTime();
+    void Slot_Play();
+    void Slot_Pause();
 };
 
 #endif // AUDIOPLAYERFRONTEND_H

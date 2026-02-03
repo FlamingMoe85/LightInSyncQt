@@ -4,6 +4,7 @@
 #include <QWidget>
 #include <QTreeWidgetItem>
 #include <QDir>
+#include <QMap>
 
 #include "../Audio/AudioPlayerFrontend.h"
 #include "SequencePlayer.h"
@@ -25,8 +26,12 @@ public:
     void DisplayCurrentTargetFromSeqItem();
     void SetSaveLoadSceneList(QList<SaveLoadScene*> *_saveLoadSceneList) {sequencePlayer.SetSaveLoadSceneList(_saveLoadSceneList);}
 
+signals:
+    void Signal_AudioPlayerFinished();
+
 public slots:
     void Slot_AddByName(const QString &_name);
+    void Slot_SongFromPlayList(const QString &_song, const bool _changedByUser);
 
 private slots:
     void on_treeWidget_itemClicked(QTreeWidgetItem *item, int column);
@@ -67,6 +72,8 @@ private slots:
 
     void Slot_PlayerStarted();
 
+    void Slot_AudioPlayerFinished();
+
 private:
     Ui::SequenceEditor *ui;
 
@@ -90,7 +97,7 @@ private:
 
     void LoadCollections();
     void ClearCollection();
-    void LoadSequence(QString &seqPath);
+    void LoadSequence(QString &seqPath, bool _changedByUser);
 
     void RemoveSequenceItem(SequenceItem* _remItem);
     void RemoveAllSequenceItemsFromUi();
@@ -98,6 +105,12 @@ private:
     void AddSequenceItemsFromList();
 
     QString SequencePath, sequenceSong;
+
+    void FindAllSequences();
+    QMap<QString, QString> songToSequenceFileMap;
+
+    int currentSong;
+    bool songHasSequence;
 
 };
 

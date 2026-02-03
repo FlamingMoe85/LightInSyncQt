@@ -18,6 +18,8 @@ AudioPlayerFrontend::AudioPlayerFrontend(AudioPlayer &_audioPlayer, QWidget *par
     QObject::connect(&seekSlider, SIGNAL(ValueChangedAbs(int)), this, SLOT(Slot_Seek(int)));
     QObject::connect(&audioPlayer, SIGNAL(Signal_DurationChanged()), this, SLOT(Slot_DurationChanged()));
     QObject::connect(&_audioPlayer, SIGNAL(Signal_TimerExpired(qint64)), this, SLOT(Slot_UpdatePlayerPos(qint64)));
+    songWasPlaying = false;
+    songWasPlaying = false;
 }
 
 void AudioPlayerFrontend::Slot_UpdatePlayerPos(qint64 playerPos)
@@ -38,6 +40,7 @@ void AudioPlayerFrontend::Slot_Play()
 void AudioPlayerFrontend::Slot_Pause()
 {
     audioPlayer.Pause();
+    songWasPlaying = false;
 }
 void AudioPlayerFrontend::Slot_Seek(int _seek)
 {
@@ -50,6 +53,7 @@ void AudioPlayerFrontend::Slot_DurationChanged()
     //ui->label_duration->setText(time);
     Utilities::MillisToTimeString(time, audioPlayer.GetLength());
     ui->label_duration->setText(time);
+    durChanged = true;
 }
 
 void AudioPlayerFrontend::UpdateCurrentTime()
@@ -57,6 +61,16 @@ void AudioPlayerFrontend::UpdateCurrentTime()
     QString time;
     Utilities::MillisToTimeString(time, audioPlayer.GetPosition());
     ui->label_curPos->setText(time);
+    if(audioPlayer.GetPosition() > 0)
+    {
+        songWasPlaying = true;
+    }
+    if((audioPlayer.GetPosition() == audioPlayer.GetLength()) && (songWasPlaying) && (!durChanged))
+    {
+        songWasPlaying = false;
+        //Signal_SongFinsihed();
+    }
+    durChanged = false;
 }
 
 void AudioPlayerFrontend::on_pushButton_BrowseSong_clicked()
@@ -66,6 +80,6 @@ void AudioPlayerFrontend::on_pushButton_BrowseSong_clicked()
     selectedSong.replace("\\", "/");
     qDebug() << selectedSong;
     if(selectedSong.isEmpty())return;
-    audioPlayer.SetSong(selectedSong);
+    audioPlayer.SetSong(selectedSong, true);
 }
 
