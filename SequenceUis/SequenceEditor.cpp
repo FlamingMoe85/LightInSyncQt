@@ -27,7 +27,11 @@ SequenceEditor::SequenceEditor(QWidget *parent) :
     sequenceSong.clear();
     LoadCollections();
     connect(playerFrontend, SIGNAL(Signal_Play()), this, SLOT(Slot_PlayerStarted()));
+    connect(playerFrontend, SIGNAL(Signal_Stop()), this, SLOT(Slot_PlayerStoped()));
     connect(&playerFrontend->audioPlayer, SIGNAL(Signal_SongFinsihed()), this, SLOT(Slot_AudioPlayerFinished()));
+    connect(&sequencePlayer, SIGNAL(Signal_Start()), this, SLOT(Slot_SeqPlayerStart()));
+    connect(&sequencePlayer, SIGNAL(Signal_Stop()), this, SLOT(Slot_SeqPlayerStop()));
+    connect(&sequencePlayer, SIGNAL(Signal_CurrentTime(const int)), this, SLOT(Slot_SeqPlayerTime(const int)));
     FindAllSequences();
     currentSong = 0;
     songHasSequence = false;
@@ -36,6 +40,22 @@ SequenceEditor::SequenceEditor(QWidget *parent) :
 SequenceEditor::~SequenceEditor()
 {
     delete ui;
+}
+
+
+void SequenceEditor::Slot_SeqPlayerStart()
+{
+    ui->pushButton_playStopSequence->setStyleSheet("background-color: rgb(48, 122, 28)");
+}
+void SequenceEditor::Slot_SeqPlayerStop()
+{
+    ui->pushButton_playStopSequence->setStyleSheet("background-color: rgb(168, 31, 22)");
+}
+void SequenceEditor::Slot_SeqPlayerTime(const int t)
+{
+    QString time;
+    Utilities::MillisToTimeString(time, t);
+    ui->label_SeqPlayerTime->setText(time);
 }
 
 void SequenceEditor::DisplayCurrentTargetFromSeqItem()
@@ -99,6 +119,11 @@ void SequenceEditor::on_treeWidget_Collections_itemClicked(QTreeWidgetItem *item
 {
     markedItem = item;
     markedColoumn = column;
+
+    if(ui->checkBox_addOnClick->isChecked())
+    {
+        on_treeWidget_Collections_itemDoubleClicked(item, column);
+    }
 }
 
 void SequenceEditor::Slot_AddByName(const QString &_name)
@@ -353,11 +378,13 @@ void SequenceEditor::on_pushButton_clicked()
 
 void SequenceEditor::on_pushButton_NewSequence_clicked()
 {
+    /*
     QDir dir;
     QString p = SequencesPathConst+ui->lineEdit_SequenceName->text();
     if(ui->lineEdit_SequenceName->text().isEmpty()) return;
     if(QFile::exists(p+".json")) return;
     dir.mkdir(p);
+    */
     SequencePath = SequencesPathConst+ui->lineEdit_SequenceName->text()+".json";
 }
 
@@ -387,9 +414,14 @@ void SequenceEditor::Slot_PlayerStarted()
 {
     if(songHasSequence)
     {
-        sequencePlayer.StopSecquence();
+        //sequencePlayer.StopSecquence();
         sequencePlayer.Start();
     }
+}
+
+void SequenceEditor::Slot_PlayerStoped()
+{
+    sequencePlayer.Pause();
 }
 
 void SequenceEditor::Slot_SongFromPlayList(const QString &_song, const bool _changedByUser)

@@ -40,6 +40,7 @@ void AudioPlayerFrontend::Slot_Play()
 void AudioPlayerFrontend::Slot_Pause()
 {
     audioPlayer.Pause();
+    Signal_Stop();
     songWasPlaying = false;
 }
 void AudioPlayerFrontend::Slot_Seek(int _seek)
@@ -81,5 +82,11 @@ void AudioPlayerFrontend::on_pushButton_BrowseSong_clicked()
     qDebug() << selectedSong;
     if(selectedSong.isEmpty())return;
     audioPlayer.SetSong(selectedSong, true);
+}
+
+
+void AudioPlayerFrontend::on_pushButton_Pause_clicked()
+{
+
 }
 

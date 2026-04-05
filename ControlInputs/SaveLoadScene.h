@@ -40,6 +40,9 @@ public:
     QString name;
     SaveLoadScene* slaveSaveLoadScene;
 
+signals:
+    void Signal_Save();
+
 private:
     Ui::SaveLoadScene *ui;
     QVector<Position*> posUis;

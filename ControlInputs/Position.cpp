@@ -28,6 +28,7 @@ Position::Position(QWidget *parent, PositionInit_t _init) :
     int i=0;
     for(QSlider* slider : mySlider)
     {
+        sliderRates[i].id = i;
         sliderRates[i++].mySlider = slider;
     }
 

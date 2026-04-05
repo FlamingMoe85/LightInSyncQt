@@ -8,6 +8,7 @@ SequencePlayer::SequencePlayer()
     treeWidget = nullptr;
     QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
     timer.setInterval(10);
+    lastState = SeqPlayerStates::STOP;
 }
 
 void SequencePlayer::PlayCollection(QString _collection, qint64 _fadeIn)
@@ -41,7 +42,7 @@ bool SequencePlayer::PlaySequence(bool forward)
 {
     while(true)
     {
-        if(listToPlay->at(curSeqItem)->GetTimeStamp() <= time)
+        if(listToPlay->count() > 0 &&  listToPlay->at(curSeqItem)->GetTimeStamp() <= time)
         {
             if(forward)
             {
@@ -67,13 +68,24 @@ bool SequencePlayer::PlaySequence(bool forward)
     }
 
     time += 10;
+    Signal_CurrentTime(time);
     return false;
 }
 
+
 void SequencePlayer::StopSecquence()
 {
-    QObject::disconnect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
+    //QObject::disconnect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
     timer.stop();
+    Signal_Stop();
+    lastState = SeqPlayerStates::STOP;
+}
+
+void SequencePlayer::Pause()
+{
+    timer.stop();
+    Signal_Stop();
+    lastState = SeqPlayerStates::PAUSE;
 }
 
 void SequencePlayer::StartSequence(QList<SequenceItem*> *_listToPlay)
@@ -81,16 +93,23 @@ void SequencePlayer::StartSequence(QList<SequenceItem*> *_listToPlay)
     time = 0;
     curSeqItem = 0;
     listToPlay = _listToPlay;
-    QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
+    //QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
     timer.start();
+    Signal_Start();
+    lastState = SeqPlayerStates::PLAY;
 }
 
 void SequencePlayer::Start()
 {
-    time = 0;
-    curSeqItem = 0;
-    QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
+    if(lastState == 0)
+    {
+        time = 0;
+        curSeqItem = 0;
+    }
+    //QObject::connect(&timer, &QTimer::timeout, this, &SequencePlayer::Slot_TimerExpired);
     timer.start();
+    Signal_Start();
+    lastState = SeqPlayerStates::PLAY;
 }
 
 void SequencePlayer::SetSequence(QList<SequenceItem*> *_listToPlay)

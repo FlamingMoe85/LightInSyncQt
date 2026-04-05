@@ -16,9 +16,13 @@ public:
 
 private:
     QString name;
-    void UpdateAvailableSceneButtons();
+
+    QStringList alreadyFilledInNames;
 
     QStringList availableScenes;
+
+public slots:
+    void Slot_UpdateAvailableSceneButtons();
 
 signals:
     void Sig_NameClicked(const QString &_name);

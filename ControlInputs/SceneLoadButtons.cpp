@@ -7,10 +7,10 @@
 SceneLoadButtons::SceneLoadButtons(QString _name)
 {
     name = _name;
-    UpdateAvailableSceneButtons();
+    Slot_UpdateAvailableSceneButtons();
 }
 
-void SceneLoadButtons::UpdateAvailableSceneButtons()
+void SceneLoadButtons::Slot_UpdateAvailableSceneButtons()
 {
 
     QDir dir;
@@ -20,9 +20,13 @@ void SceneLoadButtons::UpdateAvailableSceneButtons()
 
     for(QString &s : availableScenes)
     {
-        NameButton* newNameNutton = new NameButton(this, s);
-        AddToScrollArea(newNameNutton);
-        QObject::connect(newNameNutton, &NameButton::Sig_SendName, this, &SceneLoadButtons::Slot_NameClicked);
+        if(!alreadyFilledInNames.contains(s))
+        {
+            alreadyFilledInNames.append(s);
+            NameButton* newNameNutton = new NameButton(this, s);
+            AddToScrollArea(newNameNutton);
+            QObject::connect(newNameNutton, &NameButton::Sig_SendName, this, &SceneLoadButtons::Slot_NameClicked);
+        }
     }
 }
 

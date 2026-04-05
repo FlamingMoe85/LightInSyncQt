@@ -36,6 +36,8 @@ private slots:
 
     void on_pushButton_BrowseSong_clicked();
 
+    void on_pushButton_Pause_clicked();
+
 public slots:
 
     void UpdateCurrentTime();

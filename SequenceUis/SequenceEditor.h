@@ -71,6 +71,10 @@ private slots:
     void on_pushButton_Forward_clicked();
 
     void Slot_PlayerStarted();
+    void Slot_PlayerStoped();
+    void Slot_SeqPlayerStart();
+    void Slot_SeqPlayerStop();
+    void Slot_SeqPlayerTime(const int);
 
     void Slot_AudioPlayerFinished();
 

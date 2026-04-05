@@ -17,10 +17,23 @@ public:
     }
 
 
-    void Ping()
+    bool Ping()
     {
-        if(ratio > 0.0) ratio -= fadeInc;
+        if(ratio > 0.0)
+        {
+            ratioOld = ratio;
+            ratio -= fadeInc;
+            //if(id == 0)qDebug() << "ratio 1: " << ratio << "  this: " << this;
+        }
         if(ratio < 0.0) ratio = 0;
+        if((ratio == 0.0) && (ratioOld > 0.0))
+        {
+            //if(id == 0)qDebug() << "ratio 2: " << ratio << "  ratioOld: " << ratioOld << "  this: " << this;
+            ratioOld = 0.0;
+            return true;
+        }
+        return false;
+
       /*  if(rate == 0.0) return;
         step += rate;
         if((step >= 1.0) || (step <= -1.0))
@@ -47,6 +60,7 @@ public:
 
     float GetRelValue(float _targetRel)
     {
+        Ping();
         if(ratio == 0.0)
         {
             mySlider->setValue((int)((float)mySlider->maximum()*_targetRel));
@@ -62,7 +76,23 @@ public:
 
     float GetRelExtValue(float _targetRel, int caller)
     {
-        if(ratio == 0.0) return _targetRel;
+        bool zeroReached = Ping();
+        if(ratio == 0.0)
+        {
+            /**/
+            if(zeroReached)
+            {
+                mySlider->setValue((int)((oldSliderVal*ratio)
+                                   +
+                                  ((int)(target*(1.0-ratio)))));
+                float retVal = (float)mySlider->value() / mySlider->maximum();
+                return retVal;
+            }
+            //qDebug() << "oldSliderVal: " << oldSliderVal << "  ratio: " << ratio << "  target: " << target << "  retVal: " <<  retVal;
+
+            return _targetRel;
+
+        }
 
         if(caller == 200)
         {
@@ -76,6 +106,11 @@ public:
         }
         else
         {
+
+            if(id == 0)
+            {
+                //qDebug() << "oldSliderVal: " << oldSliderVal << "  ratio: " << ratio << "   _targetRel: "<< _targetRel << "  (1.0-ratio): " << (1.0-ratio);
+            }
         mySlider->setValue((int)((oldSliderVal*ratio)
                                  +
                                 ((int)(target*(1.0-ratio)))));
@@ -85,7 +120,21 @@ public:
 
     float GetAbsExtValue(float _targetRel, int caller)
     {
-        if(ratio == 0.0) return _targetRel;
+        bool zeroReached = Ping();
+        if(ratio == 0.0)
+        {
+            if(zeroReached)
+            {
+                mySlider->setValue((int)((oldSliderVal*ratio)
+                                   +
+                                  ((int)(target*(1.0-ratio)))));
+                float retVal = (float)mySlider->value() / mySlider->maximum();
+                //qDebug() << "oldSliderVal: " << oldSliderVal << "  ratio: " << ratio << "  target: " << target << "  retVal: " <<  retVal;
+                return retVal;
+            }
+
+            return _targetRel;
+        }
 
         if(caller == 200)
         {
@@ -107,9 +156,10 @@ public:
     }
 
     QSlider* mySlider;
+    int id;
 
 private:
-    float ratio;
+    float ratio, ratioOld;
     float oldSliderVal;
     float target;
     int inst;

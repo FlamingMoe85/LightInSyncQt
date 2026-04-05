@@ -48,13 +48,13 @@ public:
     bool SupposedToSave();
     void DoSave(bool _save);
 
-    /**/
+
     void PingForSliderMove()
     {
-        for(int i=0; i< mySlider.count(); i++)
+      /*  for(int i=0; i< mySlider.count(); i++)
         {
             sliderRates[i].Ping();
-        }
+        }*/
     }
 
 

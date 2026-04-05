@@ -52,7 +52,7 @@ void SaveLoadScene::Slot_SaveAll()
 
 void SaveLoadScene::Slot_SceneSelected(int i)
 {
-    Load(ui->comboBox->itemText(i),200);
+    Load(ui->comboBox->itemText(i),20);
 }
 
 void SaveLoadScene::UpdateAvailableCurves()
@@ -64,6 +64,7 @@ void SaveLoadScene::UpdateAvailableCurves()
     qDebug() << "availableCurves: " << availableScenes;
     listModel.setStringList(availableScenes);
     ui->comboBox->setModel(&listModel);
+    Signal_Save();
 }
 
 bool SaveLoadScene::LoadByNameAndFadeIn(QString &fileName, qint64 _fadeIn)
@@ -75,7 +76,7 @@ bool SaveLoadScene::LoadByNameAndFadeIn(QString &fileName, qint64 _fadeIn)
 
 void SaveLoadScene::Slot_LoadByName(const QString &_name)
 {
-    Load(_name, 200);
+    Load(_name, 20);
 }
 
 void SaveLoadScene::Slot_Load()
