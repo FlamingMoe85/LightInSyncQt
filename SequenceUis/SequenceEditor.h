@@ -78,6 +78,8 @@ private slots:
 
     void Slot_AudioPlayerFinished();
 
+    void on_checkBox_Loop_stateChanged(int arg1);
+
 private:
     Ui::SequenceEditor *ui;
 

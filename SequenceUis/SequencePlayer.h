@@ -31,6 +31,8 @@ public:
     void SetTreeWdiget(QTreeWidget *_treeWidget){treeWidget = _treeWidget;}
     void ForwardToPosition(qint64 _position);
     bool PlaySequence(bool forward);
+    void EnableLoop(){loopSequence = true;};
+    void DisableLoop(){loopSequence = false;};
 
 signals:
     void Signal_CurrentTime(const int);
@@ -52,6 +54,7 @@ private:
     QTimer timer;
 
     SeqPlayerStates lastState;
+    bool loopSequence;
 };
 
 #endif // SEQUENCEPLAYER_H

@@ -147,3 +147,89 @@ void Position::SetFadeIn(qint64 _fadeIn)
         sliderRates[i].SetFadeIn(_fadeIn);
     }
 }
+
+void Position::SpanMinMaxToCentreWidth(int _min, int _max, int &_centre, int &_width)
+{
+
+    if(_max >= _min)
+    {
+        _width = _max - _min;
+        _centre = _min + ((_width)/2);
+    }
+    else
+    {
+        _width = -((1000 - _min) + _max);
+        _centre = _min - ((_width)/2); //_width gonne be negativ here, so subtracting it effectivly adds
+        if(_centre > 1000)
+        {
+            _centre -= 1000;
+        }
+    }
+}
+
+void Position::SpanCentreWidthToMinMax(int _centre, int _width, int &_min, int &_max)
+{
+    _min = _centre + (_width/2);
+    _max = _centre - (_width/2);
+    if(_min < 0) _min = 1000  + _min;
+    if(_max > 1000) _max -= 1000;
+
+    if(_width > 0)
+    {
+    }
+    else
+    {
+    }
+}
+
+void Position::on_horizontalSlider_SpanMin_valueChanged(int value)
+{
+    int centre, width;
+    SpanMinMaxToCentreWidth(value, ui->horizontalSlider_SpanMax->value(), centre, width);
+    disconnect(ui->horizontalSlider_SpanCenter, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanCenter_valueChanged(int)));
+    disconnect(ui->horizontalSlider_SpanWidth, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanWidth_valueChanged(int)));
+    ui->horizontalSlider_SpanCenter->setValue(centre);
+    ui->horizontalSlider_SpanWidth->setValue(width);
+    connect(ui->horizontalSlider_SpanCenter, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanCenter_valueChanged(int)));
+    connect(ui->horizontalSlider_SpanWidth, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanWidth_valueChanged(int)));
+}
+
+
+void Position::on_horizontalSlider_SpanMax_valueChanged(int value)
+{
+    int centre, width;
+    SpanMinMaxToCentreWidth(ui->horizontalSlider_SpanMin->value(), value, centre, width);
+    disconnect(ui->horizontalSlider_SpanCenter, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanCenter_valueChanged(int)));
+    disconnect(ui->horizontalSlider_SpanWidth, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanWidth_valueChanged(int)));
+    ui->horizontalSlider_SpanCenter->setValue(centre);
+    ui->horizontalSlider_SpanWidth->setValue(width);
+    connect(ui->horizontalSlider_SpanCenter, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanCenter_valueChanged(int)));
+    connect(ui->horizontalSlider_SpanWidth, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanWidth_valueChanged(int)));
+}
+
+
+void Position::on_horizontalSlider_SpanCenter_valueChanged(int value)
+{
+    int min, max;
+    SpanCentreWidthToMinMax(value, ui->horizontalSlider_SpanWidth->value(), min, max);
+    disconnect(ui->horizontalSlider_SpanMin, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMin_valueChanged(int)));
+    disconnect(ui->horizontalSlider_SpanMax, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMax_valueChanged(int)));
+    ui->horizontalSlider_SpanMin->setValue(min);
+    ui->horizontalSlider_SpanMax->setValue(max);
+    connect(ui->horizontalSlider_SpanMin, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMin_valueChanged(int)));
+    connect(ui->horizontalSlider_SpanMax, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMax_valueChanged(int)));
+}
+
+
+void Position::on_horizontalSlider_SpanWidth_valueChanged(int value)
+{
+    int min, max;
+    SpanCentreWidthToMinMax(ui->horizontalSlider_SpanCenter->value(), value, min, max);
+    disconnect(ui->horizontalSlider_SpanMin, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMin_valueChanged(int)));
+    disconnect(ui->horizontalSlider_SpanMax, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMax_valueChanged(int)));
+    ui->horizontalSlider_SpanMin->setValue(min);
+    ui->horizontalSlider_SpanMax->setValue(max);
+    connect(ui->horizontalSlider_SpanMin, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMin_valueChanged(int)));
+    connect(ui->horizontalSlider_SpanMax, SIGNAL(valueChanged(int)), this, SLOT(on_horizontalSlider_SpanMax_valueChanged(int)));
+}
+

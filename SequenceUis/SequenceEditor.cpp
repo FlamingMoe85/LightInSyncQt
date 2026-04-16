@@ -482,3 +482,11 @@ void SequenceEditor::Slot_AudioPlayerFinished()
 {
     Signal_AudioPlayerFinished();
 }
+
+void SequenceEditor::on_checkBox_Loop_stateChanged(int arg1)
+{
+    qDebug() << "Loop Sequence: " << arg1;
+    if(arg1)sequencePlayer.EnableLoop();
+    else sequencePlayer.DisableLoop();
+}
+

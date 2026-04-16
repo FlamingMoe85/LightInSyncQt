@@ -176,6 +176,13 @@
             </property>
            </widget>
           </item>
+          <item row="0" column="2">
+           <widget class="QCheckBox" name="checkBox_Loop">
+            <property name="text">
+             <string>Loop</string>
+            </property>
+           </widget>
+          </item>
          </layout>
         </item>
        </layout>

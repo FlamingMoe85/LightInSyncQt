@@ -56,6 +56,12 @@ bool SequencePlayer::PlaySequence(bool forward)
             curSeqItem++;
             if(curSeqItem == listToPlay->count())
             {
+                if(loopSequence)
+                {
+                    time = 0;
+                    curSeqItem = 0;
+                    return false;
+                }
                 StopSecquence();
                 return true;
                 break;

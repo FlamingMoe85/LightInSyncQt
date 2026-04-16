@@ -66,11 +66,17 @@ private:
     ChangeSliderAtRate sliderRates[AMT_SLIDER_RATES];
     bool oldOverride;
     int myInst;
+    void SpanMinMaxToCentreWidth(int _min, int _max, int &_centre, int &_width);
+    void SpanCentreWidthToMinMax(int _centre, int _width, int &_min, int &_max);
 
 private slots:
     void Slot_SetPosToMiddle();
     void Slot_SpeedDec();
     void Slot_SpeedInc();
+    void on_horizontalSlider_SpanMin_valueChanged(int value);
+    void on_horizontalSlider_SpanMax_valueChanged(int value);
+    void on_horizontalSlider_SpanCenter_valueChanged(int value);
+    void on_horizontalSlider_SpanWidth_valueChanged(int value);
 };
 
 #endif // POSITION_H
